@@ -1,0 +1,513 @@
+// Data contoh (dummy). Nanti diganti dengan data dari backend/API.
+import { toKey } from '../utils/format'
+
+export const SEKOLAH = {
+  nama: 'SD Harapan Gemilang',
+  slogan: 'Cerdas, Berkarakter, dan Gemilang',
+  deskripsi:
+    'Sekolah dasar yang menumbuhkan anak-anak cerdas, berakhlak mulia, dan percaya diri melalui pembelajaran yang menyenangkan dan bermakna.',
+  npsn: '20123456',
+  akreditasi: 'A (Unggul)',
+  tahunBerdiri: 2005,
+  status: 'Swasta',
+  kurikulum: 'Kurikulum Merdeka',
+  alamat: 'Jl. Merdeka No. 45, Kel. Sukamaju, Kota Harapan 12345',
+  telepon: '(021) 555-0145',
+  whatsapp: '0812-3456-7890',
+  email: 'info@sdharapangemilang.sch.id',
+  jamOperasional: 'Senin – Jumat, 07.00 – 14.00 WIB',
+  kepalaSekolah: 'Dra. Siti Rahmawati, M.Pd.',
+  sambutan:
+    'Selamat datang di website SD Harapan Gemilang. Kami percaya setiap anak memiliki potensi luar biasa. Melalui kerja sama yang erat antara sekolah dan orang tua, kami berkomitmen mendampingi putra-putri Bapak/Ibu tumbuh menjadi pribadi yang cerdas, berkarakter, dan siap meraih masa depan yang gemilang.',
+  visi: 'Terwujudnya peserta didik yang beriman, cerdas, berkarakter, dan peduli lingkungan.',
+  misi: [
+    'Menanamkan nilai keimanan dan akhlak mulia dalam kegiatan sehari-hari.',
+    'Menyelenggarakan pembelajaran aktif, kreatif, dan menyenangkan.',
+    'Mengembangkan bakat dan minat siswa melalui kegiatan ekstrakurikuler.',
+    'Membiasakan budaya literasi, numerasi, dan pemanfaatan teknologi.',
+    'Menjalin kemitraan yang erat antara sekolah, orang tua, dan masyarakat.',
+  ],
+  sejarah:
+    'SD Harapan Gemilang didirikan pada tahun 2005 oleh Yayasan Harapan Bangsa dengan 3 ruang kelas dan 45 siswa. Berkat dukungan orang tua dan masyarakat, kini sekolah telah berkembang menjadi 12 rombongan belajar dengan fasilitas yang lengkap serta meraih akreditasi A (Unggul).',
+}
+
+export const STATISTIK = [
+  { label: 'Siswa Aktif', nilai: '432' },
+  { label: 'Guru & Staf', nilai: '32' },
+  { label: 'Rombel', nilai: '12' },
+  { label: 'Ekstrakurikuler', nilai: '9' },
+]
+
+export const KELAS = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B']
+
+// Fasilitas sekolah. `denah` = posisi di denah interaktif (persen dari lebar 100 × tinggi 70).
+// Foto asli bisa ditambahkan nanti di folder public/fasilitas/.
+export const FASILITAS = [
+  {
+    id: 'ruang-kelas',
+    nama: 'Ruang Kelas',
+    ikon: 'kelas',
+    ringkas: '12 ruang kelas yang terang, bersih, dan nyaman untuk belajar.',
+    deskripsi:
+      'Setiap ruang kelas dirancang agar anak belajar dengan nyaman: ventilasi dan pencahayaan alami yang baik, meja-kursi sesuai ukuran anak, serta dinding yang dipenuhi hasil karya siswa. Satu kelas berisi maksimal 28 siswa agar guru dapat memperhatikan setiap anak.',
+    fitur: ['Proyektor & layar di setiap kelas', 'Pojok baca kelas', 'Loker penyimpanan siswa', 'Kipas angin & ventilasi silang'],
+    kegiatan: ['Kegiatan belajar mengajar harian', 'Literasi pagi 15 menit', 'Pameran karya siswa akhir semester'],
+    lokasi: 'Gedung Kelas, lantai 1 – 2',
+    jam: 'Senin – Jumat, 07.00 – 12.00',
+    kapasitas: '28 siswa per kelas',
+    foto: ['Suasana belajar kelompok', 'Pojok baca kelas', 'Pameran karya siswa'],
+    denah: { x: 2, y: 3, w: 40, h: 24 },
+  },
+  {
+    id: 'perpustakaan',
+    nama: 'Perpustakaan',
+    ikon: 'buku',
+    ringkas: 'Lebih dari 3.000 koleksi buku cerita, pengetahuan, dan pelajaran.',
+    deskripsi:
+      'Perpustakaan menjadi pusat budaya literasi sekolah. Area baca lesehan yang nyaman membuat anak betah berlama-lama membaca. Siswa dapat meminjam hingga 2 buku selama 7 hari dan peminjaman tercatat secara digital.',
+    fitur: ['3.000+ koleksi buku', 'Area baca lesehan', 'Peminjaman tercatat digital', 'Pojok buku cerita bergambar'],
+    kegiatan: ['Mendongeng setiap Jumat', 'Tantangan membaca bulanan', 'Kunjungan kelas terjadwal'],
+    lokasi: 'Gedung Kelas, lantai 1',
+    jam: 'Senin – Jumat, 07.00 – 14.00',
+    kapasitas: '40 pengunjung',
+    foto: ['Rak koleksi buku', 'Area baca lesehan', 'Kegiatan mendongeng'],
+    denah: { x: 2, y: 30, w: 19, h: 16 },
+  },
+  {
+    id: 'lab-komputer',
+    nama: 'Lab Komputer',
+    ikon: 'komputer',
+    ringkas: '25 unit komputer untuk belajar informatika, coding, dan robotik.',
+    deskripsi:
+      'Lab komputer digunakan untuk pelajaran Informatika dan ekstrakurikuler Robotik. Siswa belajar mengetik, mengenal internet yang aman, hingga dasar pemrograman dengan cara yang menyenangkan.',
+    fitur: ['25 unit komputer', 'Internet dengan filter konten anak', 'Kit robotik edukasi', 'Layar interaktif'],
+    kegiatan: ['Pelajaran Informatika', 'Ekstrakurikuler Robotik', 'Persiapan lomba coding'],
+    lokasi: 'Gedung Kelas, lantai 2',
+    jam: 'Sesuai jadwal pelajaran',
+    kapasitas: '28 siswa',
+    foto: ['Praktik di lab', 'Tim robotik berlatih', 'Belajar coding'],
+    denah: { x: 23, y: 30, w: 19, h: 16 },
+  },
+  {
+    id: 'lapangan',
+    nama: 'Lapangan Olahraga',
+    ikon: 'lapangan',
+    ringkas: 'Lapangan serbaguna untuk upacara, olahraga, dan kegiatan besar.',
+    deskripsi:
+      'Lapangan serbaguna di tengah sekolah digunakan untuk upacara bendera setiap Senin, pelajaran PJOK, senam pagi, serta latihan futsal dan bulu tangkis. Area ini juga menjadi tempat pentas seni dan peringatan hari besar.',
+    fitur: ['Lapangan futsal & bulu tangkis', 'Tiang bendera & area upacara', 'Tribun penonton kecil', 'Gudang alat olahraga'],
+    kegiatan: ['Upacara bendera setiap Senin', 'Senam pagi setiap Jumat', 'Latihan futsal & pramuka'],
+    lokasi: 'Area tengah sekolah',
+    jam: 'Senin – Jumat, 07.00 – 15.00',
+    kapasitas: '500 orang',
+    foto: ['Upacara hari Senin', 'Pelajaran PJOK', 'Turnamen futsal antar kelas'],
+    denah: { x: 45, y: 3, w: 30, h: 40 },
+  },
+  {
+    id: 'mushola',
+    nama: 'Mushola',
+    ikon: 'mushola',
+    ringkas: 'Tempat ibadah yang bersih untuk sholat berjamaah dan kegiatan keagamaan.',
+    deskripsi:
+      'Mushola sekolah digunakan untuk sholat dhuha dan dzuhur berjamaah, kegiatan tahfidz, serta peringatan hari besar Islam. Tersedia tempat wudhu terpisah untuk siswa laki-laki dan perempuan.',
+    fitur: ['Tempat wudhu terpisah', 'Perlengkapan sholat', 'Rak Al-Qur’an & buku doa', 'Karpet bersih & nyaman'],
+    kegiatan: ['Sholat dhuha & dzuhur berjamaah', 'Ekstrakurikuler Tahfidz', 'Pesantren kilat Ramadan'],
+    lokasi: 'Sisi timur sekolah',
+    jam: 'Senin – Jumat, 07.00 – 14.00',
+    kapasitas: '150 orang',
+    foto: ['Sholat berjamaah', 'Kegiatan tahfidz', 'Tempat wudhu'],
+    denah: { x: 78, y: 3, w: 20, h: 20 },
+  },
+  {
+    id: 'uks',
+    nama: 'UKS',
+    ikon: 'uks',
+    ringkas: 'Unit Kesehatan Sekolah dengan petugas dan perlengkapan P3K.',
+    deskripsi:
+      'UKS siap menangani siswa yang sakit atau cedera ringan selama di sekolah. Bekerja sama dengan Puskesmas Sukamaju, UKS rutin mengadakan pemeriksaan kesehatan, imunisasi, dan penyuluhan hidup sehat.',
+    fitur: ['4 tempat tidur', 'Perlengkapan P3K lengkap', 'Petugas UKS terlatih', 'Timbangan & alat ukur tinggi badan'],
+    kegiatan: ['Pemeriksaan kesehatan berkala', 'Program dokter kecil', 'Penyuluhan cuci tangan & gizi'],
+    lokasi: 'Sisi timur, sebelah mushola',
+    jam: 'Senin – Jumat, 07.00 – 13.00',
+    kapasitas: '4 tempat tidur',
+    foto: ['Ruang istirahat', 'Pemeriksaan kesehatan', 'Dokter kecil bertugas'],
+    denah: { x: 78, y: 26, w: 20, h: 14 },
+  },
+  {
+    id: 'kantin',
+    nama: 'Kantin Sehat',
+    ikon: 'kantin',
+    ringkas: 'Jajanan bergizi tanpa pewarna dan pengawet berbahaya.',
+    deskripsi:
+      'Kantin sehat menyediakan makanan dan minuman bergizi yang diawasi sekolah. Semua penjual telah mengikuti pelatihan keamanan pangan, dan tersedia wastafel cuci tangan di depan kantin.',
+    fitur: ['Menu bergizi diawasi sekolah', 'Tanpa pewarna & pengawet berbahaya', 'Wastafel cuci tangan', 'Area makan beratap'],
+    kegiatan: ['Makan bersama saat istirahat', 'Hari buah setiap Rabu', 'Edukasi jajanan sehat'],
+    lokasi: 'Sisi timur, dekat gerbang samping',
+    jam: 'Senin – Jumat, 07.00 – 12.30',
+    kapasitas: '80 tempat duduk',
+    foto: ['Area makan', 'Menu sehat harian', 'Antre cuci tangan'],
+    denah: { x: 78, y: 43, w: 20, h: 25 },
+  },
+  {
+    id: 'taman',
+    nama: 'Taman & Kebun Sekolah',
+    ikon: 'taman',
+    ringkas: 'Taman bermain yang aman dan kebun untuk belajar menanam.',
+    deskripsi:
+      'Taman bermain dilengkapi wahana yang aman untuk anak, sementara kebun sekolah menjadi laboratorium alam tempat siswa belajar menanam sayur, merawat tanaman, dan mengenal lingkungan.',
+    fitur: ['Ayunan, perosotan & jungkat-jungkit', 'Lantai karet pengaman', 'Kebun sayur & green house', 'Kolam ikan kecil'],
+    kegiatan: ['Bermain saat istirahat', 'Praktik IPAS menanam', 'Jumat bersih & hijau'],
+    lokasi: 'Bagian selatan sekolah',
+    jam: 'Senin – Jumat, 07.00 – 14.00',
+    kapasitas: '60 anak',
+    foto: ['Taman bermain', 'Kebun sayur siswa', 'Praktik menanam'],
+    denah: { x: 45, y: 46, w: 30, h: 22 },
+  },
+]
+
+// Area di denah yang bukan fasilitas untuk dikunjungi
+export const DENAH_LAIN = [
+  { nama: 'Kantor Guru & TU', denah: { x: 2, y: 49, w: 40, h: 10 } },
+  { nama: 'Gerbang Utama', denah: { x: 2, y: 62, w: 18, h: 6 }, gerbang: true },
+]
+
+// Jadwal kunjungan sekolah untuk umum (calon orang tua murid, mitra, dll.)
+export const KUNJUNGAN = {
+  sesi: ['09.00 – 10.00', '10.30 – 11.30', '13.00 – 14.00'],
+  kuotaPerSesi: 2, // jumlah rombongan per sesi
+  maksOrang: 10,
+  keperluan: ['Calon orang tua murid (PPDB)', 'Orang tua siswa', 'Instansi / mitra sekolah', 'Lainnya'],
+}
+
+export const EKSKUL = [
+  'Pramuka',
+  'Tari Tradisional',
+  'Futsal',
+  'Robotik',
+  'Paduan Suara',
+  'Melukis',
+  'Tahfidz',
+  'Bulu Tangkis',
+  'English Club',
+]
+
+// Guru & staf. `peran` menentukan menu di Portal Guru & Staf (lihat src/context/akses.js),
+// `kelas` diisi jika ia wali kelas.
+export const GURU_AWAL = [
+  { id: 'g1', nama: 'Dra. Siti Rahmawati, M.Pd.', nip: '197203151998032001', jabatan: 'Kepala Sekolah', mapel: '-', peran: [], kelas: '' },
+  { id: 'g2', nama: 'Andi Pratama, S.Pd.', nip: '198805122014031002', jabatan: 'Wali Kelas 4A', mapel: 'Guru Kelas', peran: ['wali_kelas'], kelas: '4A' },
+  { id: 'g3', nama: 'Rina Marlina, S.Pd.', nip: '199001202015032003', jabatan: 'Wakasek Kurikulum', mapel: 'Guru Kelas 1A', peran: ['wali_kelas', 'wakasek_kurikulum'], kelas: '1A' },
+  { id: 'g4', nama: 'Dewi Kartika, S.Pd.', nip: '198707072012032004', jabatan: 'Wali Kelas 6A', mapel: 'Guru Kelas', peran: ['wali_kelas'], kelas: '6A' },
+  { id: 'g5', nama: 'Budi Santoso, S.Pd.', nip: '198511302010011005', jabatan: 'Wakasek Kesiswaan', mapel: 'PJOK', peran: ['guru_mapel', 'wakasek_kesiswaan'], kelas: '' },
+  { id: 'g6', nama: 'Nur Aisyah, S.Pd.I.', nip: '199203182017032006', jabatan: 'Guru Mapel', mapel: 'Pendidikan Agama Islam', peran: ['guru_mapel'], kelas: '' },
+  { id: 'g7', nama: 'Maria Natalia, S.Pd.', nip: '199406252019032007', jabatan: 'Guru Mapel', mapel: 'Bahasa Inggris', peran: ['guru_mapel'], kelas: '' },
+  { id: 'g8', nama: 'Hendra Wijaya, S.Kom.', nip: '199109092016011008', jabatan: 'Guru Mapel', mapel: 'Informatika', peran: ['guru_mapel'], kelas: '' },
+  { id: 'g9', nama: 'Sri Handayani, S.E.', nip: '', jabatan: 'Kepala Tata Usaha', mapel: '-', peran: ['tata_usaha'], kelas: '' },
+  { id: 'g10', nama: 'Yusuf Hidayat, S.IP.', nip: '', jabatan: 'Pustakawan', mapel: '-', peran: ['pustakawan'], kelas: '' },
+  { id: 'g11', nama: 'Agus Setiawan, S.T.', nip: '198602142011011011', jabatan: 'Wakasek Sarana & Prasarana', mapel: 'Matematika', peran: ['guru_mapel', 'wakasek_sarpras'], kelas: '' },
+  { id: 'g12', nama: 'Laila Fitriani, S.Psi.', nip: '199308112019032012', jabatan: 'Guru BK', mapel: 'Bimbingan Konseling', peran: ['guru_bk'], kelas: '' },
+  { id: 'g13', nama: 'Joko Susilo', nip: '', jabatan: 'Satpam', mapel: '-', peran: ['satpam'], kelas: '' },
+]
+
+// Pilihan untuk menu Sarana & Prasarana dan Bimbingan Konseling
+export const KATEGORI_BARANG = ['Mebel', 'Elektronik', 'Alat Peraga', 'Olahraga', 'Kebersihan', 'Lainnya']
+export const KONDISI_BARANG = ['Baik', 'Rusak Ringan', 'Rusak Berat']
+export const LOKASI_SEKOLAH = ['Ruang Kelas', 'Perpustakaan', 'Lab Komputer', 'Lapangan Olahraga', 'Mushola', 'UKS', 'Kantin Sehat', 'Taman & Kebun Sekolah', 'Kantor Guru & TU', 'Gerbang Utama', 'Toilet', 'Gudang']
+export const STATUS_KERUSAKAN = ['Dilaporkan', 'Diperbaiki', 'Selesai']
+export const KATEGORI_KONSELING = ['Belajar', 'Pribadi', 'Sosial', 'Karier']
+export const LAYANAN_KONSELING = ['Konseling Individu', 'Konseling Kelompok', 'Konsultasi Orang Tua', 'Kunjungan Rumah']
+export const STATUS_KONSELING = ['Dalam Proses', 'Perlu Pemantauan', 'Selesai']
+export const KEPERLUAN_TAMU = ['Bertemu guru/staf', 'Urusan administrasi (TU)', 'Mengantar/menjemput siswa', 'Kunjungan sekolah terjadwal', 'Pengiriman barang', 'Lainnya']
+
+export const INVENTARIS_AWAL = [
+  { id: 'inv1', nama: 'Meja siswa', kategori: 'Mebel', lokasi: 'Ruang Kelas', jumlah: 360, kondisi: 'Baik', keterangan: '30 meja × 12 kelas' },
+  { id: 'inv2', nama: 'Kursi siswa', kategori: 'Mebel', lokasi: 'Ruang Kelas', jumlah: 360, kondisi: 'Baik', keterangan: '' },
+  { id: 'inv3', nama: 'Proyektor LCD', kategori: 'Elektronik', lokasi: 'Ruang Kelas', jumlah: 12, kondisi: 'Rusak Ringan', keterangan: '1 unit lampunya redup (kelas 3B)' },
+  { id: 'inv4', nama: 'Komputer siswa', kategori: 'Elektronik', lokasi: 'Lab Komputer', jumlah: 30, kondisi: 'Baik', keterangan: '' },
+  { id: 'inv5', nama: 'AC split 1 PK', kategori: 'Elektronik', lokasi: 'Lab Komputer', jumlah: 2, kondisi: 'Rusak Berat', keterangan: '1 unit tidak dingin, kompresor mati' },
+  { id: 'inv6', nama: 'Rak buku kayu', kategori: 'Mebel', lokasi: 'Perpustakaan', jumlah: 14, kondisi: 'Baik', keterangan: '' },
+  { id: 'inv7', nama: 'Torso anatomi tubuh', kategori: 'Alat Peraga', lokasi: 'Ruang Kelas', jumlah: 2, kondisi: 'Baik', keterangan: 'Dipakai bergantian kelas 4–6' },
+  { id: 'inv8', nama: 'Bola futsal', kategori: 'Olahraga', lokasi: 'Gudang', jumlah: 8, kondisi: 'Rusak Ringan', keterangan: '3 bola kempis' },
+  { id: 'inv9', nama: 'Tempat tidur UKS', kategori: 'Mebel', lokasi: 'UKS', jumlah: 2, kondisi: 'Baik', keterangan: '' },
+  { id: 'inv10', nama: 'CCTV', kategori: 'Elektronik', lokasi: 'Gerbang Utama', jumlah: 6, kondisi: 'Baik', keterangan: 'Terpantau dari pos satpam' },
+]
+
+// Pengaturan SPP tahun ajaran berjalan
+export const SPP = {
+  tahunAjaran: '2026/2027',
+  nominal: 350000,
+  tanggalJatuhTempo: 10,
+  bulan: ['2026-07', '2026-08', '2026-09', '2026-10', '2026-11', '2026-12', '2027-01', '2027-02', '2027-03', '2027-04', '2027-05', '2027-06'],
+}
+
+export const BANK_VA = [
+  { kode: 'bca', nama: 'BCA', prefix: '39012' },
+  { kode: 'bri', nama: 'BRI', prefix: '88810' },
+  { kode: 'mandiri', nama: 'Mandiri', prefix: '89508' },
+  { kode: 'bni', nama: 'BNI', prefix: '98820' },
+]
+
+export const BUKU_AWAL = [
+  { id: 'b1', judul: 'Si Kancil dan Buaya', penulis: 'Tim Cerita Rakyat', kategori: 'Cerita Rakyat', stok: 4 },
+  { id: 'b2', judul: 'Ensiklopedia Hewan Nusantara', penulis: 'Rudi Hartono', kategori: 'Pengetahuan', stok: 2 },
+  { id: 'b3', judul: 'Matematika Asyik Kelas 4', penulis: 'Tim Edukasi', kategori: 'Pelajaran', stok: 6 },
+  { id: 'b4', judul: 'Petualangan di Hutan Kalimantan', penulis: 'Nadia Putri', kategori: 'Fiksi Anak', stok: 3 },
+  { id: 'b5', judul: 'Atlas Indonesia & Dunia', penulis: 'Tim Kartografi', kategori: 'Pengetahuan', stok: 2 },
+  { id: 'b6', judul: 'Kumpulan Dongeng Sebelum Tidur', penulis: 'Sari Wulandari', kategori: 'Fiksi Anak', stok: 5 },
+  { id: 'b7', judul: 'Mengenal Tata Surya', penulis: 'Agus Prasetyo', kategori: 'Pengetahuan', stok: 3 },
+  { id: 'b8', judul: 'Pahlawan-Pahlawan Indonesia', penulis: 'Tim Sejarah', kategori: 'Sejarah', stok: 4 },
+  { id: 'b9', judul: 'Belajar Coding untuk Anak', penulis: 'Hendra Wijaya', kategori: 'Pelajaran', stok: 2 },
+  { id: 'b10', judul: 'Malin Kundang', penulis: 'Tim Cerita Rakyat', kategori: 'Cerita Rakyat', stok: 3 },
+]
+
+const SISWA_4A = [
+  ['Rafa Aditya', 'L', 'Dewi Lestari'],
+  ['Aisyah Putri Ramadhani', 'P', 'Ahmad Ramadhan'],
+  ['Bima Sakti Nugraha', 'L', 'Sri Wahyuni'],
+  ['Citra Ayu Lestari', 'P', 'Bambang Susilo'],
+  ['Dimas Arya Saputra', 'L', 'Yuliana'],
+  ['Elena Maharani', 'P', 'Agus Setiawan'],
+  ['Fajar Kurniawan', 'L', 'Ratna Sari'],
+  ['Gita Anjani', 'P', 'Hadi Purnomo'],
+  ['Hafiz Maulana', 'L', 'Siti Aminah'],
+  ['Intan Permatasari', 'P', 'Joko Susanto'],
+  ['Joko Prasetyo', 'L', 'Rahmi Fitri'],
+  ['Kirana Larasati', 'P', 'Teguh Prakoso'],
+]
+
+const SISWA_LAIN = [
+  ['230101', 'Naura Azzahra', '1A', 'P', 'Fikri Hidayat'],
+  ['230102', 'Raka Pratama', '1A', 'L', 'Lina Marlina'],
+  ['230103', 'Salsa Nabila', '1A', 'P', 'Dedi Kurnia'],
+  ['230601', 'Tegar Wicaksono', '6A', 'L', 'Endang Sulastri'],
+  ['230602', 'Vania Anindita', '6A', 'P', 'Wahyu Hidayat'],
+  ['230603', 'Yoga Firmansyah', '6A', 'L', 'Nani Suryani'],
+]
+
+export const SISWA_AWAL = [
+  ...SISWA_4A.map(([nama, jk, ortu], i) => {
+    const nis = `2304${String(i + 1).padStart(2, '0')}`
+    return { id: `s${nis}`, nis, nama, kelas: '4A', jk, ortu }
+  }),
+  ...SISWA_LAIN.map(([nis, nama, kelas, jk, ortu]) => ({ id: `s${nis}`, nis, nama, kelas, jk, ortu })),
+]
+
+export const PENGUMUMAN_AWAL = [
+  {
+    id: 'p1',
+    judul: 'Penilaian Tengah Semester Ganjil 2026/2027',
+    kategori: 'Akademik',
+    tanggal: '2026-10-01',
+    isi: 'Penilaian Tengah Semester (PTS) ganjil akan dilaksanakan pada 12–16 Oktober 2026. Siswa diharapkan hadir pukul 07.00 WIB dan membawa alat tulis lengkap. Kisi-kisi dapat dilihat di grup kelas masing-masing.',
+  },
+  {
+    id: 'p2',
+    judul: 'Kegiatan Field Trip Kelas 4 ke Museum Nasional',
+    kategori: 'Kegiatan',
+    tanggal: '2026-09-28',
+    isi: 'Siswa kelas 4 akan mengikuti field trip ke Museum Nasional pada Jumat, 23 Oktober 2026. Formulir persetujuan orang tua mohon dikumpulkan paling lambat 16 Oktober 2026 kepada wali kelas.',
+  },
+  {
+    id: 'p3',
+    judul: 'Pembukaan PPDB Tahun Ajaran 2027/2028',
+    kategori: 'PPDB',
+    tanggal: '2026-09-20',
+    isi: 'Penerimaan Peserta Didik Baru (PPDB) tahun ajaran 2027/2028 resmi dibuka mulai 1 Oktober 2026. Pendaftaran dapat dilakukan langsung secara online melalui halaman PPDB di website ini.',
+  },
+  {
+    id: 'p4',
+    judul: 'Juara 1 Lomba Robotik Tingkat Kota',
+    kategori: 'Prestasi',
+    tanggal: '2026-09-15',
+    isi: 'Selamat kepada tim robotik SD Harapan Gemilang yang berhasil meraih Juara 1 Lomba Robotik Tingkat Kota 2026. Terima kasih atas dukungan Bapak/Ibu orang tua dan para pembina.',
+  },
+  {
+    id: 'p5',
+    judul: 'Jadwal Pemeriksaan Kesehatan Gigi Siswa',
+    kategori: 'Umum',
+    tanggal: '2026-09-08',
+    isi: 'Bekerja sama dengan Puskesmas Sukamaju, akan diadakan pemeriksaan kesehatan gigi gratis untuk seluruh siswa pada 14 Oktober 2026 di ruang UKS.',
+  },
+]
+
+export const KATEGORI_PENGUMUMAN = ['Akademik', 'Kegiatan', 'PPDB', 'Prestasi', 'Umum']
+
+export const GALERI = [
+  { id: 1, judul: 'Upacara Hari Senin', kategori: 'Kegiatan', ikon: 'flag' },
+  { id: 2, judul: 'Juara Lomba Robotik', kategori: 'Prestasi', ikon: 'trophy' },
+  { id: 3, judul: 'Belajar di Perpustakaan', kategori: 'Pembelajaran', ikon: 'book' },
+  { id: 4, judul: 'Latihan Pramuka', kategori: 'Ekstrakurikuler', ikon: 'tent' },
+  { id: 5, judul: 'Pentas Seni Tari', kategori: 'Ekstrakurikuler', ikon: 'music' },
+  { id: 6, judul: 'Praktik di Lab Komputer', kategori: 'Pembelajaran', ikon: 'monitor' },
+  { id: 7, judul: 'Peringatan HUT RI ke-81', kategori: 'Kegiatan', ikon: 'flag' },
+  { id: 8, judul: 'Turnamen Futsal Antar Kelas', kategori: 'Prestasi', ikon: 'trophy' },
+  { id: 9, judul: 'Menanam Pohon Bersama', kategori: 'Kegiatan', ikon: 'sprout' },
+]
+
+export const PPDB = {
+  tahunAjaran: '2027/2028',
+  // Usia dihitung pada tanggal ini (awal tahun ajaran baru)
+  tanggalAcuanUsia: '2027-07-01',
+  usiaMinimal: 6,
+  agama: ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'],
+  berkas: [
+    { id: 'akta', label: 'Akta kelahiran', wajib: true },
+    { id: 'kk', label: 'Kartu Keluarga (KK)', wajib: true },
+    { id: 'foto', label: 'Pas foto berwarna 3x4', wajib: true },
+    { id: 'ktp', label: 'KTP orang tua/wali', wajib: true },
+    { id: 'tk', label: 'Surat keterangan lulus TK/PAUD', wajib: false },
+    { id: 'prestasi', label: 'Sertifikat prestasi', wajib: false, jalur: 'Prestasi' },
+  ],
+  jadwal: [
+    { tahap: 'Pendaftaran Online', tanggal: '1 Okt 2026 – 31 Jan 2027' },
+    { tahap: 'Observasi & Wawancara', tanggal: '8 – 13 Feb 2027' },
+    { tahap: 'Pengumuman Hasil', tanggal: '20 Feb 2027' },
+    { tahap: 'Daftar Ulang', tanggal: '22 Feb – 6 Mar 2027' },
+  ],
+  syarat: [
+    'Usia minimal 6 tahun pada 1 Juli 2027',
+    'Fotokopi akta kelahiran',
+    'Fotokopi Kartu Keluarga (KK)',
+    'Pas foto berwarna ukuran 3x4 (2 lembar)',
+    'Fotokopi KTP kedua orang tua',
+    'Surat keterangan lulus TK/PAUD (jika ada)',
+  ],
+  jalur: [
+    { nama: 'Reguler', kuota: 50, ket: 'Terbuka untuk umum sesuai urutan pendaftaran.' },
+    { nama: 'Prestasi', kuota: 6, ket: 'Bagi calon siswa dengan prestasi akademik/non-akademik.' },
+    { nama: 'Saudara Kandung', kuota: 8, ket: 'Bagi calon siswa yang memiliki kakak di SD Harapan Gemilang.' },
+  ],
+}
+
+// Mata pelajaran. `absensi: false` = kegiatan yang tidak dihitung dalam absensi per mapel.
+export const MAPEL = {
+  upacara: { nama: 'Upacara Bendera', guru: 'Semua guru', warna: 'bg-primary-100 text-primary-700', absensi: false },
+  senam: { nama: 'Senam Pagi', guru: 'Budi Santoso, S.Pd.', warna: 'bg-lime-100 text-lime-700', absensi: false },
+  mtk: { nama: 'Matematika', guru: 'Andi Pratama, S.Pd.', warna: 'bg-sky-100 text-sky-700' },
+  bindo: { nama: 'Bahasa Indonesia', guru: 'Andi Pratama, S.Pd.', warna: 'bg-orange-100 text-orange-700' },
+  ipas: { nama: 'IPAS', guru: 'Andi Pratama, S.Pd.', warna: 'bg-emerald-100 text-emerald-700' },
+  pancasila: { nama: 'Pendidikan Pancasila', guru: 'Andi Pratama, S.Pd.', warna: 'bg-rose-100 text-rose-700' },
+  senbud: { nama: 'Seni Budaya', guru: 'Andi Pratama, S.Pd.', warna: 'bg-fuchsia-100 text-fuchsia-700' },
+  mulok: { nama: 'Bahasa Daerah', guru: 'Andi Pratama, S.Pd.', warna: 'bg-amber-100 text-amber-700' },
+  agama: { nama: 'Pendidikan Agama', guru: 'Nur Aisyah, S.Pd.I.', warna: 'bg-teal-100 text-teal-700' },
+  bing: { nama: 'Bahasa Inggris', guru: 'Maria Natalia, S.Pd.', warna: 'bg-indigo-100 text-indigo-700' },
+  pjok: { nama: 'PJOK', guru: 'Budi Santoso, S.Pd.', warna: 'bg-lime-100 text-lime-700' },
+  info: { nama: 'Informatika', guru: 'Hendra Wijaya, S.Kom.', warna: 'bg-cyan-100 text-cyan-700' },
+  pramuka: { nama: 'Pramuka', guru: 'Pembina Pramuka', warna: 'bg-yellow-100 text-yellow-800' },
+}
+
+// Pembagian waktu harian (1 sesi = 2 jam pelajaran @35 menit)
+export const SESI = [
+  { mulai: '07.00', selesai: '08.10' },
+  { mulai: '08.10', selesai: '09.20' },
+  { mulai: '09.40', selesai: '10.50' },
+  { mulai: '10.50', selesai: '12.00' },
+]
+export const ISTIRAHAT = { mulai: '09.20', selesai: '09.40', setelahSesi: 2 }
+
+// Jam sekolah (Senin – Jumat). `guru: true` hanya ditampilkan di portal guru.
+export const JAM_SEKOLAH = [
+  { label: 'Gerbang dibuka', jam: '06.30' },
+  { label: 'Guru hadir', jam: '06.45', guru: true },
+  { label: 'Bel masuk', jam: SESI[0].mulai },
+  { label: 'Istirahat', jam: `${ISTIRAHAT.mulai} – ${ISTIRAHAT.selesai}` },
+  { label: 'Pulang siswa', jam: SESI[SESI.length - 1].selesai },
+  { label: 'Jam kerja guru selesai', jam: '14.00', guru: true },
+]
+
+// Jadwal pelajaran per kelas (contoh hanya kelas 4A). Isi = kunci MAPEL per sesi.
+export const JADWAL = {
+  '4A': {
+    Senin: ['upacara', 'mtk', 'bindo', 'ipas'],
+    Selasa: ['agama', 'mtk', 'bing', 'senbud'],
+    Rabu: ['pjok', 'bindo', 'ipas', 'pancasila'],
+    Kamis: ['mtk', 'info', 'bindo', 'mulok'],
+    Jumat: ['senam', 'agama', 'ipas', 'pramuka'],
+  },
+}
+
+export const HARI_SEKOLAH = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
+
+// Kalender akademik 2026/2027. Tanggal libur keagamaan bertanda `perkiraan`
+// perlu dicocokkan dengan SKB 3 Menteri yang resmi.
+export const KALENDER = [
+  { mulai: '2026-07-13', selesai: '2026-07-15', judul: 'Masa Pengenalan Lingkungan Sekolah (MPLS)', jenis: 'kegiatan' },
+  { mulai: '2026-08-17', judul: 'HUT Kemerdekaan RI ke-81', jenis: 'libur' },
+  { mulai: '2026-08-25', judul: 'Maulid Nabi Muhammad SAW', jenis: 'libur', perkiraan: true },
+  { mulai: '2026-10-12', selesai: '2026-10-16', judul: 'Penilaian Tengah Semester (PTS) Ganjil', jenis: 'ujian' },
+  { mulai: '2026-10-14', judul: 'Pemeriksaan Kesehatan Gigi', jenis: 'kegiatan' },
+  { mulai: '2026-10-23', judul: 'Field Trip Kelas 4 ke Museum Nasional', jenis: 'kegiatan' },
+  { mulai: '2026-10-28', judul: 'Upacara Hari Sumpah Pemuda', jenis: 'kegiatan' },
+  { mulai: '2026-11-10', judul: 'Upacara Hari Pahlawan', jenis: 'kegiatan' },
+  { mulai: '2026-11-25', judul: 'Peringatan Hari Guru Nasional', jenis: 'kegiatan' },
+  { mulai: '2026-12-07', selesai: '2026-12-11', judul: 'Penilaian Akhir Semester (PAS) Ganjil', jenis: 'ujian' },
+  { mulai: '2026-12-18', judul: 'Pembagian Rapor Semester Ganjil', jenis: 'kegiatan' },
+  { mulai: '2026-12-21', selesai: '2027-01-01', judul: 'Libur Semester Ganjil', jenis: 'libur' },
+  { mulai: '2026-12-25', judul: 'Hari Raya Natal', jenis: 'libur' },
+  { mulai: '2027-01-01', judul: 'Tahun Baru 2027', jenis: 'libur' },
+  { mulai: '2027-01-04', judul: 'Hari Pertama Semester Genap', jenis: 'kegiatan' },
+  { mulai: '2027-01-05', judul: 'Isra Mikraj Nabi Muhammad SAW', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-02-06', judul: 'Tahun Baru Imlek', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-03-08', selesai: '2027-03-16', judul: 'Libur Hari Raya Idulfitri', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-03-22', selesai: '2027-03-26', judul: 'Penilaian Tengah Semester (PTS) Genap', jenis: 'ujian' },
+  { mulai: '2027-03-26', judul: 'Wafat Yesus Kristus', jenis: 'libur' },
+  { mulai: '2027-05-06', judul: 'Kenaikan Yesus Kristus', jenis: 'libur' },
+  { mulai: '2027-05-17', judul: 'Hari Raya Iduladha', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-05-20', judul: 'Hari Raya Waisak', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-06-01', judul: 'Hari Lahir Pancasila', jenis: 'libur' },
+  { mulai: '2027-06-07', selesai: '2027-06-11', judul: 'Penilaian Akhir Tahun (PAT)', jenis: 'ujian' },
+  { mulai: '2027-06-18', judul: 'Pembagian Rapor Kenaikan Kelas', jenis: 'kegiatan' },
+  { mulai: '2027-06-21', selesai: '2027-07-09', judul: 'Libur Kenaikan Kelas', jenis: 'libur' },
+]
+
+// Tugas/PR kelas 4A. Tanggal dihitung relatif dari hari ini supaya demo selalu relevan.
+const relatif = (hari) => toKey(new Date(new Date().setDate(new Date().getDate() + hari)))
+
+export const TUGAS = [
+  { id: 't1', kelas: '4A', mapel: 'mtk', judul: 'Latihan Soal Pecahan', deskripsi: 'Kerjakan buku paket halaman 45 nomor 1–10 di buku tugas.', diberikan: relatif(-2), tenggat: relatif(1) },
+  { id: 't2', kelas: '4A', mapel: 'bing', judul: 'Hafalan Kosakata Anggota Tubuh', deskripsi: 'Hafalkan 15 kosakata anggota tubuh dalam bahasa Inggris. Akan ada tes lisan.', diberikan: relatif(-1), tenggat: relatif(2) },
+  { id: 't3', kelas: '4A', mapel: 'bindo', judul: 'Menulis Cerita Pengalaman', deskripsi: 'Tulis cerita pengalaman yang paling berkesan minimal 2 paragraf.', diberikan: relatif(-3), tenggat: relatif(4) },
+  { id: 't4', kelas: '4A', mapel: 'ipas', judul: 'Mengamati Pertumbuhan Kacang Hijau', deskripsi: 'Tanam kacang hijau di kapas, lalu catat tinggi tanaman setiap hari selama 7 hari.', diberikan: relatif(-5), tenggat: relatif(6) },
+  { id: 't5', kelas: '4A', mapel: 'senbud', judul: 'Menggambar Rumah Adat', deskripsi: 'Gambar dan warnai salah satu rumah adat Indonesia di kertas A4.', diberikan: relatif(-8), tenggat: relatif(-1) },
+  { id: 't6', kelas: '4A', mapel: 'pancasila', judul: 'Rangkuman Sila Ketiga', deskripsi: 'Tulis contoh sikap persatuan di rumah dan di sekolah, masing-masing 3 contoh.', diberikan: relatif(-10), tenggat: relatif(-4) },
+]
+
+// Biodata lengkap (contoh hanya untuk siswa demo)
+export const BIODATA = {
+  230401: {
+    nisn: '0151234567',
+    tempatLahir: 'Kota Harapan',
+    tanggalLahir: '2016-05-14',
+    agama: 'Islam',
+    golonganDarah: 'O',
+    alamat: 'Jl. Melati No. 12, Kel. Sukamaju, Kota Harapan',
+    teleponOrtu: '0812-1111-2222',
+    ekskul: ['Robotik', 'Futsal'],
+  },
+}
+
+// Akun demo — HANYA untuk tampilan frontend, bukan sistem login sungguhan
+// Akun role 'staf' terhubung ke data guru lewat `guruId`, sehingga jabatannya
+// mengikuti pengaturan Kepala Sekolah di menu Data Guru & Staf.
+export const AKUN_DEMO = [
+  { username: 'siswa', password: 'siswa123', role: 'siswa', label: 'Siswa', nama: 'Rafa Aditya', nis: '230401', kelas: '4A' },
+  { username: 'ortu', password: 'ortu123', role: 'ortu', label: 'Orang Tua', nama: 'Ibu Dewi Lestari', anakNis: '230401' },
+  { username: 'guru', password: 'guru123', role: 'staf', label: 'Wali Kelas', nama: 'Andi Pratama, S.Pd.', guruId: 'g2' },
+  { username: 'kurikulum', password: 'kurikulum123', role: 'staf', label: 'Wakasek Kurikulum', nama: 'Rina Marlina, S.Pd.', guruId: 'g3' },
+  { username: 'kesiswaan', password: 'kesiswaan123', role: 'staf', label: 'Wakasek Kesiswaan', nama: 'Budi Santoso, S.Pd.', guruId: 'g5' },
+  { username: 'tu', password: 'tu123', role: 'staf', label: 'Tata Usaha', nama: 'Sri Handayani, S.E.', guruId: 'g9' },
+  { username: 'pustaka', password: 'pustaka123', role: 'staf', label: 'Pustakawan', nama: 'Yusuf Hidayat, S.IP.', guruId: 'g10' },
+  { username: 'sarpras', password: 'sarpras123', role: 'staf', label: 'Wakasek Sarpras', nama: 'Agus Setiawan, S.T.', guruId: 'g11' },
+  { username: 'bk', password: 'bk123', role: 'staf', label: 'Guru BK', nama: 'Laila Fitriani, S.Psi.', guruId: 'g12' },
+  { username: 'satpam', password: 'satpam123', role: 'staf', label: 'Satpam', nama: 'Joko Susilo', guruId: 'g13' },
+]
+
+// Akun pengguna sungguhan — TIDAK ditampilkan di daftar akun demo halaman login.
+// Username ditulis huruf kecil; saat login, huruf besar/kecil tidak dibedakan.
+// Password diambil dari sd-app/.env.local (tidak ikut ke Git, lihat .env.example);
+// akun tanpa password dinonaktifkan. Pindahkan ke database Laravel saat backend siap.
+export const AKUN_TERDAFTAR = [
+  { username: 'raymond fernando', password: import.meta.env.VITE_PASSWORD_KEPSEK, role: 'kepsek', label: 'Kepala Sekolah', nama: 'Raymond Fernando' },
+].filter((a) => a.password)
+
+export const LABEL_ROLE = { siswa: 'Siswa', ortu: 'Orang Tua', staf: 'Guru & Staf', kepsek: 'Kepala Sekolah' }

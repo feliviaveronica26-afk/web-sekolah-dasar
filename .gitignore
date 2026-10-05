@@ -1,0 +1,18 @@
+# Dependensi & hasil build
+node_modules/
+dist/
+
+# File rahasia / pengaturan lokal
+.env
+.env.*
+!.env.example
+
+# Log & cache
+*.log
+npm-debug.log*
+.vite/
+
+# Sistem operasi & editor
+.DS_Store
+Thumbs.db
+.idea/

@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Tema merah putih — warna seragam SD */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary-50: #fff1f2;
+  --color-primary-100: #ffe0e2;
+  --color-primary-200: #ffc6ca;
+  --color-primary-300: #ff9ea4;
+  --color-primary-400: #fb6670;
+  --color-primary-500: #f23845;
+  --color-primary-600: #d91a28;
+  --color-primary-700: #b5121f;
+  --color-primary-800: #95131e;
+  --color-primary-900: #7c161f;
+  --color-primary-950: #44060b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-slate-800 antialiased;
+}
+
+/* Saat mencetak kuitansi, hanya area .area-cetak yang ikut tercetak */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .area-cetak,
+  .area-cetak * {
+    visibility: visible;
+  }
+  .area-cetak {
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: none !important;
+  }
+}
+
+/* Efek riak saat tombol diklik (dipakai TombolHubungi di Beranda) */
+@keyframes riak {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.animasi-riak {
+  animation: riak 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Garis merah putih dekoratif */
+.stripe-merah-putih {
+  background: linear-gradient(to bottom, var(--color-primary-600) 50%, #ffffff 50%);
+}
