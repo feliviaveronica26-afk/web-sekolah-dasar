@@ -7,6 +7,8 @@ import KalenderAkademik from './components/KalenderAkademik'
 
 import Home from './pages/public/Home'
 import Profil from './pages/public/Profil'
+import Akademik from './pages/public/Akademik'
+import Guru from './pages/public/Guru'
 import Fasilitas from './pages/public/Fasilitas'
 import FasilitasDetail from './pages/public/FasilitasDetail'
 import Berita from './pages/public/Berita'
@@ -22,15 +24,24 @@ import SiswaJadwal from './pages/siswa/SiswaJadwal'
 import SiswaAbsensi from './pages/siswa/SiswaAbsensi'
 import SiswaTugas from './pages/siswa/SiswaTugas'
 import SiswaProfil from './pages/siswa/SiswaProfil'
+import SiswaNilai from './pages/siswa/SiswaNilai'
+import SiswaLencana from './pages/siswa/SiswaLencana'
+import SiswaEkskul from './pages/siswa/SiswaEkskul'
+import SiswaPerpustakaan from './pages/siswa/SiswaPerpustakaan'
+import SiswaPresensi from './pages/siswa/SiswaPresensi'
 
 import OrtuDashboard from './pages/ortu/OrtuDashboard'
 import OrtuSpp from './pages/ortu/OrtuSpp'
 import OrtuAbsensi from './pages/ortu/OrtuAbsensi'
 import OrtuIzin from './pages/ortu/OrtuIzin'
 import OrtuPengumuman from './pages/ortu/OrtuPengumuman'
+import OrtuNilai from './pages/ortu/OrtuNilai'
+import OrtuSikap from './pages/ortu/OrtuSikap'
+import OrtuTugas from './pages/ortu/OrtuTugas'
+import OrtuPesan from './pages/ortu/OrtuPesan'
 
 import StafDashboard from './pages/staf/StafDashboard'
-import AbsensiKelas from './pages/staf/AbsensiKelas'
+import PresensiSiswa from './pages/staf/PresensiSiswa'
 import PersetujuanIzin from './pages/staf/PersetujuanIzin'
 import KepsekDashboard from './pages/kepsek/KepsekDashboard'
 
@@ -44,9 +55,16 @@ import KelolaPengumuman from './pages/kelola/KelolaPengumuman'
 import Perpustakaan from './pages/kelola/Perpustakaan'
 import JadwalKelas from './pages/kelola/JadwalKelas'
 import Konseling from './pages/kelola/Konseling'
+import InputNilai from './pages/kelola/InputNilai'
+import TugasKelas from './pages/kelola/TugasKelas'
+import PoinSikap from './pages/kelola/PoinSikap'
+import PesanOrtu from './pages/kelola/PesanOrtu'
+import RaporKelas from './pages/kelola/RaporKelas'
 import BukuTamu from './pages/kelola/BukuTamu'
 import Inventaris from './pages/kelola/Inventaris'
 import LaporanKerusakan from './pages/kelola/LaporanKerusakan'
+import PresensiStaf from './pages/kelola/PresensiStaf'
+import DaftarSiswa from './pages/kelola/DaftarSiswa'
 
 // Gulir ke atas saat pindah halaman, atau ke elemen tujuan jika alamat memakai #anchor
 function ScrollToTop() {
@@ -69,8 +87,15 @@ const dashboard = (role) => (
 
 // Halaman kelola yang dipakai bersama Portal Guru & Staf dan Portal Kepala Sekolah
 const HALAMAN_KELOLA = {
-  absensi: <AbsensiKelas />,
+  presensi: <PresensiStaf />,
+  kelas: <DaftarSiswa />,
+  absensi: <PresensiSiswa />,
   izin: <PersetujuanIzin />,
+  nilai: <InputNilai />,
+  tugas: <TugasKelas />,
+  sikap: <PoinSikap />,
+  pesan: <PesanOrtu />,
+  rapor: <RaporKelas />,
   siswa: <DataSiswa />,
   guru: <DataGuru />,
   kehadiran: <RekapKehadiran />,
@@ -99,6 +124,8 @@ export default function App() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/profil" element={<Profil />} />
+          <Route path="/akademik" element={<Akademik />} />
+          <Route path="/guru" element={<Guru />} />
           <Route path="/fasilitas" element={<Fasilitas />} />
           <Route path="/fasilitas/:id" element={<FasilitasDetail />} />
           <Route path="/berita" element={<Berita />} />
@@ -112,15 +139,24 @@ export default function App() {
 
         <Route path="/dashboard/siswa" element={dashboard('siswa')}>
           <Route index element={<SiswaDashboard />} />
+          <Route path="presensi" element={<SiswaPresensi />} />
           <Route path="jadwal" element={<SiswaJadwal />} />
           <Route path="absensi" element={<SiswaAbsensi />} />
           <Route path="tugas" element={<SiswaTugas />} />
+          <Route path="nilai" element={<SiswaNilai />} />
+          <Route path="lencana" element={<SiswaLencana />} />
+          <Route path="ekskul" element={<SiswaEkskul />} />
+          <Route path="perpustakaan" element={<SiswaPerpustakaan />} />
           <Route path="kalender" element={<KalenderAkademik />} />
           <Route path="profil" element={<SiswaProfil />} />
         </Route>
 
         <Route path="/dashboard/ortu" element={dashboard('ortu')}>
           <Route index element={<OrtuDashboard />} />
+          <Route path="nilai" element={<OrtuNilai />} />
+          <Route path="sikap" element={<OrtuSikap />} />
+          <Route path="tugas" element={<OrtuTugas />} />
+          <Route path="pesan" element={<OrtuPesan />} />
           <Route path="spp" element={<OrtuSpp />} />
           <Route path="absensi" element={<OrtuAbsensi />} />
           <Route path="izin" element={<OrtuIzin />} />

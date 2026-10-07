@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Eye, EyeOff, LogIn } from 'lucide-react'
+import { Bintang, Gumpalan } from '../components/Hiasan'
 import { Alert, btn, inputCls, labelCls } from '../components/ui'
 import { useAuth } from '../context/AuthContext'
 import { AKUN_DEMO, LABEL_ROLE, SEKOLAH } from '../data/dummy'
@@ -44,20 +45,33 @@ export default function Login() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Panel kiri */}
-      <div className="relative hidden overflow-hidden bg-primary-600 p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-white/10" />
-        <div className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-primary-500/60" />
+      <div className="relative hidden overflow-hidden bg-linear-to-br from-primary-600 to-primary-800 p-12 text-white lg:flex lg:flex-col lg:justify-between">
+        <div className="pola-titik absolute inset-0" />
+        <Gumpalan className="absolute -right-28 -top-28 h-[26rem] w-[26rem] text-white/10" />
+        <Bintang className="absolute right-16 top-32 h-7 w-7 animate-melayang text-amber-300" />
         <Link to="/" className="relative flex items-center gap-3">
-          <img src="/logo.svg" alt="" className="h-12 w-12 rounded-full ring-2 ring-white/70" />
-          <span className="text-xl font-extrabold">{SEKOLAH.nama}</span>
+          <img src="/logo.png" alt="" className="h-14 w-14 object-contain drop-shadow-lg" />
+          <span className="font-display text-2xl font-bold">{SEKOLAH.nama}</span>
         </Link>
         <div className="relative">
-          <h1 className="text-4xl font-extrabold leading-tight">
-            Satu portal untuk orang tua, guru, dan sekolah.
-          </h1>
-          <p className="mt-4 max-w-md text-primary-50">
-            Pantau kehadiran, ajukan izin, dan dapatkan informasi sekolah dengan mudah dari mana saja.
+          <h1 className="text-5xl font-bold leading-tight">Satu portal untuk seluruh warga sekolah.</h1>
+          <p className="mt-4 max-w-md text-lg text-primary-50">
+            Pantau kehadiran, nilai, tugas, dan kabar sekolah dengan mudah dari mana saja.
           </p>
+          <div className="mt-8 grid max-w-lg grid-cols-2 gap-3">
+            {[
+              ['🎒', 'Siswa', 'Tugas, nilai, lencana'],
+              ['👨‍👩‍👧', 'Orang Tua', 'Kehadiran, SPP, pesan'],
+              ['🧑‍🏫', 'Guru & Staf', 'Absensi, nilai, layanan'],
+              ['🏫', 'Kepala Sekolah', 'Laporan & kebijakan'],
+            ].map(([e, j, d]) => (
+              <div key={j} className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur">
+                <p className="text-2xl">{e}</p>
+                <p className="mt-2 font-display text-lg font-bold">{j}</p>
+                <p className="text-sm text-primary-100">{d}</p>
+              </div>
+            ))}
+          </div>
         </div>
         <p className="relative text-sm text-primary-200">{SEKOLAH.slogan}</p>
       </div>
@@ -68,8 +82,8 @@ export default function Login() {
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-primary-600">
             <ArrowLeft className="h-4 w-4" /> Kembali ke beranda
           </Link>
-          <img src="/logo.svg" alt="" className="mt-8 h-14 w-14 lg:hidden" />
-          <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-slate-900">Masuk ke Portal</h2>
+          <img src="/logo.png" alt="" className="mt-8 h-16 w-16 object-contain lg:hidden" />
+          <h2 className="mt-6 text-4xl font-bold text-slate-900">Masuk ke Portal</h2>
           <p className="mt-2 text-slate-500">Silakan masuk menggunakan akun yang diberikan sekolah.</p>
 
           <form onSubmit={masuk} className="mt-8 space-y-4">

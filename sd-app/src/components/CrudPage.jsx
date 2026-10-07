@@ -9,8 +9,9 @@ import { useData } from '../context/DataContext'
   columns: [{ key, label, render?(item) }]
   tanpaHeader: sembunyikan judul halaman (untuk ditanam di dalam tab)
   ringkasan: elemen tambahan di antara judul dan tabel (mis. kartu statistik)
+  saring:   fungsi (item) => boolean untuk membatasi data yang boleh dilihat pengguna
 */
-export default function CrudPage({ title, desc, koleksi, itemLabel, fields, columns, searchKeys, filter, kosong, urutkan, validasi, tanpaHeader, ringkasan }) {
+export default function CrudPage({ title, desc, koleksi, itemLabel, fields, columns, searchKeys, filter, kosong, urutkan, validasi, tanpaHeader, ringkasan, saring }) {
   const { data, tambah, ubah, hapus } = useData()
   const [cari, setCari] = useState('')
   const [nilaiFilter, setNilaiFilter] = useState('')
@@ -20,7 +21,8 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
   const [hapusItem, setHapusItem] = useState(null)
 
   const q = cari.trim().toLowerCase()
-  let daftar = data[koleksi].filter(
+  const milik = saring ? data[koleksi].filter(saring) : data[koleksi]
+  let daftar = milik.filter(
     (item) =>
       (!q || searchKeys.some((k) => String(item[k] ?? '').toLowerCase().includes(q))) &&
       (!filter || !nilaiFilter || item[filter.key] === nilaiFilter),
@@ -120,7 +122,7 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
           </div>
         )}
         <div className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-          Menampilkan {daftar.length} dari {data[koleksi].length} data
+          Menampilkan {daftar.length} dari {milik.length} data
         </div>
       </Card>
 

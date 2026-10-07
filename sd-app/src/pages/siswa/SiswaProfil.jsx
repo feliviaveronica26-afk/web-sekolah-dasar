@@ -3,6 +3,7 @@ import { Avatar, Card, DashHeader, EmptyState } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
 import { BIODATA, SEKOLAH } from '../../data/dummy'
+import { ekskulSiswa } from '../../utils/prestasi'
 import { formatTanggal } from '../../utils/format'
 
 export default function SiswaProfil() {
@@ -13,6 +14,7 @@ export default function SiswaProfil() {
   if (!siswa) return <EmptyState icon={UserX} title="Data siswa tidak ditemukan" desc="Silakan hubungi admin sekolah." />
 
   const bio = BIODATA[siswa.nis] ?? {}
+  const ekskul = ekskulSiswa(data, siswa)
   const waliKelas = data.guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === siswa.kelas)
   const temanSekelas = data.siswa.filter((s) => s.kelas === siswa.kelas && s.nis !== siswa.nis).sort((a, b) => a.nama.localeCompare(b.nama))
 
@@ -40,7 +42,7 @@ export default function SiswaProfil() {
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-white/5" />
             <div className="relative flex items-center gap-3 border-b border-white/20 pb-3">
-              <img src="/logo.svg" alt="" className="h-10 w-10 rounded-full ring-2 ring-white/70" />
+              <img src="/logo.png" alt="" className="h-11 w-11 object-contain drop-shadow-md" />
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-primary-100">Kartu Pelajar</p>
                 <p className="font-extrabold">{SEKOLAH.nama}</p>
@@ -77,15 +79,15 @@ export default function SiswaProfil() {
             </Card>
           )}
 
-          {bio.ekskul?.length > 0 && (
+          {ekskul.length > 0 && (
             <Card className="p-5">
               <p className="flex items-center gap-2 text-sm font-bold text-slate-700">
                 <Trophy className="h-4 w-4 text-primary-600" /> Ekstrakurikuler yang diikuti
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                {bio.ekskul.map((e) => (
-                  <span key={e} className="rounded-full bg-primary-50 px-3 py-1.5 text-sm font-semibold text-primary-700">
-                    {e}
+                {ekskul.map((e) => (
+                  <span key={e.id} className={`rounded-full px-3 py-1.5 text-sm font-semibold ${e.warna}`}>
+                    {e.nama}
                   </span>
                 ))}
               </div>

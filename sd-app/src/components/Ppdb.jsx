@@ -404,7 +404,7 @@ export function BuktiPendaftaran({ pendaftar }) {
     <>
       <div className="area-cetak mt-6 rounded-2xl border-2 border-dashed border-primary-300 bg-white p-5">
         <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
-          <img src="/logo.svg" alt="" className="h-10 w-10" />
+          <img src="/logo.png" alt="" className="h-10 w-10 object-contain" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-primary-600">Bukti Pendaftaran PPDB {PPDB.tahunAjaran}</p>
             <p className="font-extrabold text-slate-900">{SEKOLAH.nama}</p>

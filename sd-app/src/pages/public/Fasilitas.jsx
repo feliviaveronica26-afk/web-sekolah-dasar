@@ -1,16 +1,19 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ArrowRight, CalendarCheck, Clock, MousePointerClick, Search, Users } from 'lucide-react'
 import { CekKunjungan, DenahSekolah, FormKunjungan, IKON_FASILITAS } from '../../components/Fasilitas'
 import { Card, Modal, PageHeader, SectionTitle, btn } from '../../components/ui'
 import { FASILITAS, KUNJUNGAN } from '../../data/dummy'
 
 export default function Fasilitas() {
-  const [form, setForm] = useState(false)
+  // Tautan /fasilitas#kunjungan (dari beranda/footer) langsung membuka formulir
+  const { hash } = useLocation()
+  const [form, setForm] = useState(hash === '#kunjungan')
 
   return (
     <>
       <PageHeader
+        eyebrow="Tur Virtual"
         title="Fasilitas Sekolah"
         subtitle="Jelajahi setiap sudut SD Harapan Gemilang secara virtual, lalu jadwalkan kunjungan untuk melihatnya langsung."
       />
@@ -26,11 +29,11 @@ export default function Fasilitas() {
             <DenahSekolah />
           </div>
 
-          <div className="space-y-5 lg:pt-20">
+          <div id="kunjungan" className="scroll-mt-28 space-y-5 lg:pt-20">
             <Card className="overflow-hidden">
               <div className="bg-primary-600 p-6 text-white">
                 <CalendarCheck className="h-8 w-8" />
-                <h2 className="mt-3 text-xl font-extrabold">Ingin melihat langsung?</h2>
+                <h2 className="mt-3 text-2xl font-bold">Ingin melihat langsung?</h2>
                 <p className="mt-1 text-sm text-primary-50">Jadwalkan kunjungan ke sekolah, kami akan mendampingi Anda berkeliling.</p>
               </div>
               <div className="space-y-3 p-6 text-sm text-slate-600">
@@ -68,12 +71,12 @@ export default function Fasilitas() {
                 <Link
                   key={f.id}
                   to={`/fasilitas/${f.id}`}
-                  className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:border-primary-200 hover:shadow-lg"
+                  className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:border-primary-200 hover:shadow-xl"
                 >
-                  <span className="grid h-12 w-12 place-items-center rounded-xl bg-primary-50 text-primary-600 transition group-hover:bg-primary-600 group-hover:text-white">
+                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-50 text-primary-600 transition group-hover:rotate-[-6deg] group-hover:bg-primary-600 group-hover:text-white">
                     <Icon className="h-6 w-6" />
                   </span>
-                  <h3 className="mt-4 font-bold text-slate-900">{f.nama}</h3>
+                  <h3 className="mt-4 text-lg font-bold text-slate-900">{f.nama}</h3>
                   <p className="mt-1 flex-1 text-sm text-slate-600">{f.ringkas}</p>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600">
                     Kunjungi <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />

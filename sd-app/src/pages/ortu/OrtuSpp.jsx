@@ -168,7 +168,7 @@ export default function OrtuSpp() {
                 </p>
               )}
             </div>
-            <button onClick={mulaiBayar} disabled={!!trxBerjalan} className={`${btn.primary} px-8 py-3.5 text-base`}>
+            <button onClick={mulaiBayar} disabled={!!trxBerjalan} className={`${btn.primary} px-8 py-3.5 text-base!`}>
               Bayar Sekarang
             </button>
           </div>

@@ -202,7 +202,7 @@ export function Kuitansi({ siswa, pembayaran }) {
     <>
       <div className="area-cetak relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6">
         <div className="flex items-center gap-3 border-b-2 border-primary-600 pb-4">
-          <img src="/logo.svg" alt="" className="h-12 w-12" />
+          <img src="/logo.png" alt="" className="h-12 w-12 object-contain" />
           <div>
             <p className="font-extrabold text-slate-900">{SEKOLAH.nama}</p>
             <p className="text-xs text-slate-500">{SEKOLAH.alamat}</p>

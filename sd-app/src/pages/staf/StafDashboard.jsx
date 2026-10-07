@@ -2,22 +2,37 @@ import { Link } from 'react-router-dom'
 import {
   AlertTriangle,
   ArrowRight,
+  Award,
   BookOpen,
+  BookOpenCheck,
   CalendarCheck,
   CalendarDays,
   ClipboardCheck,
+  ClipboardList,
+  Contact,
   FileCheck,
+  HeartHandshake,
   Library,
+  MessagesSquare,
+  NotebookPen,
+  ShieldCheck,
+  TrendingUp,
+  UserPlus,
   Users,
   Wallet,
+  Wrench,
 } from 'lucide-react'
+import { GrafikBatang } from '../../components/Grafik'
+import { Gumpalan } from '../../components/Hiasan'
 import JamSekolah from '../../components/JamSekolah'
+import { KartuPresensiSaya, RingkasanPresensi } from '../../components/Presensi'
 import { JENIS_AGENDA, agendaMendatang, rentangAgenda } from '../../components/KalenderAkademik'
 import { Avatar, Badge, Card, DashHeader, EmptyState, StatCard, btn } from '../../components/ui'
 import { PERAN, useAkses } from '../../context/akses'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
-import { HARI_SEKOLAH, JADWAL, MAPEL, SESI } from '../../data/dummy'
-import { formatTanggal, isHariSekolah, namaHari, todayKey } from '../../utils/format'
+import { HARI_SEKOLAH, JADWAL, KKTP, MAPEL, MAPEL_RAPOR, SESI } from '../../data/dummy'
+import { nilaiAkhir, rekapNilai } from '../../utils/nilai'
+import { formatHari, formatTanggal, isHariSekolah, namaHari, todayKey } from '../../utils/format'
 import { kehadiranSekolah, rekapSiswa, ringkasPerpus, ringkasSpp } from '../../utils/ringkasan'
 import { rupiah } from '../../utils/spp'
 
@@ -45,6 +60,11 @@ function PanelWaliKelas({ kelas, base }) {
   const sudahDiisi = siswaKelas.filter((s) => absenHariIni[s.nis]).length
   const hadirHariIni = siswaKelas.filter((s) => absenHariIni[s.nis] === 'H').length
   const izinMenunggu = data.izin.filter((i) => i.kelas === kelas && i.status === 'Menunggu')
+  const nisKelas = siswaKelas.map((s) => s.nis)
+  const pesanBaru = data.pesan.filter((p) => nisKelas.includes(p.nis) && !p.dibacaGuru)
+  const nilaiKelas = siswaKelas.map((s) => rekapNilai(data, s).rataRata).filter((n) => n !== null)
+  const rataNilai = nilaiKelas.length ? Math.round((nilaiKelas.reduce((a, b) => a + b, 0) / nilaiKelas.length) * 10) / 10 : '–'
+  const tugasAktif = data.tugas.filter((t) => t.kelas === kelas && t.tenggat >= todayKey())
   const tanggalTerakhir = Object.keys(data.absensi).sort().reverse().slice(0, 20)
   const rekap = siswaKelas.map((s) => ({ ...s, ...ringkasAbsensi(data.absensi, s.nis, tanggalTerakhir) }))
   const rataRata = rekap.length ? Math.round(rekap.reduce((acc, s) => acc + s.persen, 0) / rekap.length) : 0
@@ -58,7 +78,7 @@ function PanelWaliKelas({ kelas, base }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-extrabold text-slate-900">Kelas {kelas}</h2>
         <Link to={`${base}/absensi`} className={btn.primary}>
-          <ClipboardCheck className="h-4 w-4" /> Isi Absensi Hari Ini
+          <ClipboardCheck className="h-4 w-4" /> Buka Presensi Hari Ini
         </Link>
       </div>
 
@@ -80,6 +100,36 @@ function PanelWaliKelas({ kelas, base }) {
         />
         <StatCard icon={FileCheck} label="Izin Menunggu" value={izinMenunggu.length} hint="perlu ditinjau" tone="amber" />
         <StatCard icon={ClipboardCheck} label="Rata-rata Kehadiran" value={`${rataRata}%`} hint="20 hari terakhir" tone="primary" />
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+        <Link to={`${base}/pesan`} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:shadow-md">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-100 text-primary-700">
+            <MessagesSquare className="h-5 w-5" />
+          </span>
+          <span>
+            <span className="block text-xl font-extrabold text-slate-900">{pesanBaru.length}</span>
+            <span className="block text-xs text-slate-500">pesan orang tua belum dibaca</span>
+          </span>
+        </Link>
+        <Link to={`${base}/rapor`} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:shadow-md">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-100 text-sky-700">
+            <TrendingUp className="h-5 w-5" />
+          </span>
+          <span>
+            <span className="block text-xl font-extrabold text-slate-900">{rataNilai}</span>
+            <span className="block text-xs text-slate-500">rata-rata nilai kelas</span>
+          </span>
+        </Link>
+        <Link to={`${base}/tugas`} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:shadow-md">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-100 text-amber-700">
+            <ClipboardList className="h-5 w-5" />
+          </span>
+          <span>
+            <span className="block text-xl font-extrabold text-slate-900">{tugasAktif.length}</span>
+            <span className="block text-xs text-slate-500">tugas aktif</span>
+          </span>
+        </Link>
       </div>
 
       <div className="mt-4 grid gap-6 lg:grid-cols-2">
@@ -129,6 +179,45 @@ function PanelWaliKelas({ kelas, base }) {
   )
 }
 
+// Pintasan menu yang paling sering dipakai, tampil sesuai hak akses
+const AKSI_CEPAT = [
+  { menu: 'absensi', label: 'Presensi Siswa', icon: ClipboardCheck, warna: 'bg-emerald-100 text-emerald-700' },
+  { menu: 'kelas', label: 'Daftar Siswa', icon: Contact, warna: 'bg-cyan-100 text-cyan-700' },
+  { menu: 'nilai', label: 'Input Nilai', icon: NotebookPen, warna: 'bg-sky-100 text-sky-700' },
+  { menu: 'tugas', label: 'Buat Tugas', icon: ClipboardList, warna: 'bg-amber-100 text-amber-700' },
+  { menu: 'sikap', label: 'Beri Poin', icon: Award, warna: 'bg-violet-100 text-violet-700' },
+  { menu: 'pesan', label: 'Pesan Ortu', icon: MessagesSquare, warna: 'bg-primary-100 text-primary-700' },
+  { menu: 'rapor', label: 'Rapor Kelas', icon: BookOpenCheck, warna: 'bg-teal-100 text-teal-700' },
+  { menu: 'konseling', label: 'Konseling', icon: HeartHandshake, warna: 'bg-pink-100 text-pink-700' },
+  { menu: 'bukutamu', label: 'Buku Tamu', icon: ShieldCheck, warna: 'bg-slate-100 text-slate-700' },
+  { menu: 'kerusakan', label: 'Lapor Kerusakan', icon: Wrench, warna: 'bg-orange-100 text-orange-700' },
+  { menu: 'perpustakaan', label: 'Perpustakaan', icon: Library, warna: 'bg-indigo-100 text-indigo-700' },
+  { menu: 'spp', label: 'Keuangan SPP', icon: Wallet, warna: 'bg-emerald-100 text-emerald-700' },
+  { menu: 'ppdb', label: 'PPDB', icon: UserPlus, warna: 'bg-sky-100 text-sky-700' },
+]
+
+// Rata-rata nilai mapel yang diampu guru mapel, per kelas
+function PanelGuruMapel({ nama, base }) {
+  const { data } = useData()
+  const mapelSaya = Object.keys(MAPEL).filter((k) => MAPEL[k].guru === nama && MAPEL_RAPOR.includes(k))
+  const kelas = [...new Set(data.siswa.map((s) => s.kelas))].sort()
+  const baris = mapelSaya.flatMap((m) =>
+    kelas.map((k) => {
+      const nilai = data.siswa
+        .filter((s) => s.kelas === k)
+        .map((s) => nilaiAkhir(data.nilai[s.nis]?.[m]))
+        .filter((n) => n !== null)
+      return { label: `${MAPEL[m].nama} · ${k}`, nilai: nilai.length ? Math.round(nilai.reduce((a, b) => a + b, 0) / nilai.length) : null }
+    }),
+  )
+  if (!baris.length) return null
+  return (
+    <Panel judul="Rata-rata kelas mapel saya" ke={`${base}/nilai`}>
+      <GrafikBatang judul="Rata-rata nilai per kelas" data={baris} acuan={{ nilai: KKTP, label: 'KKTP' }} />
+    </Panel>
+  )
+}
+
 // Jadwal mengajar diambil dari jadwal kelas yang mencantumkan nama guru ini
 function jadwalMengajar(nama) {
   const hasil = []
@@ -146,25 +235,62 @@ export default function StafDashboard() {
   const { data } = useData()
   const { nama, peran, kelas, base } = useAkses()
   const punyaPeran = (p) => peran.includes(p)
+  const { punya } = useAkses()
   const mengajar = jadwalMengajar(nama)
   const hariIni = namaHari(todayKey())
+  const jam = new Date().getHours()
+  const salam = jam < 11 ? 'Selamat pagi' : jam < 15 ? 'Selamat siang' : jam < 18 ? 'Selamat sore' : 'Selamat malam'
+  const aksi = AKSI_CEPAT.filter((a) => punya(a.menu))
 
   return (
     <>
-      <DashHeader title={`Selamat datang, ${nama.split(',')[0]}`} desc="Ringkasan tugas Anda hari ini." />
-      <div className="-mt-3 mb-6 flex flex-wrap gap-2">
-        {peran.map((p) => (
-          <Badge key={p} className="bg-primary-50 text-primary-700">
-            {PERAN[p]?.label}
-            {p === 'wali_kelas' && kelas && ` ${kelas}`}
-          </Badge>
-        ))}
+      <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-linear-to-br from-primary-600 to-primary-800 p-6 text-white sm:p-8">
+        <div className="pola-titik absolute inset-0" />
+        <Gumpalan className="absolute -right-20 -top-24 h-80 w-80 text-white/10" />
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
+          <Avatar nama={nama} size="xl" className="bg-white text-primary-700 ring-4 ring-white/30" />
+          <div>
+            <p className="text-sm text-primary-100">{formatHari(todayKey())}</p>
+            <h1 className="text-3xl font-bold">
+              {salam}, {nama.split(',')[0]} 👋
+            </h1>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {peran.map((p) => (
+                <span key={p} className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold ring-1 ring-white/20">
+                  {PERAN[p]?.label}
+                  {p === 'wali_kelas' && kelas && ` ${kelas}`}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+
+      <KartuPresensiSaya tautan className="mb-6" />
+
+      {aksi.length > 0 && (
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {aksi.map(({ menu, label, icon: Icon, warna }) => (
+            <Link
+              key={menu}
+              to={`${base}/${menu}`}
+              className="group flex flex-col items-center gap-2 rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <span className={`grid h-11 w-11 place-items-center rounded-xl transition group-hover:scale-110 ${warna}`}>
+                <Icon className="h-5 w-5" />
+              </span>
+              <span className="text-xs font-bold text-slate-700">{label}</span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-8">
         {punyaPeran('wali_kelas') && kelas && <PanelWaliKelas kelas={kelas} base={base} />}
 
         <div className="grid gap-6 lg:grid-cols-2">
+          <RingkasanPresensi />
+
           {mengajar.length > 0 && (
             <Panel judul="Jadwal Mengajar">
               <ul className="space-y-2">
@@ -183,6 +309,7 @@ export default function StafDashboard() {
             </Panel>
           )}
 
+          {punyaPeran('guru_mapel') && <PanelGuruMapel nama={nama} base={base} />}
           {punyaPeran('tata_usaha') && <PanelSpp base={base} />}
           {punyaPeran('pustakawan') && <PanelPerpus base={base} />}
 

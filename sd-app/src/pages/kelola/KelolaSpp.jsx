@@ -8,6 +8,8 @@ import { ringkasSpp } from '../../utils/ringkasan'
 import { STATUS_SPP, bulanIni, buatNoTransaksi, bulanWajibBayar, bulanBisaDibayar, daftarBulan, namaBulan, rupiah } from '../../utils/spp'
 import { todayKey } from '../../utils/format'
 
+const PER_HALAMAN = 50
+
 export default function KelolaSpp() {
   const { data, catatTunai } = useData()
   const [cari, setCari] = useState('')
@@ -16,6 +18,7 @@ export default function KelolaSpp() {
   const [tunai, setTunai] = useState(null) // siswa yang sedang dicatat pembayarannya
   const [terpilih, setTerpilih] = useState([])
   const [kuitansi, setKuitansi] = useState(null)
+  const [batas, setBatas] = useState(PER_HALAMAN) // jumlah baris yang ditampilkan
 
   const r = ringkasSpp(data)
   const q = cari.trim().toLowerCase()
@@ -51,9 +54,24 @@ export default function KelolaSpp() {
         <div className="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama atau NIS..." className={`${inputCls} pl-10`} />
+            <input
+              value={cari}
+              onChange={(e) => {
+                setCari(e.target.value)
+                setBatas(PER_HALAMAN)
+              }}
+              placeholder="Cari nama atau NIS..."
+              className={`${inputCls} pl-10`}
+            />
           </div>
-          <select value={kelas} onChange={(e) => setKelas(e.target.value)} className={`${inputCls} lg:w-44`}>
+          <select
+            value={kelas}
+            onChange={(e) => {
+              setKelas(e.target.value)
+              setBatas(PER_HALAMAN)
+            }}
+            className={`${inputCls} lg:w-44`}
+          >
             <option value="">Semua kelas</option>
             {KELAS.map((k) => (
               <option key={k} value={k}>
@@ -62,7 +80,10 @@ export default function KelolaSpp() {
             ))}
           </select>
           <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
-            <input type="checkbox" checked={hanyaMenunggak} onChange={(e) => setHanyaMenunggak(e.target.checked)} className="h-4 w-4 accent-primary-600" />
+            <input type="checkbox" checked={hanyaMenunggak} onChange={(e) => {
+                setHanyaMenunggak(e.target.checked)
+                setBatas(PER_HALAMAN)
+              }} className="h-4 w-4 accent-primary-600" />
             Hanya yang menunggak
           </label>
         </div>
@@ -83,7 +104,7 @@ export default function KelolaSpp() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {daftar.map((s) => (
+                {daftar.slice(0, batas).map((s) => (
                   <tr key={s.nis} className="hover:bg-slate-50/60">
                     <td className="px-5 py-3">
                       <p className="font-semibold text-slate-800">{s.nama}</p>
@@ -119,6 +140,16 @@ export default function KelolaSpp() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {daftar.length > batas && (
+          <div className="flex flex-col items-center gap-2 border-t border-slate-100 px-5 py-4 sm:flex-row sm:justify-center">
+            <p className="text-sm text-slate-500">
+              Menampilkan {batas} dari {daftar.length} siswa
+            </p>
+            <button onClick={() => setBatas(batas + PER_HALAMAN)} className={btn.secondary}>
+              Tampilkan {Math.min(PER_HALAMAN, daftar.length - batas)} lagi
+            </button>
           </div>
         )}
         <div className="border-t border-slate-100 px-5 py-3">

@@ -24,7 +24,8 @@ export function rentangAgenda(e) {
   return `${formatTanggal(e.mulai, { year: undefined })} – ${formatTanggal(e.selesai)}`
 }
 
-export default function KalenderAkademik() {
+// `tanpaJudul` dipakai saat kalender ditanam di halaman publik
+export default function KalenderAkademik({ tanpaJudul = false }) {
   const [bulan, setBulan] = useState(() => {
     const d = new Date()
     return new Date(d.getFullYear(), d.getMonth(), 1)
@@ -44,7 +45,7 @@ export default function KalenderAkademik() {
 
   return (
     <>
-      <DashHeader title="Kalender Akademik" desc="Tahun ajaran 2026/2027 — hari libur, ujian, dan kegiatan sekolah." />
+      {!tanpaJudul && <DashHeader title="Kalender Akademik" desc="Tahun ajaran 2026/2027 — hari libur, ujian, dan kegiatan sekolah." />}
 
       <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <Card className="p-4 sm:p-6">

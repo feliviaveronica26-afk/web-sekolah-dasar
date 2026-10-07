@@ -102,7 +102,7 @@ export default function BukuTamu() {
       <Card className="mt-6 overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4">
           <h2 className="font-bold text-slate-900">{formatHari(tanggal)}</h2>
-          <input type="date" value={tanggal} max={hariIni} onChange={(e) => setTanggal(e.target.value || hariIni)} className={`${inputCls} w-auto`} />
+          <input type="date" value={tanggal} max={hariIni} onChange={(e) => setTanggal(e.target.value || hariIni)} className={`${inputCls} w-auto!`} />
         </div>
 
         {daftar.length === 0 ? (

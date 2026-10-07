@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, Building2, CheckCircle2, DoorOpen, HeartPulse, Laptop, Moon, Search, Trees, Trophy, Utensils } from 'lucide-react'
+import { BookOpen, Building2, CheckCircle2, DoorOpen, HandHeart, HeartPulse, Laptop, Search, Trees, Trophy, Utensils } from 'lucide-react'
 import { agendaPada } from './KalenderAkademik'
 import { TombolSalin } from './Spp'
 import { Alert, Badge, btn, inputCls, labelCls } from './ui'
@@ -13,7 +13,7 @@ export const IKON_FASILITAS = {
   buku: BookOpen,
   komputer: Laptop,
   lapangan: Trophy,
-  mushola: Moon,
+  ibadah: HandHeart,
   uks: HeartPulse,
   kantin: Utensils,
   taman: Trees,

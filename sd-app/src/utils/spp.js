@@ -5,9 +5,15 @@ export const rupiah = (n) => `Rp${n.toLocaleString('id-ID')}`
 
 export const bulanIni = () => todayKey().slice(0, 7)
 
+// Hasil format disimpan: tabel SPP memanggilnya ribuan kali (siswa × 12 bulan)
+const cacheBulan = new Map()
 export const namaBulan = (bulan, opts = { month: 'long', year: 'numeric' }) => {
-  const [y, m] = bulan.split('-').map(Number)
-  return new Date(y, m - 1, 1).toLocaleDateString('id-ID', opts)
+  const kunci = bulan + JSON.stringify(opts)
+  if (!cacheBulan.has(kunci)) {
+    const [y, m] = bulan.split('-').map(Number)
+    cacheBulan.set(kunci, new Date(y, m - 1, 1).toLocaleDateString('id-ID', opts))
+  }
+  return cacheBulan.get(kunci)
 }
 
 // "September, Oktober 2026" — atau nama bulan lengkap dengan tahun jika melewati pergantian tahun

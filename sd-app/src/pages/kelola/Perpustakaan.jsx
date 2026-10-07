@@ -23,6 +23,17 @@ export default function Perpustakaan() {
   const riwayat = data.peminjaman.filter((p) => p.tanggalKembali).sort((a, b) => b.tanggalKembali.localeCompare(a.tanggalKembali))
   const totalEksemplar = data.buku.reduce((acc, b) => acc + Number(b.stok), 0)
 
+  // Pesanan buku dari Portal Siswa yang menunggu diserahkan
+  const reservasi = data.reservasi.filter((r) => r.status === 'Menunggu').sort((a, b) => a.tanggal.localeCompare(b.tanggal))
+  const serahkan = (r) => {
+    const b = buku(r.bukuId)
+    if (aktif.filter((p) => p.nis === r.nis).length >= 2) return setError(`${siswa(r.nis)?.nama} sudah meminjam 2 buku.`)
+    if (!b || tersedia(b) <= 0) return setError(`Stok "${b?.judul ?? 'buku'}" sedang habis.`)
+    tambah('peminjaman', { nis: r.nis, bukuId: r.bukuId, tanggalPinjam: hariIni, tenggat: tambahHari(hariIni, LAMA_PINJAM), tanggalKembali: null })
+    ubah('reservasi', r.id, { status: 'Selesai' })
+    setError('')
+  }
+
   const simpanPinjam = (e) => {
     e.preventDefault()
     if (!form.nis || !form.bukuId) return setError('Pilih siswa dan buku terlebih dahulu.')
@@ -73,6 +84,32 @@ export default function Perpustakaan() {
         <StatCard icon={BookOpen} label="Sedang Dipinjam" value={aktif.length} tone="amber" />
         <StatCard icon={AlertTriangle} label="Terlambat Kembali" value={terlambat.length} tone="primary" />
       </div>
+
+      {reservasi.length > 0 && (
+        <Card className="mt-5 border-sky-200 bg-sky-50/60 p-5">
+          <p className="font-bold text-sky-900">Pesanan buku dari siswa ({reservasi.length})</p>
+          <p className="text-sm text-sky-800">Siswa memesan lewat Portal Siswa. Serahkan buku saat siswa datang ke perpustakaan.</p>
+          {error && !form && <p className="mt-2 text-sm font-semibold text-rose-700">{error}</p>}
+          <ul className="mt-3 space-y-2">
+            {reservasi.map((r) => (
+              <li key={r.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-sky-100">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-slate-800">{buku(r.bukuId)?.judul ?? '(buku dihapus)'}</p>
+                  <p className="text-xs text-slate-500">
+                    {siswa(r.nis)?.nama ?? r.nis} · Kelas {siswa(r.nis)?.kelas} · dipesan {formatTanggal(r.tanggal, { year: undefined })}
+                  </p>
+                </div>
+                <button onClick={() => ubah('reservasi', r.id, { status: 'Ditolak' })} className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-100">
+                  Tolak
+                </button>
+                <button onClick={() => serahkan(r)} className={btn.primary}>
+                  <BookOpen className="h-4 w-4" /> Serahkan buku
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       <div className="my-5 inline-flex flex-wrap rounded-xl bg-slate-100 p-1">
         {[

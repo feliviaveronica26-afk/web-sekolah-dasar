@@ -3,7 +3,7 @@ import { Check, ClipboardList } from 'lucide-react'
 import { Badge, Card, DashHeader, EmptyState } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
-import { MAPEL, TUGAS } from '../../data/dummy'
+import { MAPEL } from '../../data/dummy'
 import { formatTanggal } from '../../utils/format'
 import { infoTenggat } from './helpers'
 
@@ -13,7 +13,7 @@ export default function SiswaTugas() {
   const [tab, setTab] = useState('belum')
 
   const selesai = data.tugasSelesai[user.nis] ?? []
-  const tugasKelas = TUGAS.filter((t) => t.kelas === user.kelas)
+  const tugasKelas = data.tugas.filter((t) => t.kelas === user.kelas)
   const belum = tugasKelas.filter((t) => !selesai.includes(t.id)).sort((a, b) => a.tenggat.localeCompare(b.tenggat))
   const sudah = tugasKelas.filter((t) => selesai.includes(t.id)).sort((a, b) => b.tenggat.localeCompare(a.tenggat))
   const daftar = tab === 'belum' ? belum : sudah

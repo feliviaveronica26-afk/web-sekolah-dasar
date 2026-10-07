@@ -3,6 +3,8 @@
 /* Tema merah putih — warna seragam SD */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Huruf judul yang membulat dan ramah anak */
+  --font-display: "Fredoka", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
   --color-primary-50: #fff1f2;
   --color-primary-100: #ffe0e2;
@@ -15,6 +17,45 @@
   --color-primary-800: #95131e;
   --color-primary-900: #7c161f;
   --color-primary-950: #44060b;
+
+  --animate-melayang: melayang 6s ease-in-out infinite;
+  --animate-goyang: goyang 2.5s ease-in-out infinite;
+  --animate-putar-lambat: putar 40s linear infinite;
+}
+
+@keyframes melayang {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes goyang {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes putar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0;
+  }
 }
 
 html {
@@ -25,7 +66,7 @@ body {
   @apply bg-white text-slate-800 antialiased;
 }
 
-/* Saat mencetak kuitansi, hanya area .area-cetak yang ikut tercetak */
+/* Saat mencetak kuitansi/rapor, hanya area .area-cetak yang ikut tercetak */
 @media print {
   body * {
     visibility: hidden;
@@ -55,7 +96,57 @@ body {
   animation: riak 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+/* Elemen muncul perlahan saat di-scroll (komponen <Muncul>) */
+.muncul {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.muncul-aktif {
+  opacity: 1;
+  transform: none;
+}
+
+/* Pola titik-titik dekoratif di latar berwarna */
+.pola-titik {
+  background-image: radial-gradient(rgb(255 255 255 / 0.18) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+.pola-titik-merah {
+  background-image: radial-gradient(rgb(217 26 40 / 0.12) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
 /* Garis merah putih dekoratif */
 .stripe-merah-putih {
   background: linear-gradient(to bottom, var(--color-primary-600) 50%, #ffffff 50%);
+}
+
+/* Panel yang berganti isi (mis. nilai karakter di Profil) tampil lembut */
+@keyframes tampil-lembut {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.tampil-lembut {
+  animation: tampil-lembut 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tampil-lembut {
+    animation: none;
+  }
+  .muncul {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-melayang,
+  .animate-goyang,
+  .animate-putar-lambat {
+    animation: none;
+  }
 }
