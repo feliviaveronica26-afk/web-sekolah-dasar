@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, FileUp, Printer, Search, Send } from 'lucide-react'
 import { TombolSalin } from './Spp'
-import { Alert, Badge, btn, inputCls, labelCls } from './ui'
+import { Alert, Badge, JebakanBot, btn, inputCls, labelCls } from './ui'
 import { useData } from '../context/DataContext'
 import { PPDB, SEKOLAH } from '../data/dummy'
 import { formatTanggal, parseKey } from '../utils/format'
+import { catatKirim, tungguKirim } from '../utils/keamanan'
 
 export const STATUS_PPDB = {
   'Menunggu Verifikasi': { cls: 'bg-amber-100 text-amber-800', ket: 'Berkas sedang diperiksa panitia (1–3 hari kerja).' },
@@ -66,6 +67,7 @@ export function FormPpdb() {
   const [form, setForm] = useState(FORM_KOSONG)
   const [error, setError] = useState('')
   const [hasil, setHasil] = useState(null)
+  const [jebakan, setJebakan] = useState('')
 
   // Selalu update dari state terbaru agar perubahan beruntun tidak saling menimpa
   const ubahForm = (perubahan) => setForm((f) => ({ ...f, ...perubahan }))
@@ -107,6 +109,10 @@ export function FormPpdb() {
       setLangkah(langkah + 1)
       return
     }
+    // Anti-spam: bot yang mengisi kolom jebakan, atau terlalu banyak pendaftaran dari perangkat ini
+    if (jebakan) return setError('Pendaftaran tidak dapat diproses. Muat ulang halaman lalu coba lagi.')
+    const tunggu = tungguKirim('ppdb', 3, 30)
+    if (tunggu) return setError(`Terlalu banyak pendaftaran dari perangkat ini. Coba lagi dalam ${tunggu} menit.`)
     const urut = Math.max(0, ...data.pendaftar.map((p) => Number(p.nomor.slice(-4)))) + 1
     const { setuju: _, ...isian } = form
     const pendaftar = {
@@ -119,6 +125,7 @@ export function FormPpdb() {
       dibuat: new Date().toISOString(),
     }
     tambah('pendaftar', pendaftar)
+    catatKirim('ppdb', 30)
     setHasil(pendaftar)
   }
 
@@ -327,7 +334,8 @@ export function FormPpdb() {
       )}
 
       {langkah === 3 && (
-        <div>
+        <div className="relative">
+          <JebakanBot value={jebakan} onChange={setJebakan} />
           <p className="mb-3 text-sm text-slate-600">Periksa kembali data berikut sebelum dikirim.</p>
           <dl className="divide-y divide-slate-100 rounded-2xl border border-slate-200">
             {ringkasan.map(([k, v]) => (
@@ -442,8 +450,15 @@ export function CekStatusPpdb() {
   const [tanggal, setTanggal] = useState('')
   const [hasil, setHasil] = useState(undefined)
 
+  const [batas, setBatas] = useState(0)
+
+  // Dibatasi agar tanggal lahir tidak bisa ditebak berulang-ulang
   const cek = (e) => {
     e.preventDefault()
+    const tunggu = tungguKirim('cek-ppdb', 10, 10)
+    setBatas(tunggu)
+    if (tunggu) return setHasil(undefined)
+    catatKirim('cek-ppdb', 10)
     setHasil(data.pendaftar.find((p) => p.nomor.toLowerCase() === nomor.trim().toLowerCase() && p.tanggalLahir === tanggal) ?? null)
   }
 
@@ -459,6 +474,7 @@ export function CekStatusPpdb() {
           <Search className="h-4 w-4" /> Cek Status
         </button>
       </form>
+      {batas > 0 && <p className="mt-3 text-sm text-rose-600">Terlalu banyak pengecekan. Coba lagi dalam {batas} menit.</p>}
       {hasil === null && <p className="mt-3 text-sm text-rose-600">Data tidak ditemukan. Periksa nomor pendaftaran dan tanggal lahir.</p>}
       {hasil && (
         <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm">

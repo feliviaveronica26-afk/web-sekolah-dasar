@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { KehadiranPelajaran } from '../../components/PresensiOtp'
 import { Card, DashHeader, STATUS_ABSEN } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
@@ -31,48 +32,51 @@ export default function OrtuAbsensi() {
       <DashHeader title="Absensi Anak" desc={`Riwayat kehadiran ${anak?.nama ?? ''} setiap hari sekolah.`} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        <Card className="p-4 sm:p-6">
-          <div className="mb-5 flex items-center justify-between">
-            <button onClick={() => geser(-1)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Bulan sebelumnya">
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <h2 className="font-bold text-slate-900">
-              {bulan.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
-            </h2>
-            <button onClick={() => geser(1)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Bulan berikutnya">
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
+        <div className="space-y-6">
+          <Card className="p-4 sm:p-6">
+            <div className="mb-5 flex items-center justify-between">
+              <button onClick={() => geser(-1)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Bulan sebelumnya">
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <h2 className="font-bold text-slate-900">
+                {bulan.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+              </h2>
+              <button onClick={() => geser(1)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Bulan berikutnya">
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
 
-          <div className="grid grid-cols-7 gap-1.5 text-center sm:gap-2">
-            {NAMA_HARI.map((h) => (
-              <div key={h} className="pb-1 text-xs font-bold uppercase text-slate-400">
-                {h}
-              </div>
-            ))}
-            {Array.from({ length: offset }, (_, i) => (
-              <div key={`kosong-${i}`} />
-            ))}
-            {hariBulanIni.map((d) => {
-              const key = toKey(d)
-              const status = data.absensi[key]?.[nis]
-              const libur = d.getDay() === 0 || d.getDay() === 6
-              const info = STATUS_ABSEN[status]
-              return (
-                <div
-                  key={key}
-                  title={info?.label}
-                  className={`flex aspect-square flex-col items-center justify-center rounded-xl text-sm font-semibold ${
-                    info ? info.cls : libur ? 'bg-slate-50 text-slate-300' : 'bg-white text-slate-500 ring-1 ring-slate-100'
-                  } ${key === hariIni ? 'ring-2 ring-primary-500' : ''}`}
-                >
-                  {d.getDate()}
-                  {info && <span className="hidden text-[10px] font-medium sm:block">{info.label}</span>}
+            <div className="grid grid-cols-7 gap-1.5 text-center sm:gap-2">
+              {NAMA_HARI.map((h) => (
+                <div key={h} className="pb-1 text-xs font-bold uppercase text-slate-400">
+                  {h}
                 </div>
-              )
-            })}
-          </div>
-        </Card>
+              ))}
+              {Array.from({ length: offset }, (_, i) => (
+                <div key={`kosong-${i}`} />
+              ))}
+              {hariBulanIni.map((d) => {
+                const key = toKey(d)
+                const status = data.absensi[key]?.[nis]
+                const libur = d.getDay() === 0 || d.getDay() === 6
+                const info = STATUS_ABSEN[status]
+                return (
+                  <div
+                    key={key}
+                    title={info?.label}
+                    className={`flex aspect-square flex-col items-center justify-center rounded-xl text-sm font-semibold ${
+                      info ? info.cls : libur ? 'bg-slate-50 text-slate-300' : 'bg-white text-slate-500 ring-1 ring-slate-100'
+                    } ${key === hariIni ? 'ring-2 ring-primary-500' : ''}`}
+                  >
+                    {d.getDate()}
+                    {info && <span className="hidden text-[10px] font-medium sm:block">{info.label}</span>}
+                  </div>
+                )
+              })}
+            </div>
+          </Card>
+          {anak && <KehadiranPelajaran nis={nis} kelas={anak.kelas} judul="Hari ini per pelajaran" />}
+        </div>
 
         <div className="space-y-4">
           <Card className="p-5">

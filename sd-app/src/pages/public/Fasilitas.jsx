@@ -27,6 +27,12 @@ export default function Fasilitas() {
               <MousePointerClick className="h-4 w-4" /> Klik salah satu area untuk melihat detail fasilitas.
             </p>
             <DenahSekolah />
+            <Link
+              to="/fasilitas/ruang-kelas#denah-kelas"
+              className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700"
+            >
+              Lihat denah 18 ruang kelas <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
 
           <div id="kunjungan" className="scroll-mt-28 space-y-5 lg:pt-20">

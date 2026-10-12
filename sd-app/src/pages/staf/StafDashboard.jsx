@@ -29,10 +29,12 @@ import { KartuPresensiSaya, RingkasanPresensi } from '../../components/Presensi'
 import { JENIS_AGENDA, agendaMendatang, rentangAgenda } from '../../components/KalenderAkademik'
 import { Avatar, Badge, Card, DashHeader, EmptyState, StatCard, btn } from '../../components/ui'
 import { PERAN, useAkses } from '../../context/akses'
+import { useChatSaya } from '../../context/ChatContext'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
-import { HARI_SEKOLAH, JADWAL, KKTP, MAPEL, MAPEL_RAPOR, SESI } from '../../data/dummy'
+import { KKTP, MAPEL, MAPEL_RAPOR } from '../../data/dummy'
 import { nilaiAkhir, rekapNilai } from '../../utils/nilai'
-import { formatHari, formatTanggal, isHariSekolah, namaHari, todayKey } from '../../utils/format'
+import { formatHari, formatTanggal, isHariSekolah, namaHari, parseKey, tambahHari, todayKey } from '../../utils/format'
+import { jadwalMengajar } from '../../utils/jadwal'
 import { kehadiranSekolah, rekapSiswa, ringkasPerpus, ringkasSpp } from '../../utils/ringkasan'
 import { rupiah } from '../../utils/spp'
 
@@ -60,8 +62,7 @@ function PanelWaliKelas({ kelas, base }) {
   const sudahDiisi = siswaKelas.filter((s) => absenHariIni[s.nis]).length
   const hadirHariIni = siswaKelas.filter((s) => absenHariIni[s.nis] === 'H').length
   const izinMenunggu = data.izin.filter((i) => i.kelas === kelas && i.status === 'Menunggu')
-  const nisKelas = siswaKelas.map((s) => s.nis)
-  const pesanBaru = data.pesan.filter((p) => nisKelas.includes(p.nis) && !p.dibacaGuru)
+  const { belum: chatBelum } = useChatSaya()
   const nilaiKelas = siswaKelas.map((s) => rekapNilai(data, s).rataRata).filter((n) => n !== null)
   const rataNilai = nilaiKelas.length ? Math.round((nilaiKelas.reduce((a, b) => a + b, 0) / nilaiKelas.length) * 10) / 10 : '–'
   const tugasAktif = data.tugas.filter((t) => t.kelas === kelas && t.tenggat >= todayKey())
@@ -103,13 +104,13 @@ function PanelWaliKelas({ kelas, base }) {
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
-        <Link to={`${base}/pesan`} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:shadow-md">
+        <Link to={`${base}/chat`} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:shadow-md">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-100 text-primary-700">
             <MessagesSquare className="h-5 w-5" />
           </span>
           <span>
-            <span className="block text-xl font-extrabold text-slate-900">{pesanBaru.length}</span>
-            <span className="block text-xs text-slate-500">pesan orang tua belum dibaca</span>
+            <span className="block text-xl font-extrabold text-slate-900">{chatBelum}</span>
+            <span className="block text-xs text-slate-500">pesan chat belum dibaca</span>
           </span>
         </Link>
         <Link to={`${base}/rapor`} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:shadow-md">
@@ -186,7 +187,7 @@ const AKSI_CEPAT = [
   { menu: 'nilai', label: 'Input Nilai', icon: NotebookPen, warna: 'bg-sky-100 text-sky-700' },
   { menu: 'tugas', label: 'Buat Tugas', icon: ClipboardList, warna: 'bg-amber-100 text-amber-700' },
   { menu: 'sikap', label: 'Beri Poin', icon: Award, warna: 'bg-violet-100 text-violet-700' },
-  { menu: 'pesan', label: 'Pesan Ortu', icon: MessagesSquare, warna: 'bg-primary-100 text-primary-700' },
+  { menu: 'chat', label: 'Chat', icon: MessagesSquare, warna: 'bg-primary-100 text-primary-700' },
   { menu: 'rapor', label: 'Rapor Kelas', icon: BookOpenCheck, warna: 'bg-teal-100 text-teal-700' },
   { menu: 'konseling', label: 'Konseling', icon: HeartHandshake, warna: 'bg-pink-100 text-pink-700' },
   { menu: 'bukutamu', label: 'Buku Tamu', icon: ShieldCheck, warna: 'bg-slate-100 text-slate-700' },
@@ -218,26 +219,54 @@ function PanelGuruMapel({ nama, base }) {
   )
 }
 
-// Jadwal mengajar diambil dari jadwal kelas yang mencantumkan nama guru ini
-function jadwalMengajar(nama) {
-  const hasil = []
-  for (const [kelas, perHari] of Object.entries(JADWAL)) {
-    for (const hari of HARI_SEKOLAH) {
-      perHari[hari]?.forEach((kode, i) => {
-        if (MAPEL[kode]?.guru === nama) hasil.push({ hari, kelas, kode, jam: `${SESI[i].mulai} – ${SESI[i].selesai}` })
-      })
-    }
-  }
-  return hasil
+// Jadwal mengajar hari ini (atau hari sekolah berikutnya), dengan pintasan ke presensi pelajaran
+function PanelMengajar({ guruId, base, bisaPresensi }) {
+  const { data } = useData()
+  const semua = jadwalMengajar(data.guru, guruId)
+  if (!semua.length) return null
+  const hariIni = todayKey()
+  let tgl = hariIni
+  for (let i = 0; i < 7 && !(isHariSekolah(parseKey(tgl)) && semua.some((j) => j.hari === namaHari(tgl))); i++) tgl = tambahHari(tgl, 1)
+  const daftar = semua.filter((j) => j.hari === namaHari(tgl))
+  const jumlahKelas = new Set(semua.map((j) => j.kelas)).size
+
+  return (
+    <Panel judul="Jadwal Mengajar">
+      <p className="-mt-2 mb-3 text-sm text-slate-500">
+        {tgl === hariIni ? 'Hari ini' : namaHari(tgl)} · {daftar.length} pelajaran · {semua.length} sesi per minggu di {jumlahKelas} kelas
+      </p>
+      <ul className="space-y-2">
+        {daftar.map((j) => {
+          const siswa = data.siswa.filter((s) => s.kelas === j.kelas)
+          const catatan = siswa.map((s) => data.absensiMapel[tgl]?.[s.nis]?.[j.kunci]).filter(Boolean)
+          return (
+            <li key={j.kelas + j.kunci} className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl bg-slate-50 px-4 py-2.5 text-sm">
+              <span className="w-24 text-slate-500">
+                {j.mulai}–{j.selesai}
+              </span>
+              <span className="min-w-0 flex-1 truncate font-semibold text-slate-800">{MAPEL[j.mapel].nama}</span>
+              <Badge className="bg-white text-slate-600">Kelas {j.kelas}</Badge>
+              {bisaPresensi && tgl === hariIni && (
+                <Link
+                  to={`${base}/absensi?kelas=${j.kelas}&pelajaran=${j.kunci}`}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-bold ${catatan.length ? 'bg-emerald-100 text-emerald-700' : 'bg-primary-600 text-white hover:bg-primary-700'}`}
+                >
+                  {catatan.length ? `${catatan.filter((c) => c === 'H').length}/${siswa.length} hadir` : 'Presensi'}
+                </Link>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </Panel>
+  )
 }
 
 export default function StafDashboard() {
   const { data } = useData()
-  const { nama, peran, kelas, base } = useAkses()
+  const { nama, peran, kelas, base, guruId } = useAkses()
   const punyaPeran = (p) => peran.includes(p)
   const { punya } = useAkses()
-  const mengajar = jadwalMengajar(nama)
-  const hariIni = namaHari(todayKey())
   const jam = new Date().getHours()
   const salam = jam < 11 ? 'Selamat pagi' : jam < 15 ? 'Selamat siang' : jam < 18 ? 'Selamat sore' : 'Selamat malam'
   const aksi = AKSI_CEPAT.filter((a) => punya(a.menu))
@@ -291,23 +320,7 @@ export default function StafDashboard() {
         <div className="grid gap-6 lg:grid-cols-2">
           <RingkasanPresensi />
 
-          {mengajar.length > 0 && (
-            <Panel judul="Jadwal Mengajar">
-              <ul className="space-y-2">
-                {mengajar.map((m, i) => (
-                  <li
-                    key={i}
-                    className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm ${m.hari === hariIni ? 'bg-primary-50 ring-1 ring-primary-200' : 'bg-slate-50'}`}
-                  >
-                    <span className="w-16 font-bold text-slate-800">{m.hari}</span>
-                    <span className="w-28 text-slate-500">{m.jam}</span>
-                    <span className="flex-1 font-semibold text-slate-800">{MAPEL[m.kode].nama}</span>
-                    <Badge className="bg-white text-slate-600">Kelas {m.kelas}</Badge>
-                  </li>
-                ))}
-              </ul>
-            </Panel>
-          )}
+          <PanelMengajar guruId={guruId} base={base} bisaPresensi={punya('absensi')} />
 
           {punyaPeran('guru_mapel') && <PanelGuruMapel nama={nama} base={base} />}
           {punyaPeran('tata_usaha') && <PanelSpp base={base} />}

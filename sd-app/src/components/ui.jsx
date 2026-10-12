@@ -199,6 +199,19 @@ export function EmptyState({ icon: Icon, title, desc }) {
   )
 }
 
+// Kolom jebakan bot spam: tidak terlihat & tidak bisa difokus manusia, tetapi sering diisi bot.
+// Formulir yang kolom ini terisi tidak disimpan.
+export function JebakanBot({ value, onChange }) {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-px w-px overflow-hidden">
+      <label>
+        Jangan diisi
+        <input type="text" name="url_situs" tabIndex={-1} autoComplete="off" value={value} onChange={(e) => onChange(e.target.value)} />
+      </label>
+    </div>
+  )
+}
+
 export function Alert({ tone = 'success', children }) {
   const cls = {
     success: 'border-emerald-200 bg-emerald-50 text-emerald-800',

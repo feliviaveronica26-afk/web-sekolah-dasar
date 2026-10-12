@@ -9,6 +9,7 @@ import { BIODATA, KELAS, KKTP } from '../../data/dummy'
 import { formatTanggal, parseKey, todayKey } from '../../utils/format'
 import { rekapNilai } from '../../utils/nilai'
 import { ekskulSiswa, infoSikap, ringkasSikap } from '../../utils/prestasi'
+import { unduhFileCsv } from '../../utils/keamanan'
 
 const URUT = { nama: 'Urut nama', nis: 'Urut NIS', hadir: 'Kehadiran terendah', nilai: 'Nilai terendah' }
 const warnaHadir = (p) => (p >= 90 ? 'bg-emerald-500' : p >= 75 ? 'bg-amber-400' : 'bg-rose-500')
@@ -149,9 +150,9 @@ export default function DaftarSiswa() {
     const isi = baris.map((b, i) => [
       i + 1,
       b.s.nis,
-      `"${b.s.nama}"`,
+      b.s.nama,
       b.s.jk,
-      `"${b.s.ortu ?? ''}"`,
+      b.s.ortu ?? '',
       b.hadir.persen,
       b.hadir.S,
       b.hadir.I,
@@ -159,13 +160,7 @@ export default function DaftarSiswa() {
       b.nilai.rataRata ?? '',
       b.sikap.total,
     ])
-    const csv = [kepala, ...isi].map((r) => r.join(';')).join('\n')
-    const url = URL.createObjectURL(new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `daftar-siswa-${kelas}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    unduhFileCsv(`daftar-siswa-${kelas}.csv`, [kepala, ...isi])
   }
 
   return (

@@ -14,7 +14,12 @@ export const formatTanggal = (key, opts = {}) =>
 
 export const formatHari = (key) => formatTanggal(key, { weekday: 'long' })
 
-export const namaHari = (key) => parseKey(key).toLocaleDateString('id-ID', { weekday: 'long' })
+// Hasil disimpan: jadwal & presensi per pelajaran memanggilnya ribuan kali (siswa × tanggal)
+const cacheHari = new Map()
+export const namaHari = (key) => {
+  if (!cacheHari.has(key)) cacheHari.set(key, parseKey(key).toLocaleDateString('id-ID', { weekday: 'long' }))
+  return cacheHari.get(key)
+}
 
 export const isHariSekolah = (d) => d.getDay() !== 0 && d.getDay() !== 6
 

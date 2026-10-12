@@ -1,10 +1,18 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Eye, EyeOff, LogIn } from 'lucide-react'
+import { ArrowLeft, Eye, EyeOff, Loader2, LogIn } from 'lucide-react'
 import { Bintang, Gumpalan } from '../components/Hiasan'
 import { Alert, btn, inputCls, labelCls } from '../components/ui'
-import { useAuth } from '../context/AuthContext'
+import { ALASAN_KELUAR_KEY, useAuth } from '../context/AuthContext'
 import { AKUN_DEMO, LABEL_ROLE, SEKOLAH } from '../data/dummy'
+import { BATAS_DIAM_MENIT, BATAS_SESI_JAM, sisaKunciLogin } from '../utils/keamanan'
+
+const PESAN_KELUAR = {
+  diam: `Anda keluar otomatis karena tidak ada aktivitas selama ${BATAS_DIAM_MENIT} menit. Silakan masuk kembali.`,
+  kedaluwarsa: `Sesi Anda sudah berakhir (lebih dari ${BATAS_SESI_JAM} jam sejak masuk). Silakan masuk kembali.`,
+}
+
+const formatTunggu = (detik) => (detik >= 60 ? `${Math.floor(detik / 60)} menit ${detik % 60} detik` : `${detik} detik`)
 
 export default function Login() {
   const { user, login } = useAuth()
@@ -15,14 +23,34 @@ export default function Login() {
   const [lihat, setLihat] = useState(false)
   const [error, setError] = useState('')
   const [manual, setManual] = useState(null)
+  const [memproses, setMemproses] = useState(false)
+  const [kunci, setKunci] = useState(() => sisaKunciLogin())
+  const [alasanKeluar] = useState(() => sessionStorage.getItem(ALASAN_KELUAR_KEY))
   const usernameRef = useRef(null)
+
+  useEffect(() => sessionStorage.removeItem(ALASAN_KELUAR_KEY), [])
+
+  // Hitung mundur penguncian login setelah terlalu banyak percobaan salah
+  useEffect(() => {
+    if (!kunci) return
+    const t = setInterval(() => setKunci(sisaKunciLogin()), 1000)
+    return () => clearInterval(t)
+  }, [kunci])
 
   if (user) return <Navigate to={`/dashboard/${user.role}`} replace />
 
-  const masuk = (e) => {
+  const masuk = async (e) => {
     e.preventDefault()
-    const hasil = login(username, password)
-    if (hasil.error) return setError(hasil.error)
+    if (memproses || kunci) return
+    setMemproses(true)
+    setError('')
+    const hasil = await login(username, password)
+    setMemproses(false)
+    if (hasil.error) {
+      setError(hasil.error)
+      if (hasil.terkunci) setKunci(hasil.terkunci)
+      return
+    }
     const tujuan = location.state?.from
     navigate(tujuan?.startsWith(`/dashboard/${hasil.user.role}`) ? tujuan : `/dashboard/${hasil.user.role}`, { replace: true })
   }
@@ -87,7 +115,14 @@ export default function Login() {
           <p className="mt-2 text-slate-500">Silakan masuk menggunakan akun yang diberikan sekolah.</p>
 
           <form onSubmit={masuk} className="mt-8 space-y-4">
-            {error && <Alert tone="error">{error}</Alert>}
+            {alasanKeluar && PESAN_KELUAR[alasanKeluar] && !error && <Alert tone="info">{PESAN_KELUAR[alasanKeluar]}</Alert>}
+            {kunci > 0 ? (
+              <Alert tone="error">
+                Login dikunci sementara karena terlalu banyak percobaan yang salah. Coba lagi dalam <b>{formatTunggu(kunci)}</b>.
+              </Alert>
+            ) : (
+              error && <Alert tone="error">{error}</Alert>
+            )}
             <div>
               <label htmlFor="username" className={labelCls}>Username</label>
               <input
@@ -124,8 +159,8 @@ export default function Login() {
                 </button>
               </div>
             </div>
-            <button type="submit" className={`${btn.primary} w-full py-3`}>
-              <LogIn className="h-4 w-4" /> Masuk
+            <button type="submit" disabled={memproses || kunci > 0} className={`${btn.primary} w-full py-3`}>
+              {memproses ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />} {memproses ? 'Memeriksa...' : 'Masuk'}
             </button>
           </form>
 

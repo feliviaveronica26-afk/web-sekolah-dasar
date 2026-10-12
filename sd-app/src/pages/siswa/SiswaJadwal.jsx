@@ -1,15 +1,20 @@
 import { Fragment, useState } from 'react'
 import { Coffee, User } from 'lucide-react'
 import { Card, DashHeader } from '../../components/ui'
+import DenahKelas from '../../components/DenahKelas'
 import JamSekolah from '../../components/JamSekolah'
 import { useAuth } from '../../context/AuthContext'
-import { HARI_SEKOLAH, ISTIRAHAT, JADWAL, MAPEL, SESI } from '../../data/dummy'
+import { useData } from '../../context/DataContext'
+import { HARI_SEKOLAH, ISTIRAHAT, JADWAL, MAPEL, SESI, lantaiKelas } from '../../data/dummy'
 import { namaHari, todayKey } from '../../utils/format'
+import { guruPelajaran } from '../../utils/jadwal'
 
 // `kelas` & `aksi` dipakai saat halaman ini ditampilkan di portal guru & staf
 export default function SiswaJadwal({ kelas: kelasProp, aksi }) {
   const { user } = useAuth()
+  const { data } = useData()
   const kelas = kelasProp ?? user.kelas
+  const guruDari = (kode) => guruPelajaran(data.guru, kelas, kode)?.nama ?? MAPEL[kode].guru
   const jadwal = JADWAL[kelas] ?? {}
   const hariIni = namaHari(todayKey())
   const [hariDipilih, setHariDipilih] = useState(HARI_SEKOLAH.includes(hariIni) ? hariIni : 'Senin')
@@ -20,7 +25,7 @@ export default function SiswaJadwal({ kelas: kelasProp, aksi }) {
   const sel = (kode) => (
     <div className={`rounded-xl px-3 py-2.5 ${MAPEL[kode].warna}`}>
       <p className="text-sm font-bold">{MAPEL[kode].nama}</p>
-      <p className="mt-0.5 text-xs opacity-80">{MAPEL[kode].guru}</p>
+      <p className="mt-0.5 text-xs opacity-80">{guruDari(kode)}</p>
     </div>
   )
 
@@ -128,12 +133,20 @@ export default function SiswaJadwal({ kelas: kelasProp, aksi }) {
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-slate-800">{MAPEL[k].nama}</p>
                 <p className="flex items-center gap-1 truncate text-xs text-slate-500">
-                  <User className="h-3 w-3" /> {MAPEL[k].guru}
+                  <User className="h-3 w-3" /> {guruDari(k)}
                 </p>
               </div>
             </div>
           ))}
         </div>
+      </Card>
+
+      <Card className="mt-6 p-6">
+        <h2 className="font-bold text-slate-900">Letak Ruang Kelas</h2>
+        <p className="mb-5 mt-1 text-sm text-slate-500">
+          Kelas {kelas} ada di Gedung Utama lantai {lantaiKelas(kelas)}. Klik ruang lain untuk melihat wali kelas dan pelajarannya.
+        </p>
+        <DenahKelas key={kelas} sorot={kelas} />
       </Card>
     </>
   )

@@ -42,11 +42,12 @@ import {
 import Logo from './Logo'
 import { Avatar } from './ui'
 import { useAuth } from '../context/AuthContext'
+import { useChatSaya } from '../context/ChatContext'
 import { useData } from '../context/DataContext'
 import { PERAN, useAkses } from '../context/akses'
 import { LABEL_ROLE } from '../data/dummy'
 import { formatHari, isHariSekolah, todayKey } from '../utils/format'
-import { sesiAktifKelas } from '../utils/otp'
+import { sesiAktifKelas, sudahHadirDiSesi } from '../utils/otp'
 import { bulanWajibBayar } from '../utils/spp'
 
 // Menu portal Siswa & Orang Tua, dikelompokkan agar mudah dipindai
@@ -63,6 +64,7 @@ const MENU_TETAP = {
         { to: '/dashboard/siswa/absensi', label: 'Absensi per Mapel', icon: CalendarCheck },
       ],
     },
+    { judul: 'Komunikasi', items: [{ to: '/dashboard/siswa/chat', label: 'Chat Kelas', icon: MessagesSquare, badge: 'chat' }] },
     {
       judul: 'Kegiatan',
       items: [
@@ -88,7 +90,7 @@ const MENU_TETAP = {
     {
       judul: 'Komunikasi',
       items: [
-        { to: '/dashboard/ortu/pesan', label: 'Pesan Wali Kelas', icon: MessagesSquare, badge: 'pesanOrtu' },
+        { to: '/dashboard/ortu/chat', label: 'Chat', icon: MessagesSquare, badge: 'chat' },
         { to: '/dashboard/ortu/izin', label: 'Izin Tidak Masuk', icon: FileText },
         { to: '/dashboard/ortu/pengumuman', label: 'Pengumuman', icon: Megaphone },
       ],
@@ -106,13 +108,13 @@ const MENU_TETAP = {
 // Menu Portal Guru & Staf / Kepala Sekolah, ditampilkan sesuai hak akses (urutan tetap)
 const MENU_KELOLA = {
   presensi: { label: 'Presensi Staf', icon: Fingerprint, badge: 'presensi' },
+  chat: { label: 'Chat', icon: MessagesSquare, badge: 'chat' },
   kelas: { label: 'Daftar Siswa', icon: Contact },
   absensi: { label: 'Presensi Siswa', icon: ClipboardCheck },
   izin: { label: 'Persetujuan Izin', icon: FileCheck, badge: 'izin' },
   nilai: { label: 'Input Nilai', icon: NotebookPen },
   tugas: { label: 'Tugas Kelas', icon: ClipboardList },
   sikap: { label: 'Poin Sikap', icon: Award },
-  pesan: { label: 'Pesan Orang Tua', icon: MessagesSquare, badge: 'pesanGuru' },
   rapor: { label: 'Rapor Kelas', icon: BookOpenCheck },
   siswa: { label: 'Data Siswa', icon: Users },
   kehadiran: { label: 'Rekap Kehadiran', icon: BarChart3 },
@@ -131,7 +133,7 @@ const MENU_KELOLA = {
 }
 
 const KELOMPOK_KELOLA = [
-  { judul: 'Kelas Saya', menu: ['kelas', 'absensi', 'izin', 'nilai', 'tugas', 'sikap', 'pesan', 'rapor'] },
+  { judul: 'Kelas Saya', menu: ['kelas', 'absensi', 'izin', 'nilai', 'tugas', 'sikap', 'rapor'] },
   { judul: 'Kesiswaan', menu: ['siswa', 'kehadiran', 'konseling'] },
   { judul: 'Akademik', menu: ['jadwal', 'kalender', 'pengumuman'] },
   { judul: 'Administrasi', menu: ['guru', 'spp', 'ppdb', 'kunjungan'] },
@@ -149,8 +151,7 @@ const KET_BADGE = {
   bukutamu: 'tamu masih di dalam sekolah',
   kerusakan: 'laporan kerusakan baru',
   reservasi: 'pesanan buku dari siswa',
-  pesanOrtu: 'pesan baru dari wali kelas',
-  pesanGuru: 'pesan baru dari orang tua',
+  chat: 'pesan chat belum dibaca',
   presensi: 'pengajuan izin guru/staf menunggu persetujuan',
   presensiSaya: () => 'Anda belum absen masuk hari ini',
   presensiSiswa: () => 'Guru sudah membuka presensi, masukkan kodenya',
@@ -160,6 +161,7 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth()
   const { data } = useData()
   const akses = useAkses()
+  const { belum: chatBelum } = useChatSaya()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [buka, setBuka] = useState(false)
@@ -188,6 +190,7 @@ export default function DashboardLayout() {
             { to: akses.base, label: 'Beranda', icon: LayoutDashboard, end: true },
             // Presensi dipakai setiap hari oleh semua staf, jadi diletakkan paling atas
             { to: `${akses.base}/presensi`, ...MENU_KELOLA.presensi, badge: user.role === 'kepsek' ? 'presensi' : 'presensiSaya' },
+            ...(akses.punya('chat') ? [{ to: `${akses.base}/chat`, ...MENU_KELOLA.chat }] : []),
           ],
         },
         ...KELOMPOK_KELOLA.map((k) => ({
@@ -211,11 +214,14 @@ export default function DashboardLayout() {
     bukutamu: data.bukuTamu.filter((t) => t.tanggal === todayKey() && !t.keluar).length,
     kerusakan: data.kerusakan.filter((k) => k.status === 'Dilaporkan').length,
     reservasi: data.reservasi.filter((r) => r.status === 'Menunggu').length,
-    pesanOrtu: data.pesan.filter((p) => p.nis === nisAnak && !p.dibacaOrtu).length,
-    pesanGuru: data.pesan.filter((p) => !p.dibacaGuru && data.siswa.find((s) => s.nis === p.nis)?.kelas === akses.kelas).length,
+    chat: chatBelum,
     presensi: data.izinStaf.filter((i) => i.status === 'Menunggu').length,
     presensiSaya: akses.guruId && isHariSekolah(new Date()) && !data.presensiStaf[todayKey()]?.[akses.guruId] ? 1 : 0,
-    presensiSiswa: user.role === 'siswa' && data.absensi[todayKey()]?.[user.nis] !== 'H' && sesiAktifKelas(data, user.kelas, todayKey()) ? 1 : 0,
+    presensiSiswa: (() => {
+      if (user.role !== 'siswa') return 0
+      const sesi = sesiAktifKelas(data, user.kelas, todayKey())
+      return sesi && !sudahHadirDiSesi(data, sesi, user.nis) ? 1 : 0
+    })(),
   }
 
   const semuaItem = kelompok.flatMap((k) => k.items)

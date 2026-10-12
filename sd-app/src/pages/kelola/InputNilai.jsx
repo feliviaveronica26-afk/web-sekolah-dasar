@@ -6,6 +6,7 @@ import { useLingkup } from '../../context/akses'
 import { useData } from '../../context/DataContext'
 import { KKTP, MAPEL } from '../../data/dummy'
 import { JUMLAH_TUGAS, nilaiAkhir, predikat } from '../../utils/nilai'
+import { unduhFileCsv } from '../../utils/keamanan'
 
 // Ubah isian kotak menjadi angka 0–100, atau null jika dikosongkan
 const keAngka = (v) => (v === '' ? null : Math.max(0, Math.min(100, Math.round(Number(v)))))
@@ -58,20 +59,14 @@ export default function InputNilai() {
     const kepala = ['NIS', 'Nama', ...Array.from({ length: JUMLAH_TUGAS }, (_, i) => `Tugas ${i + 1}`), 'PTS', 'PAS', 'Nilai Akhir', 'Predikat']
     const isi = baris.map(({ s, n, akhir }) => [
       s.nis,
-      `"${s.nama}"`,
+      s.nama,
       ...Array.from({ length: JUMLAH_TUGAS }, (_, i) => n.tugas?.[i] ?? ''),
       n.pts ?? '',
       n.pas ?? '',
       akhir ?? '',
       predikat(akhir).label,
     ])
-    const csv = [kepala, ...isi].map((r) => r.join(';')).join('\n')
-    const url = URL.createObjectURL(new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `nilai-${kelas}-${MAPEL[mapel].nama.toLowerCase().replace(/\s+/g, '-')}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    unduhFileCsv(`nilai-${kelas}-${MAPEL[mapel].nama.toLowerCase().replace(/\s+/g, '-')}.csv`, [kepala, ...isi])
   }
 
   return (

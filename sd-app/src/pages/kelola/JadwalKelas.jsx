@@ -3,9 +3,9 @@ import SiswaJadwal from '../siswa/SiswaJadwal'
 import { inputCls } from '../../components/ui'
 import { JADWAL } from '../../data/dummy'
 
-// Jadwal pelajaran per kelas untuk guru & staf. Saat ini baru kelas yang datanya sudah diisi.
+// Jadwal pelajaran per kelas (1A–6C) untuk guru & staf
 export default function JadwalKelas() {
-  const daftarKelas = Object.keys(JADWAL)
+  const daftarKelas = Object.keys(JADWAL).sort()
   const [kelas, setKelas] = useState(daftarKelas[0])
 
   return (
@@ -13,10 +13,16 @@ export default function JadwalKelas() {
       kelas={kelas}
       aksi={
         <select value={kelas} onChange={(e) => setKelas(e.target.value)} className={`${inputCls} sm:w-44`} aria-label="Pilih kelas">
-          {daftarKelas.map((k) => (
-            <option key={k} value={k}>
-              Kelas {k}
-            </option>
+          {[...new Set(daftarKelas.map((k) => k[0]))].map((t) => (
+            <optgroup key={t} label={`Kelas ${t}`}>
+              {daftarKelas
+                .filter((k) => k[0] === t)
+                .map((k) => (
+                  <option key={k} value={k}>
+                    Kelas {k}
+                  </option>
+                ))}
+            </optgroup>
           ))}
         </select>
       }

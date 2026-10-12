@@ -1,5 +1,6 @@
 // Data contoh (dummy). Nanti diganti dengan data dari backend/API.
 import { toKey } from '../utils/format'
+import { bacaHash } from '../utils/keamanan'
 
 export const SEKOLAH = {
   nama: 'SD Harapan Gemilang',
@@ -178,14 +179,14 @@ export const FASILITAS = [
     ikon: 'kelas',
     ringkas: '18 ruang kelas yang terang, bersih, dan nyaman untuk belajar.',
     deskripsi:
-      'Setiap ruang kelas dirancang agar anak belajar dengan nyaman: ventilasi dan pencahayaan alami yang baik, meja-kursi sesuai ukuran anak, serta dinding yang dipenuhi hasil karya siswa. Satu kelas berisi maksimal 28 siswa agar guru dapat memperhatikan setiap anak.',
-    fitur: ['Proyektor & layar di setiap kelas', 'Pojok baca kelas', 'Loker penyimpanan siswa', 'Kipas angin & ventilasi silang'],
+      'Seluruh 18 ruang kelas ada di Gedung Utama dua lantai yang khusus untuk siswa: kelas 1 – 3 di lantai 1 dan kelas 4 – 6 di lantai 2, dengan tangga dan lift. Setiap ruang dirancang agar anak belajar dengan nyaman: ventilasi dan pencahayaan alami yang baik, meja-kursi sesuai ukuran anak, serta dinding yang dipenuhi hasil karya siswa. Satu kelas berisi maksimal 28 siswa agar guru dapat memperhatikan setiap anak.',
+    fitur: ['Proyektor & layar di setiap kelas', 'Pojok baca kelas', 'Loker penyimpanan siswa', 'Lift & tangga ke lantai 2'],
     kegiatan: ['Kegiatan belajar mengajar harian', 'Literasi pagi 15 menit', 'Pameran karya siswa akhir semester'],
-    lokasi: 'Gedung Kelas, lantai 1 – 2',
+    lokasi: 'Gedung Utama, lantai 1 – 2',
     jam: 'Senin – Jumat, 07.00 – 12.00',
     kapasitas: '28 siswa per kelas',
     foto: ['Suasana belajar kelompok', 'Pojok baca kelas', 'Pameran karya siswa'],
-    denah: { x: 2, y: 3, w: 40, h: 24 },
+    denah: { x: 21, y: 25, w: 58, h: 11, label: 'Gedung Utama · Ruang Kelas 1A – 6C' },
   },
   {
     id: 'perpustakaan',
@@ -196,56 +197,69 @@ export const FASILITAS = [
       'Perpustakaan menjadi pusat budaya literasi sekolah. Area baca lesehan yang nyaman membuat anak betah berlama-lama membaca. Siswa dapat meminjam hingga 2 buku selama 7 hari dan peminjaman tercatat secara digital.',
     fitur: ['3.000+ koleksi buku', 'Area baca lesehan', 'Peminjaman tercatat digital', 'Pojok buku cerita bergambar'],
     kegiatan: ['Mendongeng setiap Jumat', 'Tantangan membaca bulanan', 'Kunjungan kelas terjadwal'],
-    lokasi: 'Gedung Kelas, lantai 1',
+    lokasi: 'Gedung depan, dekat gerbang utama',
     jam: 'Senin – Jumat, 07.00 – 14.00',
     kapasitas: '40 pengunjung',
     foto: ['Rak koleksi buku', 'Area baca lesehan', 'Kegiatan mendongeng'],
-    denah: { x: 2, y: 30, w: 19, h: 16 },
+    denah: { x: 57, y: 60.5, w: 16, h: 16 },
   },
   {
     id: 'lab-komputer',
     nama: 'Lab Komputer',
     ikon: 'komputer',
-    ringkas: '25 unit komputer untuk belajar informatika, coding, dan robotik.',
+    ringkas: '2 ruang lab komputer untuk belajar informatika, coding, dan robotik.',
     deskripsi:
-      'Lab komputer digunakan untuk pelajaran Informatika dan ekstrakurikuler Robotik. Siswa belajar mengetik, mengenal internet yang aman, hingga dasar pemrograman dengan cara yang menyenangkan.',
-    fitur: ['25 unit komputer', 'Internet dengan filter konten anak', 'Kit robotik edukasi', 'Layar interaktif'],
+      'Dua ruang lab komputer di gedung kanan, bersebelahan dengan ruang kepala sekolah dan lab server, digunakan untuk pelajaran Informatika dan ekstrakurikuler Robotik. Siswa belajar mengetik, mengenal internet yang aman, hingga dasar pemrograman dengan cara yang menyenangkan.',
+    fitur: ['2 ruang lab, 15 komputer per ruang', 'Internet dengan filter konten anak', 'Kit robotik edukasi', 'Layar interaktif'],
     kegiatan: ['Pelajaran Informatika', 'Ekstrakurikuler Robotik', 'Persiapan lomba coding'],
-    lokasi: 'Gedung Kelas, lantai 2',
+    lokasi: 'Gedung kanan, sebelah ruang kepala sekolah & lab server',
     jam: 'Sesuai jadwal pelajaran',
-    kapasitas: '28 siswa',
+    kapasitas: '28 siswa per ruang',
     foto: ['Praktik di lab', 'Tim robotik berlatih', 'Belajar coding'],
-    denah: { x: 23, y: 30, w: 19, h: 16 },
+    denah: [
+      { x: 82, y: 38.5, w: 15, h: 8, label: 'Lab Komputer 1' },
+      { x: 82, y: 47, w: 15, h: 8, label: 'Lab Komputer 2' },
+    ],
   },
   {
     id: 'lapangan',
     nama: 'Lapangan Olahraga',
     ikon: 'lapangan',
-    ringkas: 'Lapangan serbaguna untuk upacara, olahraga, dan kegiatan besar.',
+    ringkas: 'Lapangan futsal, bulu tangkis, dan pramuka di belakang sekolah.',
     deskripsi:
-      'Lapangan serbaguna di tengah sekolah digunakan untuk upacara bendera setiap Senin, pelajaran PJOK, senam pagi, serta latihan futsal dan bulu tangkis. Area ini juga menjadi tempat pentas seni dan peringatan hari besar.',
-    fitur: ['Lapangan futsal & bulu tangkis', 'Tiang bendera & area upacara', 'Tribun penonton kecil', 'Gudang alat olahraga'],
-    kegiatan: ['Upacara bendera setiap Senin', 'Senam pagi setiap Jumat', 'Latihan futsal & pramuka'],
-    lokasi: 'Area tengah sekolah',
+      'Area olahraga di belakang sekolah dibagi sesuai ekstrakurikuler: lapangan futsal, dua lapangan bulu tangkis, dan lapangan pramuka yang juga dipakai untuk senam pagi. Pelajaran PJOK berlangsung di sini, sedangkan upacara bendera setiap Senin diadakan di Lapangan Upacara di tengah sekolah.',
+    fitur: ['Lapangan futsal', '2 lapangan bulu tangkis', 'Lapangan pramuka & senam', 'Gudang alat olahraga'],
+    kegiatan: ['Pelajaran PJOK', 'Latihan futsal & bulu tangkis', 'Latihan pramuka & senam pagi'],
+    lokasi: 'Belakang sekolah',
     jam: 'Senin – Jumat, 07.00 – 15.00',
-    kapasitas: '500 orang',
-    foto: ['Upacara hari Senin', 'Pelajaran PJOK', 'Turnamen futsal antar kelas'],
-    denah: { x: 45, y: 3, w: 30, h: 40 },
+    kapasitas: '300 orang',
+    foto: ['Pelajaran PJOK', 'Latihan bulu tangkis', 'Turnamen futsal antar kelas'],
+    denah: [
+      { x: 3, y: 5.5, w: 25, h: 15.5, label: 'Lapangan Futsal', ikon: 'futsal' },
+      { x: 29.5, y: 5.5, w: 17, h: 15.5, label: 'Lapangan Bulu Tangkis', ikon: 'bulutangkis' },
+      { x: 48, y: 5.5, w: 19, h: 15.5, label: 'Lapangan Pramuka & Senam', ikon: 'pramuka' },
+    ],
   },
   {
-    id: 'ruang-ibadah',
-    nama: 'Ruang Ibadah',
+    id: 'tempat-ibadah',
+    nama: 'Tempat Ibadah',
     ikon: 'ibadah',
-    ringkas: 'Ruang ibadah untuk semua agama yang bersih, tenang, dan nyaman.',
+    ringkas: 'Lima tempat ibadah kecil: musholla, gereja, vihara, klenteng, dan pura.',
     deskripsi:
-      'Sekolah menyediakan mushola dengan tempat wudhu terpisah serta ruang doa untuk siswa Kristen, Katolik, Hindu, Buddha, dan Konghucu. Ruang ini dipakai untuk ibadah, pelajaran Pendidikan Agama sesuai keyakinan masing-masing siswa, dan persiapan perayaan hari besar keagamaan.',
-    fitur: ['Mushola & tempat wudhu terpisah', 'Ruang doa lintas agama', 'Kitab suci & buku doa semua agama', 'Karpet & kursi bersih, nyaman'],
+      'Di zona ibadah yang tenang di bagian depan sekolah, jauh dari keramaian lapangan dan kantin, terdapat lima tempat ibadah kecil: musholla dengan tempat wudhu terpisah, gereja kecil untuk siswa Kristen dan Katolik, vihara kecil, klenteng kecil, dan pura kecil. Tempat ini dipakai untuk ibadah, pelajaran Pendidikan Agama sesuai keyakinan masing-masing siswa, dan persiapan perayaan hari besar keagamaan.',
+    fitur: ['Musholla & tempat wudhu terpisah', 'Gereja kecil (Kristen & Katolik)', 'Vihara, klenteng, dan pura kecil', 'Kitab suci & buku doa semua agama'],
     kegiatan: ['Doa pagi bersama sebelum belajar', 'Pendidikan Agama sesuai keyakinan siswa', 'Perayaan hari besar semua agama'],
-    lokasi: 'Sisi timur sekolah',
+    lokasi: 'Zona ibadah, bagian depan sekolah',
     jam: 'Senin – Jumat, 07.00 – 14.00',
-    kapasitas: '150 orang',
-    foto: ['Doa pagi bersama', 'Mushola sekolah', 'Ruang doa lintas agama'],
-    denah: { x: 78, y: 3, w: 20, h: 20 },
+    kapasitas: '30 orang per tempat ibadah',
+    foto: ['Musholla sekolah', 'Gereja kecil', 'Vihara, klenteng & pura'],
+    denah: [
+      { x: 3.5, y: 63, w: 9, h: 13, label: 'Musholla' },
+      { x: 14, y: 63, w: 9, h: 13, label: 'Gereja' },
+      { x: 24.5, y: 63, w: 9, h: 13, label: 'Vihara' },
+      { x: 35, y: 63, w: 9, h: 13, label: 'Klenteng' },
+      { x: 45.5, y: 63, w: 9, h: 13, label: 'Pura' },
+    ],
   },
   {
     id: 'uks',
@@ -256,11 +270,11 @@ export const FASILITAS = [
       'UKS siap menangani siswa yang sakit atau cedera ringan selama di sekolah. Bekerja sama dengan Puskesmas Sukamaju, UKS rutin mengadakan pemeriksaan kesehatan, imunisasi, dan penyuluhan hidup sehat.',
     fitur: ['4 tempat tidur', 'Perlengkapan P3K lengkap', 'Petugas UKS terlatih', 'Timbangan & alat ukur tinggi badan'],
     kegiatan: ['Pemeriksaan kesehatan berkala', 'Program dokter kecil', 'Penyuluhan cuci tangan & gizi'],
-    lokasi: 'Sisi timur, sebelah ruang ibadah',
+    lokasi: 'Bagian depan, dekat gerbang utama & pos satpam',
     jam: 'Senin – Jumat, 07.00 – 13.00',
     kapasitas: '4 tempat tidur',
     foto: ['Ruang istirahat', 'Pemeriksaan kesehatan', 'Dokter kecil bertugas'],
-    denah: { x: 78, y: 26, w: 20, h: 14 },
+    denah: { x: 75, y: 60.5, w: 11, h: 16 },
   },
   {
     id: 'kantin',
@@ -271,11 +285,11 @@ export const FASILITAS = [
       'Kantin sehat menyediakan makanan dan minuman bergizi yang diawasi sekolah. Semua penjual telah mengikuti pelatihan keamanan pangan, dan tersedia wastafel cuci tangan di depan kantin.',
     fitur: ['Menu bergizi diawasi sekolah', 'Tanpa pewarna & pengawet berbahaya', 'Wastafel cuci tangan', 'Area makan beratap'],
     kegiatan: ['Makan bersama saat istirahat', 'Hari buah setiap Rabu', 'Edukasi jajanan sehat'],
-    lokasi: 'Sisi timur, dekat gerbang samping',
+    lokasi: 'Belakang sekolah, dekat lapangan olahraga',
     jam: 'Senin – Jumat, 07.00 – 12.30',
     kapasitas: '80 tempat duduk',
     foto: ['Area makan', 'Menu sehat harian', 'Antre cuci tangan'],
-    denah: { x: 78, y: 43, w: 20, h: 25 },
+    denah: { x: 69, y: 3, w: 14, h: 18 },
   },
   {
     id: 'taman',
@@ -286,19 +300,57 @@ export const FASILITAS = [
       'Taman bermain dilengkapi wahana yang aman untuk anak, sementara kebun sekolah menjadi laboratorium alam tempat siswa belajar menanam sayur, merawat tanaman, dan mengenal lingkungan.',
     fitur: ['Ayunan, perosotan & jungkat-jungkit', 'Lantai karet pengaman', 'Kebun sayur & green house', 'Kolam ikan kecil'],
     kegiatan: ['Bermain saat istirahat', 'Praktik IPAS menanam', 'Jumat bersih & hijau'],
-    lokasi: 'Bagian selatan sekolah',
+    lokasi: 'Pojok belakang kanan sekolah',
     jam: 'Senin – Jumat, 07.00 – 14.00',
     kapasitas: '60 anak',
     foto: ['Taman bermain', 'Kebun sayur siswa', 'Praktik menanam'],
-    denah: { x: 45, y: 46, w: 30, h: 22 },
+    denah: { x: 84.5, y: 3, w: 12.5, h: 18 },
   },
 ]
 
+/*
+  Denah sekolah. Koordinat dalam satuan denah: x 0–100 (kiri → kanan), y 0–80 (atas = belakang
+  sekolah, bawah = depan). `denah` fasilitas boleh berupa satu area atau daftar area berlabel.
+  Tata letak: area olahraga & kantin di belakang; Gedung Utama (kelas) di tengah diapit gedung kiri
+  (guru & staf) dan gedung kanan (kepala sekolah, lab server, 2 lab komputer); Lapangan Upacara di
+  antara ketiganya; zona ibadah, perpustakaan, UKS, dan pos satpam di depan; gerbang utama di kanan.
+*/
+export const UKURAN_DENAH = { lebar: 100, tinggi: 80 }
+
 // Area di denah yang bukan fasilitas untuk dikunjungi
 export const DENAH_LAIN = [
-  { nama: 'Kantor Guru & TU', denah: { x: 2, y: 49, w: 40, h: 10 } },
-  { nama: 'Gerbang Utama', denah: { x: 2, y: 62, w: 18, h: 6 }, gerbang: true },
+  { nama: 'Ruang Guru & Staf', ikon: 'guru', denah: { x: 3, y: 25, w: 15, h: 30 } },
+  { nama: 'Ruang Kepala Sekolah', ikon: 'kepsek', denah: { x: 82, y: 25, w: 15, h: 6.5 } },
+  { nama: 'Lab Server', ikon: 'server', denah: { x: 82, y: 32, w: 15, h: 6 } },
+  { nama: 'Lapangan Upacara', jenis: 'upacara', denah: { x: 21, y: 39, w: 58, h: 16 } },
+  { nama: 'Pos Satpam', ikon: 'satpam', denah: { x: 88, y: 60.5, w: 9, h: 7 } },
+  { nama: 'Parkir Antar-Jemput', ikon: 'parkir', jenis: 'parkir', denah: { x: 88, y: 69, w: 9, h: 7.5 } },
 ]
+
+// Zona berlatar (di bawah bangunan) beserta labelnya
+export const DENAH_ZONA = [
+  { nama: 'Area Olahraga', denah: { x: 2.5, y: 2.5, w: 65, h: 19 } },
+  { nama: 'Zona Ibadah', denah: { x: 2.5, y: 60, w: 52.5, h: 17 } },
+]
+
+// Jalan & selasar
+export const DENAH_JALUR = [
+  { x: 2, y: 22, w: 96, h: 2 },
+  { x: 18.75, y: 22, w: 1.75, h: 37 },
+  { x: 79.5, y: 22, w: 1.75, h: 37 },
+  { x: 2, y: 56.5, w: 98, h: 2.5 },
+]
+
+// Gerbang utama di pagar sisi kanan, sejajar jalan depan
+export const DENAH_GERBANG = { y: 55.5, h: 4.5 }
+
+// Denah Gedung Utama (khusus siswa): dua lantai, ruang di sisi utara & selatan koridor. Kelas 1–3 di
+// lantai 1 agar dekat gerbang & UKS, kelas 4–6 di lantai 2. 'lift', 'tangga' & 'toilet' bukan ruang kelas.
+export const GEDUNG_KELAS = [
+  { lantai: 1, utara: ['lift', '1A', '1B', '1C', '2A', '2B'], selatan: ['tangga', '2C', '3A', '3B', '3C', 'toilet'] },
+  { lantai: 2, utara: ['lift', '4A', '4B', '4C', '5A', '5B'], selatan: ['tangga', '5C', '6A', '6B', '6C', 'toilet'] },
+]
+export const lantaiKelas = (kelas) => GEDUNG_KELAS.find((l) => [...l.utara, ...l.selatan].includes(kelas))?.lantai ?? null
 
 // Jadwal kunjungan sekolah untuk umum (calon orang tua murid, mitra, dll.)
 export const KUNJUNGAN = {
@@ -395,7 +447,25 @@ export const GURU_AWAL = [
 // Pilihan untuk menu Sarana & Prasarana dan Bimbingan Konseling
 export const KATEGORI_BARANG = ['Mebel', 'Elektronik', 'Alat Peraga', 'Olahraga', 'Kebersihan', 'Lainnya']
 export const KONDISI_BARANG = ['Baik', 'Rusak Ringan', 'Rusak Berat']
-export const LOKASI_SEKOLAH = ['Ruang Kelas', 'Perpustakaan', 'Lab Komputer', 'Lapangan Olahraga', 'Ruang Ibadah', 'UKS', 'Kantin Sehat', 'Taman & Kebun Sekolah', 'Kantor Guru & TU', 'Gerbang Utama', 'Toilet', 'Gudang']
+export const LOKASI_SEKOLAH = [
+  'Ruang Kelas',
+  'Ruang Guru & Staf',
+  'Ruang Kepala Sekolah',
+  'Lab Komputer',
+  'Lab Server',
+  'Perpustakaan',
+  'Lapangan Upacara',
+  'Lapangan Olahraga',
+  'Tempat Ibadah',
+  'UKS',
+  'Kantin Sehat',
+  'Taman & Kebun Sekolah',
+  'Pos Satpam',
+  'Gerbang Utama',
+  'Lift',
+  'Toilet',
+  'Gudang',
+]
 export const STATUS_KERUSAKAN = ['Dilaporkan', 'Diperbaiki', 'Selesai']
 export const KATEGORI_KONSELING = ['Belajar', 'Pribadi', 'Sosial', 'Karier']
 export const LAYANAN_KONSELING = ['Konseling Individu', 'Konseling Kelompok', 'Konsultasi Orang Tua', 'Kunjungan Rumah']
@@ -662,18 +732,62 @@ export const JAM_SEKOLAH = [
   { label: 'Jam kerja guru selesai', jam: JAM_KERJA.umum.pulang, guru: true },
 ]
 
-// Jadwal pelajaran per kelas (contoh hanya kelas 4A). Isi = kunci MAPEL per sesi.
-export const JADWAL = {
-  '4A': {
-    Senin: ['upacara', 'mtk', 'bindo', 'ipas'],
-    Selasa: ['agama', 'mtk', 'bing', 'senbud'],
-    Rabu: ['pjok', 'bindo', 'ipas', 'pancasila'],
-    Kamis: ['mtk', 'info', 'bindo', 'mulok'],
-    Jumat: ['senam', 'agama', 'ipas', 'pramuka'],
-  },
+export const HARI_SEKOLAH = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
+
+// Mapel yang diajar guru mapel khusus (bukan wali kelas). Mapel lain diajar wali kelas masing-masing.
+export const MAPEL_GURU_KHUSUS = ['agama', 'bing', 'pjok', 'info']
+
+// Jadwal kelas 4A disusun manual; kelas lain dibuat dengan pola yang sama oleh buatJadwal().
+const JADWAL_4A = {
+  Senin: ['upacara', 'mtk', 'bindo', 'ipas'],
+  Selasa: ['agama', 'mtk', 'bing', 'senbud'],
+  Rabu: ['pjok', 'bindo', 'ipas', 'pancasila'],
+  Kamis: ['mtk', 'info', 'bindo', 'mulok'],
+  Jumat: ['senam', 'agama', 'ipas', 'pramuka'],
 }
 
-export const HARI_SEKOLAH = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
+/*
+  Jadwal semua kelas: upacara (Senin) & senam (Jumat) di sesi pertama, pramuka di sesi terakhir
+  Jumat untuk kelas 3–6. Jam guru mapel khusus digeser antarkelas agar sebisa mungkin tidak bentrok;
+  sisanya diisi mapel wali kelas. Kelas 1–2 belum belajar IPAS & Informatika.
+*/
+function buatJadwal() {
+  const jadwal = { '4A': JADWAL_4A }
+  const slot = HARI_SEKOLAH.flatMap((h) => SESI.map((_, i) => [h, i])).filter(
+    ([h, i]) => !(h === 'Senin' && i === 0) && !(h === 'Jumat' && (i === 0 || i === SESI.length - 1)),
+  )
+  const sibuk = {} // { mapel: Set('Hari-sesi') } — jam yang sudah dipakai guru mapel tersebut
+  const tandai = (m, h, i) => (sibuk[m] ??= new Set()).add(`${h}-${i}`)
+  for (const [h, isi] of Object.entries(JADWAL_4A)) isi.forEach((m, i) => tandai(m, h, i))
+
+  KELAS.filter((k) => k !== '4A').forEach((kelas, n) => {
+    const atas = Number(kelas[0]) >= 3
+    const hari = Object.fromEntries(HARI_SEKOLAH.map((h) => [h, SESI.map(() => null)]))
+    hari.Senin[0] = 'upacara'
+    hari.Jumat[0] = 'senam'
+    if (atas) hari.Jumat[SESI.length - 1] = 'pramuka'
+
+    const khusus = ['agama', 'bing', 'pjok', 'agama', ...(atas ? ['info'] : [])]
+    khusus.forEach((m, j) => {
+      const urut = slot.map((_, x) => slot[(x + n * 3 + j * 4) % slot.length])
+      const kosong = ([h, i]) => !hari[h][i] && !hari[h].includes(m)
+      const [h, i] = urut.find((sl) => kosong(sl) && !sibuk[m]?.has(sl.join('-'))) ?? urut.find(kosong)
+      hari[h][i] = m
+      tandai(m, h, i)
+    })
+
+    const umum = atas
+      ? ['mtk', 'bindo', 'ipas', 'pancasila', 'mtk', 'bindo', 'ipas', 'senbud', 'mtk', 'bindo', 'ipas', 'mulok']
+      : ['mtk', 'bindo', 'pancasila', 'senbud', 'mtk', 'bindo', 'mulok', 'bindo', 'mtk', 'pancasila', 'bindo', 'senbud', 'mtk', 'bindo']
+    let u = n
+    for (const h of HARI_SEKOLAH) hari[h] = hari[h].map((m) => m ?? umum[u++ % umum.length])
+    jadwal[kelas] = hari
+  })
+  return jadwal
+}
+
+// Jadwal pelajaran per kelas: { kelas: { hari: [kunci MAPEL per sesi] } }
+export const JADWAL = buatJadwal()
 
 // Kalender akademik 2026/2027. Tanggal libur keagamaan bertanda `perkiraan`
 // perlu dicocokkan dengan SKB 3 Menteri yang resmi.
@@ -757,10 +871,11 @@ export const AKUN_DEMO = [
 
 // Akun pengguna sungguhan — TIDAK ditampilkan di daftar akun demo halaman login.
 // Username ditulis huruf kecil; saat login, huruf besar/kecil tidak dibedakan.
-// Password diambil dari sd-app/.env.local (tidak ikut ke Git, lihat .env.example);
-// akun tanpa password dinonaktifkan. Pindahkan ke database Laravel saat backend siap.
+// Password TIDAK disimpan di kode: yang ada hanya hash PBKDF2 dari sd-app/.env.local
+// (buat dengan `npm run hash-password`, lihat .env.example). Akun tanpa hash dinonaktifkan.
+// Pindahkan ke database Laravel saat backend siap.
 export const AKUN_TERDAFTAR = [
-  { username: 'raymond fernando', password: import.meta.env.VITE_PASSWORD_KEPSEK, role: 'kepsek', label: 'Kepala Sekolah', nama: 'Raymond Fernando' },
-].filter((a) => a.password)
+  { username: 'raymond fernando', hash: bacaHash(import.meta.env.VITE_HASH_KEPSEK), role: 'kepsek', label: 'Kepala Sekolah', nama: 'Raymond Fernando' },
+].filter((a) => a.hash)
 
 export const LABEL_ROLE = { siswa: 'Siswa', ortu: 'Orang Tua', staf: 'Guru & Staf', kepsek: 'Kepala Sekolah' }

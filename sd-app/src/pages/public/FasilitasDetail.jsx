@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, CalendarCheck, CheckCircle2, Clock, MapPin, Sparkles, Users } from 'lucide-react'
+import DenahKelas from '../../components/DenahKelas'
 import { DenahSekolah, FormKunjungan, IKON_FASILITAS } from '../../components/Fasilitas'
-import { Card, EmptyState, Modal, btn } from '../../components/ui'
+import { Card, EmptyState, Modal, SectionTitle, btn } from '../../components/ui'
 import { FASILITAS } from '../../data/dummy'
 
 // Sementara memakai ilustrasi. Ganti dengan foto asli di folder public/fasilitas/
@@ -147,6 +148,13 @@ export default function FasilitasDetail() {
           </Card>
         </aside>
       </section>
+
+      {f.id === 'ruang-kelas' && (
+        <section id="denah-kelas" className="mx-auto max-w-6xl scroll-mt-28 px-4 pb-16 sm:px-6">
+          <SectionTitle eyebrow="Gedung Utama" title="Denah 18 ruang kelas" desc="Gedung Utama khusus siswa: kelas 1 – 3 di lantai 1, kelas 4 – 6 di lantai 2, dengan tangga dan lift." center={false} />
+          <DenahKelas />
+        </section>
+      )}
 
       <Modal open={form} onClose={() => setForm(false)} title="Jadwalkan Kunjungan Sekolah">
         <FormKunjungan key={f.id} fasilitasAwal={[f.id]} />

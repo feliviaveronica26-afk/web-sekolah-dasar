@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { ArrowUpRight, Clock3, Mail, MapPin, MessageCircle, Navigation, Phone, Send } from 'lucide-react'
 import Faq from '../../components/Faq'
 import { Muncul } from '../../components/Hiasan'
-import { Alert, Card, PageHeader, SectionTitle, btn, inputCls, labelCls } from '../../components/ui'
+import { Alert, Card, JebakanBot, PageHeader, SectionTitle, btn, inputCls, labelCls } from '../../components/ui'
 import { FAQ, SEKOLAH } from '../../data/dummy'
+import { catatKirim, tungguKirim } from '../../utils/keamanan'
 
 const nomorWa = (no) => no.replace(/\D/g, '').replace(/^0/, '62')
 const petaUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SEKOLAH.alamat)}`
@@ -50,11 +51,20 @@ function PetaIlustrasi() {
 
 export default function Kontak() {
   const [terkirim, setTerkirim] = useState(false)
+  const [error, setError] = useState('')
+  const [jebakan, setJebakan] = useState('')
 
-  // Belum terhubung ke backend: pesan hanya ditampilkan sebagai terkirim
+  // Belum terhubung ke backend: pesan hanya ditampilkan sebagai terkirim.
+  // Anti-spam: kolom jebakan bot & maksimal 3 pesan per 10 menit dari perangkat yang sama.
   const kirim = (e) => {
     e.preventDefault()
+    setTerkirim(false)
+    if (jebakan) return setError('Pesan tidak dapat dikirim. Muat ulang halaman lalu coba lagi.')
+    const tunggu = tungguKirim('kontak', 3, 10)
+    if (tunggu) return setError(`Terlalu banyak pesan dari perangkat ini. Coba lagi dalam ${tunggu} menit.`)
+    catatKirim('kontak', 10)
     e.target.reset()
+    setError('')
     setTerkirim(true)
   }
 
@@ -114,7 +124,13 @@ export default function Kontak() {
               <Alert>Terima kasih! Pesan Anda sudah kami terima.</Alert>
             </div>
           )}
-          <form onSubmit={kirim} className="mt-6 grid gap-4 sm:grid-cols-2">
+          {error && (
+            <div className="mt-4">
+              <Alert tone="error">{error}</Alert>
+            </div>
+          )}
+          <form onSubmit={kirim} className="relative mt-6 grid gap-4 sm:grid-cols-2">
+            <JebakanBot value={jebakan} onChange={setJebakan} />
             <div>
               <label className={labelCls} htmlFor="nama">Nama lengkap</label>
               <input id="nama" required className={inputCls} placeholder="Nama Bapak/Ibu" />

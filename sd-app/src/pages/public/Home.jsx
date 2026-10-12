@@ -31,7 +31,7 @@ import { formatTanggal } from '../../utils/format'
 
 const AKSES_CEPAT = [
   { to: '/ppdb#daftar', icon: UserPlus, judul: 'Daftar PPDB', desc: `Tahun ajaran ${PPDB.tahunAjaran}`, warna: 'bg-primary-600 text-white' },
-  { to: '/fasilitas#kunjungan', icon: MapPinned, judul: 'Kunjungi Sekolah', desc: 'Jadwalkan tur kampus', warna: 'bg-amber-400 text-amber-950' },
+  { to: '/fasilitas#kunjungan', icon: MapPinned, judul: 'Kunjungi Sekolah', desc: 'Jadwalkan keliling sekolah', warna: 'bg-amber-400 text-amber-950' },
   { to: '/login', icon: Smartphone, judul: 'Portal Orang Tua', desc: 'Pantau ananda setiap hari', warna: 'bg-sky-500 text-white' },
   { to: '/akademik#kalender', icon: CalendarDays, judul: 'Kalender Akademik', desc: 'Agenda & hari libur', warna: 'bg-emerald-500 text-white' },
 ]

@@ -6,7 +6,7 @@ import { mapelRapor } from '../utils/nilai'
 // Jabatan di Portal Guru & Staf beserta menu yang dibukanya.
 // Satu orang boleh punya beberapa jabatan; menunya digabung.
 export const PERAN = {
-  wali_kelas: { label: 'Wali Kelas', menu: ['kelas', 'absensi', 'izin', 'nilai', 'tugas', 'sikap', 'pesan', 'rapor'] },
+  wali_kelas: { label: 'Wali Kelas', menu: ['kelas', 'absensi', 'izin', 'nilai', 'tugas', 'sikap', 'rapor'] },
   guru_mapel: { label: 'Guru Mapel', menu: ['kelas', 'absensi', 'nilai', 'tugas', 'sikap'] },
   wakasek_kurikulum: { label: 'Wakasek Kurikulum', menu: ['jadwal', 'kalender', 'pengumuman', 'nilai', 'rapor'] },
   wakasek_kesiswaan: { label: 'Wakasek Kesiswaan', menu: ['siswa', 'kehadiran', 'sikap'] },
@@ -18,12 +18,12 @@ export const PERAN = {
 }
 
 // Menu yang dimiliki semua guru & staf, apa pun jabatannya
-export const MENU_UMUM = ['presensi']
+export const MENU_UMUM = ['presensi', 'chat']
 
 // Kepala Sekolah memegang akses tertinggi: semua menu kelola + pengaturan jabatan guru & staf.
 // Absensi kelas, persetujuan izin, dan pesan orang tua tidak termasuk karena itu tugas harian wali kelas.
 export const MENU_KEPSEK = [
-  'presensi', 'kelas', 'siswa', 'guru', 'kehadiran', 'nilai', 'rapor', 'sikap', 'konseling', 'tugas', 'spp', 'ppdb', 'kunjungan', 'bukutamu',
+  'presensi', 'chat', 'kelas', 'siswa', 'guru', 'kehadiran', 'nilai', 'rapor', 'sikap', 'konseling', 'tugas', 'spp', 'ppdb', 'kunjungan', 'bukutamu',
   'pengumuman', 'perpustakaan', 'inventaris', 'kerusakan', 'jadwal', 'kalender',
 ]
 

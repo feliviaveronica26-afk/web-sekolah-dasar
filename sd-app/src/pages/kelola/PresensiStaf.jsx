@@ -29,6 +29,7 @@ import { useAkses } from '../../context/akses'
 import { useData } from '../../context/DataContext'
 import { JENIS_IZIN_STAF } from '../../data/dummy'
 import { formatHari, formatTanggal, isHariSekolah, namaHari, parseKey, rentangHariSekolah, tambahHari, todayKey } from '../../utils/format'
+import { unduhFileCsv } from '../../utils/keamanan'
 import {
   KODE_IZIN_STAF,
   STATUS_PRESENSI,
@@ -476,8 +477,8 @@ function Rekap({ onDetail }) {
       'Pulang awal',
     ]
     const isi = baris.map(({ g, r }) => [
-      `"${g.nama}"`,
-      `"${g.jabatan}"`,
+      g.nama,
+      g.jabatan,
       r.tercatat,
       r.H,
       r.T,
@@ -493,13 +494,7 @@ function Rekap({ onDetail }) {
       r.lupaPulang,
       r.pulangAwal,
     ])
-    const csv = [kepala, ...isi].map((x) => x.join(';')).join('\n')
-    const url = URL.createObjectURL(new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `presensi-staf-${p.kode === '20' ? '20-hari-terakhir' : p.kode}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    unduhFileCsv(`presensi-staf-${p.kode === '20' ? '20-hari-terakhir' : p.kode}.csv`, [kepala, ...isi])
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import PublicLayout from './components/PublicLayout'
 import DashboardLayout from './components/DashboardLayout'
@@ -38,7 +38,6 @@ import OrtuPengumuman from './pages/ortu/OrtuPengumuman'
 import OrtuNilai from './pages/ortu/OrtuNilai'
 import OrtuSikap from './pages/ortu/OrtuSikap'
 import OrtuTugas from './pages/ortu/OrtuTugas'
-import OrtuPesan from './pages/ortu/OrtuPesan'
 
 import StafDashboard from './pages/staf/StafDashboard'
 import PresensiSiswa from './pages/staf/PresensiSiswa'
@@ -58,13 +57,28 @@ import Konseling from './pages/kelola/Konseling'
 import InputNilai from './pages/kelola/InputNilai'
 import TugasKelas from './pages/kelola/TugasKelas'
 import PoinSikap from './pages/kelola/PoinSikap'
-import PesanOrtu from './pages/kelola/PesanOrtu'
 import RaporKelas from './pages/kelola/RaporKelas'
 import BukuTamu from './pages/kelola/BukuTamu'
 import Inventaris from './pages/kelola/Inventaris'
 import LaporanKerusakan from './pages/kelola/LaporanKerusakan'
 import PresensiStaf from './pages/kelola/PresensiStaf'
 import DaftarSiswa from './pages/kelola/DaftarSiswa'
+import StatusJaringan from './components/StatusJaringan'
+import { useAkses } from './context/akses'
+
+// Halaman chat dimuat terpisah saat dibuka, agar halaman lain tidak ikut membesar
+const Chat = lazy(() => import('./pages/Chat'))
+const halamanChat = (
+  <Suspense fallback={<p className="py-20 text-center text-sm text-slate-500">Memuat chat...</p>}>
+    <Chat />
+  </Suspense>
+)
+
+// Alamat lama "Pesan Orang Tua" kini menjadi Chat
+function KeChat() {
+  const { base } = useAkses()
+  return <Navigate to={`${base}/chat`} replace />
+}
 
 // Gulir ke atas saat pindah halaman, atau ke elemen tujuan jika alamat memakai #anchor
 function ScrollToTop() {
@@ -94,7 +108,7 @@ const HALAMAN_KELOLA = {
   nilai: <InputNilai />,
   tugas: <TugasKelas />,
   sikap: <PoinSikap />,
-  pesan: <PesanOrtu />,
+  chat: halamanChat,
   rapor: <RaporKelas />,
   siswa: <DataSiswa />,
   guru: <DataGuru />,
@@ -112,14 +126,16 @@ const HALAMAN_KELOLA = {
   kalender: <KalenderAkademik />,
 }
 
-const ruteKelola = Object.entries(HALAMAN_KELOLA).map(([menu, halaman]) => (
-  <Route key={menu} path={menu} element={<AksesMenu menu={menu}>{halaman}</AksesMenu>} />
-))
+const ruteKelola = [
+  ...Object.entries(HALAMAN_KELOLA).map(([menu, halaman]) => <Route key={menu} path={menu} element={<AksesMenu menu={menu}>{halaman}</AksesMenu>} />),
+  <Route key="pesan" path="pesan" element={<KeChat />} />,
+]
 
 export default function App() {
   return (
     <>
       <ScrollToTop />
+      <StatusJaringan />
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
@@ -140,6 +156,7 @@ export default function App() {
         <Route path="/dashboard/siswa" element={dashboard('siswa')}>
           <Route index element={<SiswaDashboard />} />
           <Route path="presensi" element={<SiswaPresensi />} />
+          <Route path="chat" element={halamanChat} />
           <Route path="jadwal" element={<SiswaJadwal />} />
           <Route path="absensi" element={<SiswaAbsensi />} />
           <Route path="tugas" element={<SiswaTugas />} />
@@ -156,7 +173,8 @@ export default function App() {
           <Route path="nilai" element={<OrtuNilai />} />
           <Route path="sikap" element={<OrtuSikap />} />
           <Route path="tugas" element={<OrtuTugas />} />
-          <Route path="pesan" element={<OrtuPesan />} />
+          <Route path="chat" element={halamanChat} />
+          <Route path="pesan" element={<Navigate to="/dashboard/ortu/chat" replace />} />
           <Route path="spp" element={<OrtuSpp />} />
           <Route path="absensi" element={<OrtuAbsensi />} />
           <Route path="izin" element={<OrtuIzin />} />

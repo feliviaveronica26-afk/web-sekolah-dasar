@@ -27,6 +27,7 @@ import { STATUS_PPDB } from '../../components/Ppdb'
 import { KartuPresensiSaya, RingkasanPresensi } from '../../components/Presensi'
 import { Alert, Avatar, Badge, Card, JudulKartu, KategoriBadge, Modal, Progres, StatCard, Tabs, btn } from '../../components/ui'
 import { PERAN, useAkses } from '../../context/akses'
+import { useChat } from '../../context/ChatContext'
 import { useData } from '../../context/DataContext'
 import { KKTP, PPDB } from '../../data/dummy'
 import { formatHari, formatTanggal, isHariSekolah, jamSekarang, todayKey } from '../../utils/format'
@@ -52,6 +53,7 @@ function trenKehadiran(data) {
 
 export default function KepsekDashboard() {
   const { data, resetData } = useData()
+  const { resetChat } = useChat()
   const { nama, guruId } = useAkses()
   const [konfirmasi, setKonfirmasi] = useState(false)
   const [direset, setDireset] = useState(false)
@@ -321,6 +323,7 @@ export default function KepsekDashboard() {
             <button
               onClick={() => {
                 resetData()
+                resetChat()
                 setKonfirmasi(false)
                 setDireset(true)
               }}
@@ -332,7 +335,7 @@ export default function KepsekDashboard() {
         }
       >
         <p className="text-slate-600">
-          Semua perubahan (siswa, guru, nilai, tugas, poin sikap, pesan, absensi, izin, presensi staf, SPP, perpustakaan) akan dikembalikan ke data contoh awal.
+          Semua perubahan (siswa, guru, nilai, tugas, poin sikap, chat beserta berkasnya, absensi, izin, presensi staf, SPP, perpustakaan) akan dikembalikan ke data contoh awal.
         </p>
       </Modal>
     </>

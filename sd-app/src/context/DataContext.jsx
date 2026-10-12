@@ -6,8 +6,6 @@ import {
   EKSKUL,
   GURU_AWAL,
   INVENTARIS_AWAL,
-  JADWAL,
-  MAPEL,
   PENGUMUMAN_AWAL,
   SIKAP,
   SISWA_AWAL,
@@ -15,9 +13,10 @@ import {
   TUGAS_AWAL,
 } from '../data/dummy'
 import { angkaKelas, mapelRapor } from '../utils/nilai'
-import { hariSekolahSebelum, isHariSekolah, jamSekarang, namaHari, parseKey, rentangHariSekolah, tambahHari, todayKey, uid } from '../utils/format'
+import { hariSekolahSebelum, isHariSekolah, jamSekarang, parseKey, rentangHariSekolah, tambahHari, todayKey, uid } from '../utils/format'
 import { KODE_IZIN_STAF, dariMenit, jamKerja, keMenit } from '../utils/presensi'
-import { MAKS_PERCOBAAN, MASA_BERLAKU_MENIT, buatKodeOtp, sesiBerlaku } from '../utils/otp'
+import { MAKS_PERCOBAAN, MASA_BERLAKU_MENIT, buatKodeOtp, sesiBerlaku, sudahHadirDiSesi } from '../utils/otp'
+import { pelajaranHari } from '../utils/jadwal'
 import { bulanIni } from '../utils/spp'
 
 const DataContext = createContext(null)
@@ -56,6 +55,24 @@ function buatAbsensiContoh(siswa) {
     }
   }
   return absensi
+}
+
+// Kehadiran per pelajaran contoh. Hanya pengecualian yang disimpan: siswa yang hadir hari itu
+// tetapi izin (ke UKS, dijemput lebih awal) atau tidak masuk di satu pelajaran. Sisanya ikut harian.
+function buatAbsensiMapelContoh(siswa, absensi) {
+  const hasil = {}
+  for (const [tanggal, harian] of Object.entries(absensi)) {
+    for (const s of siswa) {
+      if (harian[s.nis] !== 'H') continue
+      for (const p of pelajaranHari(s.kelas, tanggal)) {
+        const n = hashTeks(s.nis + tanggal + p.kunci) % 100
+        if (n >= 3) continue
+        hasil[tanggal] ??= {}
+        hasil[tanggal][s.nis] = { ...hasil[tanggal][s.nis], [p.kunci]: n < 1 ? 'A' : 'I' }
+      }
+    }
+  }
+  return hasil
 }
 
 // Riwayat SPP contoh: { nis: { 'YYYY-MM': { tanggal, metode, noTransaksi, jumlah } } }
@@ -137,24 +154,6 @@ function buatEkskulContoh(siswa) {
     hasil[s.nis] = [...new Set([pilihan[h % pilihan.length], pilihan[(h >> 3) % pilihan.length]].slice(0, 1 + (h % 2)).map((e) => e.id))]
   }
   return hasil
-}
-
-// Percakapan contoh antara orang tua dan wali kelas
-function buatPesanContoh() {
-  const lalu = (hari, jam) => {
-    const d = new Date()
-    d.setDate(d.getDate() - hari)
-    d.setHours(jam, 15, 0, 0)
-    return d.toISOString()
-  }
-  const guru = 'Andi Pratama, S.Pd.'
-  return [
-    { id: 'ps1', nis: '230401', dari: 'guru', pengirim: guru, isi: 'Selamat pagi Bu Dewi. Rafa hari ini aktif sekali saat diskusi IPAS tentang siklus air. 👍', waktu: lalu(3, 9), dibacaOrtu: true, dibacaGuru: true },
-    { id: 'ps2', nis: '230401', dari: 'ortu', pengirim: 'Ibu Dewi Lestari', isi: 'Terima kasih infonya, Pak Andi. Di rumah dia juga semangat bercerita soal itu.', waktu: lalu(3, 12), dibacaOrtu: true, dibacaGuru: true },
-    { id: 'ps3', nis: '230401', dari: 'ortu', pengirim: 'Ibu Dewi Lestari', isi: 'Pak, minggu depan ada field trip ke Museum Nasional ya? Apakah anak perlu membawa bekal sendiri?', waktu: lalu(1, 19), dibacaOrtu: true, dibacaGuru: true },
-    { id: 'ps4', nis: '230401', dari: 'guru', pengirim: guru, isi: 'Betul, Bu. Mohon dibawakan bekal makan siang dan botol minum. Formulir persetujuannya dikumpulkan paling lambat 16 Oktober ya.', waktu: lalu(0, 7), dibacaOrtu: false, dibacaGuru: true },
-    { id: 'ps5', nis: '230405', dari: 'ortu', pengirim: 'Ibu Yuliana', isi: 'Selamat pagi Pak, Dimas sudah sembuh dan besok masuk sekolah. Apakah ada tugas yang perlu dikejar?', waktu: lalu(0, 6), dibacaOrtu: true, dibacaGuru: false },
-  ]
 }
 
 // Catatan konseling contoh; nama & kelas diambil dari data siswa
@@ -242,6 +241,7 @@ function dataAwal() {
   const hariIni = todayKey()
   const [kemarin, , , lalu] = hariSekolahSebelum(4)
   const izinStaf = buatIzinStafContoh(hariIni)
+  const absensi = buatAbsensiContoh(SISWA_AWAL)
   return {
     izinStaf,
     presensiStaf: buatPresensiStafContoh(GURU_AWAL, izinStaf),
@@ -249,10 +249,13 @@ function dataAwal() {
     // jejakAbsensi = { 'YYYY-MM-DD': { nis: { cara: 'otp'|'guru'|'izin', jam, oleh?, sebelum? } } }
     sesiPresensi: [],
     jejakAbsensi: {},
+    // Kehadiran per pelajaran yang dicatat guru pengampu (lihat src/utils/jadwal.js) beserta jejaknya:
+    // jejakMapel = { 'YYYY-MM-DD': { nis: { kunci: { cara, jam, oleh?, sebelum? } } } }
+    absensiMapel: buatAbsensiMapelContoh(SISWA_AWAL, absensi),
+    jejakMapel: {},
     tugas: TUGAS_AWAL,
     nilai: buatNilaiContoh(SISWA_AWAL),
     sikap: buatSikapContoh(SISWA_AWAL),
-    pesan: buatPesanContoh(),
     ekskul: buatEkskulContoh(SISWA_AWAL),
     catatanWali: {}, // { nis: teks } — jika kosong dipakai catatan bawaan
     // Pesanan buku dari siswa, diproses pustakawan menjadi peminjaman
@@ -271,7 +274,7 @@ function dataAwal() {
     siswa: SISWA_AWAL,
     guru: GURU_AWAL,
     pengumuman: PENGUMUMAN_AWAL,
-    absensi: buatAbsensiContoh(SISWA_AWAL),
+    absensi,
     tugasSelesai: { 230401: ['t6'] }, // { nis: [id tugas yang sudah dikerjakan] }
     spp: buatSppContoh(SISWA_AWAL),
     transaksi: [], // transaksi pembayaran online yang sedang/pernah dibuat
@@ -535,18 +538,6 @@ export function DataProvider({ children }) {
 
   const simpanCatatanWali = (nis, teks) => setData((d) => ({ ...d, catatanWali: { ...d.catatanWali, [nis]: teks } }))
 
-  const kirimPesan = ({ nis, dari, pengirim, isi }) =>
-    tambah('pesan', { nis, dari, pengirim, isi, waktu: new Date().toISOString(), dibacaOrtu: dari === 'ortu', dibacaGuru: dari === 'guru' })
-
-  // Tandai semua pesan satu siswa sudah dibaca oleh pihak 'ortu' atau 'guru'
-  const bacaPesan = (nis, pihak) => {
-    const kunci = pihak === 'ortu' ? 'dibacaOrtu' : 'dibacaGuru'
-    setData((d) =>
-      d.pesan.some((p) => p.nis === nis && !p[kunci])
-        ? { ...d, pesan: d.pesan.map((p) => (p.nis === nis ? { ...p, [kunci]: true } : p)) }
-        : d,
-    )
-  }
 
   const toggleEkskul = (nis, id) =>
     setData((d) => {
@@ -596,13 +587,19 @@ export function DataProvider({ children }) {
 
   // ===== Presensi siswa dengan OTP =====
 
-  // Guru membuka sesi baru untuk satu kelas; sesi lama kelas itu hari ini otomatis ditutup
-  const bukaSesiPresensi = (kelas, guru) => {
+  /*
+    Guru membuka sesi baru untuk satu kelas: presensi harian (wali kelas, `pelajaran` kosong) atau
+    satu pelajaran ({ jam, mapel, kunci }). Sesi lama kelas itu hari ini otomatis ditutup.
+  */
+  const bukaSesiPresensi = (kelas, guru, pelajaran = null) => {
     const mulai = new Date()
     const sesi = {
       id: uid(),
       kelas,
       tanggal: todayKey(),
+      jam: pelajaran?.jam ?? null,
+      mapel: pelajaran?.mapel ?? null,
+      kunci: pelajaran?.kunci ?? null,
       kode: buatKodeOtp(),
       mulai: mulai.toISOString(),
       berakhir: new Date(mulai.getTime() + MASA_BERLAKU_MENIT * 60000).toISOString(),
@@ -625,31 +622,53 @@ export function DataProvider({ children }) {
     setData((d) => ({ ...d, sesiPresensi: d.sesiPresensi.map((s) => (s.id === id ? { ...s, ditutup: true, berakhir: new Date().toISOString() } : s)) }))
 
   /*
-    Siswa memasukkan kode. Hasil: { ok, alasan, jam, sisa }
+    Siswa memasukkan kode. Hasil: { ok, alasan, jam, sisa, sesi }
     alasan: 'sudah' | 'tidak-ada' | 'kedaluwarsa' | 'terkunci' | 'salah'
+    Kode pelajaran mencatat hadir di pelajaran itu; jika siswa belum punya presensi harian
+    (mis. datang terlambat), harian ikut tercatat hadir.
   */
   const isiPresensiOtp = (nis, kelas, kode) => {
     const tgl = todayKey()
     const jam = jamSekarang()
-    if (data.absensi[tgl]?.[nis] === 'H') return { ok: false, alasan: 'sudah', jam: data.jejakAbsensi[tgl]?.[nis]?.jam }
     const sesiHariIni = data.sesiPresensi.filter((s) => s.kelas === kelas && s.tanggal === tgl)
     const aktif = sesiHariIni.find((s) => sesiBerlaku(s))
     if (!aktif) return { ok: false, alasan: sesiHariIni.some((s) => s.kode === kode) ? 'kedaluwarsa' : 'tidak-ada' }
+    if (sudahHadirDiSesi(data, aktif, nis)) return { ok: false, alasan: 'sudah', sesi: aktif }
     const gagal = aktif.gagal?.[nis] ?? 0
     if (gagal >= MAKS_PERCOBAAN) return { ok: false, alasan: 'terkunci' }
     if (aktif.kode !== kode) {
-      setData((d) => ({ ...d, sesiPresensi: d.sesiPresensi.map((s) => (s.id === aktif.id ? { ...s, gagal: { ...s.gagal, [nis]: gagal + 1 } } : s)) }))
+      // Hitung dari data terbaru agar percobaan yang dikirim beruntun tidak terlewat
+      setData((d) => ({
+        ...d,
+        sesiPresensi: d.sesiPresensi.map((s) => (s.id === aktif.id ? { ...s, gagal: { ...s.gagal, [nis]: (s.gagal?.[nis] ?? 0) + 1 } } : s)),
+      }))
       return { ok: false, alasan: gagal + 1 >= MAKS_PERCOBAAN ? 'terkunci' : 'salah', sisa: MAKS_PERCOBAAN - gagal - 1 }
     }
     setData((d) => {
-      const sebelum = d.absensi[tgl]?.[nis]
-      return {
-        ...d,
-        absensi: { ...d.absensi, [tgl]: { ...d.absensi[tgl], [nis]: 'H' } },
-        jejakAbsensi: { ...d.jejakAbsensi, [tgl]: { ...d.jejakAbsensi[tgl], [nis]: { cara: 'otp', jam, sesiId: aktif.id, ...(sebelum && { sebelum }) } } },
+      const harian = d.absensi[tgl]?.[nis]
+      const jejak = { cara: 'otp', jam, sesiId: aktif.id }
+      let baru = d
+      if (aktif.kunci) {
+        const lama = d.absensiMapel[tgl]?.[nis]?.[aktif.kunci]
+        baru = {
+          ...baru,
+          absensiMapel: { ...d.absensiMapel, [tgl]: { ...d.absensiMapel[tgl], [nis]: { ...d.absensiMapel[tgl]?.[nis], [aktif.kunci]: 'H' } } },
+          jejakMapel: {
+            ...d.jejakMapel,
+            [tgl]: { ...d.jejakMapel[tgl], [nis]: { ...d.jejakMapel[tgl]?.[nis], [aktif.kunci]: { ...jejak, ...(lama && { sebelum: lama }) } } },
+          },
+        }
       }
+      if (!aktif.kunci || !harian) {
+        baru = {
+          ...baru,
+          absensi: { ...d.absensi, [tgl]: { ...d.absensi[tgl], [nis]: 'H' } },
+          jejakAbsensi: { ...d.jejakAbsensi, [tgl]: { ...d.jejakAbsensi[tgl], [nis]: { ...jejak, ...(harian && { sebelum: harian }), ...(aktif.kunci && { pelajaran: aktif.kunci }) } } },
+        }
+      }
+      return baru
     })
-    return { ok: true, jam }
+    return { ok: true, jam, sesi: aktif }
   }
 
   // Guru mengubah kehadiran siswa ({ nis: 'H'|'S'|'I'|'A' }); jejak perubahan disimpan
@@ -664,6 +683,25 @@ export function DataProvider({ children }) {
         absensi[nis] = kode
       }
       return { ...d, absensi: { ...d.absensi, [tanggal]: absensi }, jejakAbsensi: { ...d.jejakAbsensi, [tanggal]: jejak } }
+    })
+
+  // Guru pengampu mengubah kehadiran di satu pelajaran ({ nis: 'H'|'S'|'I'|'A' })
+  const ubahAbsensiPelajaran = (tanggal, kunci, perubahan, oleh) =>
+    setData((d) => {
+      const jam = jamSekarang()
+      const absensiMapel = { ...d.absensiMapel[tanggal] }
+      const jejakMapel = { ...d.jejakMapel[tanggal] }
+      for (const [nis, kode] of Object.entries(perubahan)) {
+        const lama = absensiMapel[nis]?.[kunci]
+        if (lama === kode) continue
+        const jejakLama = jejakMapel[nis]?.[kunci]
+        absensiMapel[nis] = { ...absensiMapel[nis], [kunci]: kode }
+        jejakMapel[nis] = {
+          ...jejakMapel[nis],
+          [kunci]: { cara: 'guru', jam, oleh, ...(lama && { sebelum: lama }), ...(jejakLama?.cara === 'otp' && { otp: jejakLama.jam }) },
+        }
+      }
+      return { ...d, absensiMapel: { ...d.absensiMapel, [tanggal]: absensiMapel }, jejakMapel: { ...d.jejakMapel, [tanggal]: jejakMapel } }
     })
 
   const resetData = () => setData(dataAwal())
@@ -683,8 +721,6 @@ export function DataProvider({ children }) {
         catatTunai,
         simpanNilai,
         simpanCatatanWali,
-        kirimPesan,
-        bacaPesan,
         toggleEkskul,
         absenStaf,
         koreksiPresensi,
@@ -694,6 +730,7 @@ export function DataProvider({ children }) {
         tutupSesiPresensi,
         isiPresensiOtp,
         ubahAbsensiSiswa,
+        ubahAbsensiPelajaran,
         resetData,
       }}
     >
@@ -715,26 +752,22 @@ export function ringkasAbsensi(absensi, nis, daftarTanggal) {
   return { ...hitung, total, persen: total ? Math.round((hitung.H / total) * 100) : 0 }
 }
 
-// Absensi per mata pelajaran, diturunkan dari absensi harian + jadwal kelas.
-// Siswa yang hadir sesekali tercatat izin di satu mapel (mis. ke UKS / pulang lebih awal).
-// Nanti diganti dengan data absensi per mapel yang diisi guru mapel lewat backend.
-export function absensiPerMapel(absensi, nis, kelas) {
+// Absensi per mata pelajaran: catatan guru pengampu per pelajaran, atau presensi harian jika
+// pelajaran itu tidak dipresensi tersendiri.
+export function absensiPerMapel(data, nis, kelas) {
   const hasil = {}
-  for (const tanggal of Object.keys(absensi).sort().reverse()) {
-    const harian = absensi[tanggal]?.[nis]
-    const jadwal = JADWAL[kelas]?.[namaHari(tanggal)]
-    if (!harian || !jadwal) continue
-    for (const kode of jadwal) {
-      if (MAPEL[kode]?.absensi === false) continue
-      let status = harian
-      if (harian === 'H') {
-        const hash = [...(nis + tanggal + kode)].reduce((acc, c) => (acc * 33 + c.charCodeAt(0)) % 997, 3)
-        if (hash % 100 < 3) status = 'I'
-      }
-      hasil[kode] ??= { H: 0, S: 0, I: 0, A: 0, total: 0, riwayat: [] }
-      hasil[kode][status]++
-      hasil[kode].total++
-      hasil[kode].riwayat.push({ tanggal, status })
+  const tanggalAda = new Set([...Object.keys(data.absensi), ...Object.keys(data.absensiMapel ?? {})])
+  for (const tanggal of [...tanggalAda].sort().reverse()) {
+    for (const p of pelajaranHari(kelas, tanggal)) {
+      const khusus = data.absensiMapel?.[tanggal]?.[nis]?.[p.kunci]
+      // Pelajaran hari ini yang belum dimulai belum dihitung
+      if (!khusus && tanggal === todayKey() && jamSekarang() < p.mulai) continue
+      const status = khusus ?? data.absensi[tanggal]?.[nis]
+      if (!status) continue
+      hasil[p.mapel] ??= { H: 0, S: 0, I: 0, A: 0, total: 0, riwayat: [] }
+      hasil[p.mapel][status]++
+      hasil[p.mapel].total++
+      hasil[p.mapel].riwayat.push({ tanggal, status, jam: `${p.mulai}–${p.selesai}` })
     }
   }
   for (const r of Object.values(hasil)) r.persen = Math.round((r.H / r.total) * 100)

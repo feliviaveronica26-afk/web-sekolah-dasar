@@ -17,8 +17,10 @@ import {
 import { Gumpalan } from '../../components/Hiasan'
 import { Avatar, Badge, Card, EmptyState, IzinBadge, JudulKartu, KategoriBadge, STATUS_ABSEN, StatCard, btn } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
+import { useChat } from '../../context/ChatContext'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
 import { JADWAL, MAPEL, SESI, SPP } from '../../data/dummy'
+import { idGuru, idOrtu, idPribadi, jumlahBelum, ringkas as ringkasPesan } from '../../utils/chat'
 import { formatTanggal, namaHari, todayKey } from '../../utils/format'
 import { predikat, rekapNilai } from '../../utils/nilai'
 import { ringkasSikap } from '../../utils/prestasi'
@@ -28,6 +30,7 @@ import { RiwayatSikap } from '../siswa/SiswaLencana'
 export default function OrtuDashboard() {
   const { user } = useAuth()
   const { data } = useData()
+  const chat = useChat()
   const anak = data.siswa.find((s) => s.nis === user.anakNis)
 
   if (!anak) return <EmptyState icon={UserX} title="Data anak tidak ditemukan" desc="Silakan hubungi admin sekolah." />
@@ -45,8 +48,11 @@ export default function OrtuDashboard() {
   const nilai = rekapNilai(data, anak)
   const sikap = ringkasSikap(data, anak.nis)
   const tugasAktif = data.tugas.filter((t) => t.kelas === anak.kelas && t.tenggat >= hariIni && !(data.tugasSelesai[anak.nis] ?? []).includes(t.id))
-  const pesanBaru = data.pesan.filter((p) => p.nis === anak.nis && !p.dibacaOrtu)
-  const pesanTerakhir = [...data.pesan].filter((p) => p.nis === anak.nis).sort((a, b) => b.waktu.localeCompare(a.waktu))[0]
+  const wali = data.guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === anak.kelas)
+  const pidWali = wali ? idPribadi(idOrtu(anak.nis), idGuru(wali.id)) : null
+  const pesanWali = (pidWali && chat.state.pesan[pidWali]) || []
+  const pesanBaru = jumlahBelum(pesanWali, chat.state.dibaca[idOrtu(anak.nis)]?.[pidWali], idOrtu(anak.nis))
+  const pesanTerakhir = pesanWali.at(-1)
   const panggilan = anak.nama.split(' ')[0]
 
   return (
@@ -112,18 +118,18 @@ export default function OrtuDashboard() {
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         {/* Pesan wali kelas */}
         <Card className="p-6">
-          <JudulKartu icon={MessagesSquare} judul="Pesan wali kelas">
-            {pesanBaru.length > 0 && <Badge className="bg-amber-100 text-amber-800">{pesanBaru.length} baru</Badge>}
+          <JudulKartu icon={MessagesSquare} judul="Chat wali kelas">
+            {pesanBaru > 0 && <Badge className="bg-amber-100 text-amber-800">{pesanBaru} baru</Badge>}
           </JudulKartu>
           {pesanTerakhir ? (
             <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-xs font-semibold text-slate-500">{pesanTerakhir.dari === 'guru' ? pesanTerakhir.pengirim : 'Anda'}</p>
-              <p className="mt-1 line-clamp-3 text-sm text-slate-700">{pesanTerakhir.isi}</p>
+              <p className="text-xs font-semibold text-slate-500">{pesanTerakhir.dari === idOrtu(anak.nis) ? 'Anda' : wali.nama}</p>
+              <p className="mt-1 line-clamp-3 text-sm text-slate-700">{ringkasPesan(pesanTerakhir)}</p>
             </div>
           ) : (
             <p className="text-sm text-slate-500">Belum ada pesan.</p>
           )}
-          <Link to="/dashboard/ortu/pesan" className={`${btn.secondary} mt-4 w-full`}>
+          <Link to={pidWali ? `/dashboard/ortu/chat?buka=${encodeURIComponent(pidWali)}` : '/dashboard/ortu/chat'} className={`${btn.secondary} mt-4 w-full`}>
             Buka percakapan <ArrowRight className="h-4 w-4" />
           </Link>
         </Card>

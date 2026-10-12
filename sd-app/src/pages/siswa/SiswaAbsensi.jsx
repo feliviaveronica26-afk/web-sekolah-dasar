@@ -4,6 +4,7 @@ import { Badge, Card, DashHeader, EmptyState, STATUS_ABSEN } from '../../compone
 import { useAuth } from '../../context/AuthContext'
 import { absensiPerMapel, useData } from '../../context/DataContext'
 import { MAPEL } from '../../data/dummy'
+import { guruPelajaran } from '../../utils/jadwal'
 import { formatHari } from '../../utils/format'
 
 const warnaPersen = (p) => (p >= 90 ? 'bg-emerald-500' : p >= 75 ? 'bg-amber-400' : 'bg-rose-500')
@@ -11,7 +12,7 @@ const warnaPersen = (p) => (p >= 90 ? 'bg-emerald-500' : p >= 75 ? 'bg-amber-400
 export default function SiswaAbsensi() {
   const { user } = useAuth()
   const { data } = useData()
-  const perMapel = absensiPerMapel(data.absensi, user.nis, user.kelas)
+  const perMapel = absensiPerMapel(data, user.nis, user.kelas)
   const daftar = Object.entries(perMapel).sort((a, b) => MAPEL[a[0]].nama.localeCompare(MAPEL[b[0]].nama))
   const [dipilih, setDipilih] = useState(daftar[0]?.[0] ?? null)
 
@@ -88,12 +89,14 @@ export default function SiswaAbsensi() {
             <div className="border-b border-slate-100 p-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Riwayat</p>
               <h2 className="mt-1 font-bold text-slate-900">{MAPEL[dipilih].nama}</h2>
-              <p className="text-sm text-slate-500">{MAPEL[dipilih].guru}</p>
+              <p className="text-sm text-slate-500">{guruPelajaran(data.guru, user.kelas, dipilih)?.nama ?? MAPEL[dipilih].guru}</p>
             </div>
             <ul className="max-h-96 divide-y divide-slate-100 overflow-y-auto">
               {detail.riwayat.map((r) => (
-                <li key={r.tanggal} className="flex items-center justify-between px-5 py-3 text-sm">
-                  <span className="text-slate-700">{formatHari(r.tanggal)}</span>
+                <li key={r.tanggal + r.jam} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
+                  <span className="text-slate-700">
+                    {formatHari(r.tanggal)} <span className="text-xs text-slate-400">· {r.jam}</span>
+                  </span>
                   <Badge className={STATUS_ABSEN[r.status].cls}>{STATUS_ABSEN[r.status].label}</Badge>
                 </li>
               ))}
@@ -104,7 +107,8 @@ export default function SiswaAbsensi() {
 
       <p className="mt-6 flex items-start gap-2 text-xs text-slate-500">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-        Upacara dan senam pagi tidak dihitung dalam absensi per mata pelajaran. Kehadiran minimal yang disarankan adalah 90%.
+        Kehadiran di tiap pelajaran dicatat guru pengampunya (kode OTP atau manual). Pelajaran yang tidak dipresensi tersendiri mengikuti presensi
+        harian. Upacara dan senam pagi tidak dihitung. Kehadiran minimal yang disarankan adalah 90%.
       </p>
     </>
   )

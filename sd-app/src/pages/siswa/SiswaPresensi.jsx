@@ -1,5 +1,5 @@
 import { CalendarCheck, ShieldAlert } from 'lucide-react'
-import { IsiPresensiOtp, teksJejak } from '../../components/PresensiOtp'
+import { IsiPresensiOtp, KehadiranPelajaran, teksJejak } from '../../components/PresensiOtp'
 import { Badge, Card, DashHeader, JudulKartu, STATUS_ABSEN } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
@@ -7,9 +7,9 @@ import { formatTanggal, todayKey } from '../../utils/format'
 import { MAKS_PERCOBAAN, MASA_BERLAKU_MENIT } from '../../utils/otp'
 
 const LANGKAH = [
-  'Gurumu membuka presensi dan menampilkan kode 6 angka di papan atau proyektor.',
-  `Buka menu Presensi Hari Ini, ketik kodenya, lalu tekan Kirim. Kode hanya berlaku ${MASA_BERLAKU_MENIT} menit.`,
-  'Status Hadir langsung tercatat dan bisa dilihat orang tuamu.',
+  'Wali kelasmu membuka presensi harian di pagi hari, dan guru tiap pelajaran bisa membuka presensi pelajarannya.',
+  `Gurumu menampilkan kode 6 angka. Buka menu Presensi Hari Ini, ketik kodenya, lalu tekan Kirim. Kode hanya berlaku ${MASA_BERLAKU_MENIT} menit.`,
+  'Status Hadir langsung tercatat di hari itu atau di pelajaran itu, dan bisa dilihat orang tuamu.',
 ]
 
 export default function SiswaPresensi() {
@@ -60,6 +60,7 @@ export default function SiswaPresensi() {
         </Card>
 
         <div className="space-y-6">
+          <KehadiranPelajaran nis={user.nis} kelas={user.kelas} />
           <Card className="p-6">
             <h2 className="font-bold text-slate-900">Cara presensi</h2>
             <ol className="mt-4 space-y-3">
