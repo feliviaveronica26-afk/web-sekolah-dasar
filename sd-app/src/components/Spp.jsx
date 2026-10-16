@@ -18,7 +18,7 @@ export function StripBulan({ data, nis, kecil = false }) {
     )
   }
   return (
-    <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-12">
+    <div className="grid grid-cols-3 gap-2 min-[400px]:grid-cols-4 sm:grid-cols-6 lg:grid-cols-12">
       {SPP.bulan.map((b) => {
         const s = statusSpp(data, nis, b)
         return (
@@ -269,6 +269,7 @@ export function riwayatPembayaran(data, nis) {
   for (const [bulan, info] of Object.entries(data.spp[nis] ?? {})) {
     grup[info.noTransaksi] ??= { noTransaksi: info.noTransaksi, tanggal: info.tanggal, metode: info.metode, bulan: [] }
     grup[info.noTransaksi].bulan.push(bulan)
+    if (info.bukti) grup[info.noTransaksi].bukti = info.bukti
   }
   return Object.values(grup)
     .map((g) => ({ ...g, bulan: g.bulan.sort() }))

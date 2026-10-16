@@ -52,6 +52,3 @@ export const bulanBisaDibayar = (data, nis) =>
 // Bulan yang sudah wajib dibayar sekarang (terlambat + bulan berjalan)
 export const bulanWajibBayar = (data, nis) =>
   SPP.bulan.filter((b) => ['terlambat', 'tagihan'].includes(statusSpp(data, nis, b)))
-
-export const buatNoTransaksi = () =>
-  `SPP-${todayKey().replaceAll('-', '')}-${Math.floor(1000 + Math.random() * 9000)}`

@@ -11,7 +11,6 @@ import {
   FileClock,
   GraduationCap,
   HeartHandshake,
-  RotateCcw,
   Timer,
   TrendingUp,
   UserPlus,
@@ -21,13 +20,13 @@ import {
   Wrench,
 } from 'lucide-react'
 import { GrafikBatang, GrafikGaris } from '../../components/Grafik'
+import { KartuKas } from '../../components/Keuangan'
 import { Gumpalan } from '../../components/Hiasan'
 import { JENIS_AGENDA, agendaMendatang, rentangAgenda } from '../../components/KalenderAkademik'
 import { STATUS_PPDB } from '../../components/Ppdb'
 import { KartuPresensiSaya, RingkasanPresensi } from '../../components/Presensi'
-import { Alert, Avatar, Badge, Card, JudulKartu, KategoriBadge, Modal, Progres, StatCard, Tabs, btn } from '../../components/ui'
+import { Avatar, Badge, Card, JudulKartu, KategoriBadge, Progres, StatCard, Tabs } from '../../components/ui'
 import { PERAN, useAkses } from '../../context/akses'
-import { useChat } from '../../context/ChatContext'
 import { useData } from '../../context/DataContext'
 import { KKTP, PPDB } from '../../data/dummy'
 import { formatHari, formatTanggal, isHariSekolah, jamSekarang, todayKey } from '../../utils/format'
@@ -52,11 +51,8 @@ function trenKehadiran(data) {
 }
 
 export default function KepsekDashboard() {
-  const { data, resetData } = useData()
-  const { resetChat } = useChat()
+  const { data } = useData()
   const { nama, guruId } = useAkses()
-  const [konfirmasi, setKonfirmasi] = useState(false)
-  const [direset, setDireset] = useState(false)
   const [grafik, setGrafik] = useState('nilai')
 
   const hariIni = todayKey()
@@ -113,12 +109,6 @@ export default function KepsekDashboard() {
           </div>
         </div>
       </div>
-
-      {direset && (
-        <div className="mb-4">
-          <Alert>Data demo berhasil dikembalikan ke kondisi awal.</Alert>
-        </div>
-      )}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard icon={Users} label="Total siswa" value={data.siswa.length} hint={`${perKelas.length} kelas terdata`} tone="sky" />
@@ -186,31 +176,34 @@ export default function KepsekDashboard() {
           )}
         </Card>
 
-        <Card className="p-6">
-          <JudulKartu icon={Wallet} judul="Keuangan SPP">
-            <Link to={`${BASE}/spp`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
-              Detail <ArrowRight className="h-4 w-4" />
-            </Link>
-          </JudulKartu>
-          <p className="text-sm text-slate-500">Pembayaran bulan {namaBulan(bulanIni())}</p>
-          <div className="mt-2 flex items-end justify-between">
-            <p className="text-3xl font-extrabold text-slate-900">{persenLunas}%</p>
-            <p className="text-sm text-slate-500">
-              {spp.lunasBulanIni} dari {data.siswa.length} siswa lunas
-            </p>
-          </div>
-          <Progres nilai={persenLunas} warna="bg-emerald-500" tinggi="h-3" className="mt-2" />
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-rose-50 p-4">
-              <p className="text-xs text-rose-700">Siswa menunggak</p>
-              <p className="text-xl font-extrabold text-rose-700">{spp.menunggak}</p>
+        <div className="space-y-6">
+          <KartuKas ke={`${BASE}/keuangan`} />
+          <Card className="p-6">
+            <JudulKartu icon={Wallet} judul="Keuangan SPP">
+              <Link to={`${BASE}/spp`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+                Detail <ArrowRight className="h-4 w-4" />
+              </Link>
+            </JudulKartu>
+            <p className="text-sm text-slate-500">Pembayaran bulan {namaBulan(bulanIni())}</p>
+            <div className="mt-2 flex items-end justify-between">
+              <p className="text-3xl font-extrabold text-slate-900">{persenLunas}%</p>
+              <p className="text-sm text-slate-500">
+                {spp.lunasBulanIni} dari {data.siswa.length} siswa lunas
+              </p>
             </div>
-            <div className="rounded-xl bg-amber-50 p-4">
-              <p className="text-xs text-amber-800">Total tunggakan</p>
-              <p className="text-xl font-extrabold text-amber-800">{rupiah(spp.totalTunggakan)}</p>
+            <Progres nilai={persenLunas} warna="bg-emerald-500" tinggi="h-3" className="mt-2" />
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl bg-rose-50 p-4">
+                <p className="text-xs text-rose-700">Siswa menunggak</p>
+                <p className="text-xl font-extrabold text-rose-700">{spp.menunggak}</p>
+              </div>
+              <div className="rounded-xl bg-amber-50 p-4">
+                <p className="text-xs text-amber-800">Total tunggakan</p>
+                <p className="text-xl font-extrabold text-amber-800">{rupiah(spp.totalTunggakan)}</p>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -281,7 +274,7 @@ export default function KepsekDashboard() {
             const orang = data.guru.filter((g) => g.peran?.includes(kode))
             return (
               <li key={kode} className="flex flex-wrap items-start gap-2 text-sm">
-                <span className="w-44 shrink-0 font-semibold text-slate-700">{p.label}</span>
+                <span className="w-full shrink-0 font-semibold text-slate-700 sm:w-44">{p.label}</span>
                 <span className="flex flex-1 flex-wrap gap-1">
                   {orang.length ? (
                     orang.map((g) => (
@@ -300,44 +293,6 @@ export default function KepsekDashboard() {
         </ul>
       </Card>
 
-      <Card className="mt-6 flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="font-bold text-slate-900">Reset Data Demo</h2>
-          <p className="mt-1 text-sm text-slate-500">Data saat ini tersimpan di browser (localStorage). Kembalikan ke data contoh awal jika diperlukan.</p>
-        </div>
-        <button onClick={() => setKonfirmasi(true)} className={btn.secondary}>
-          <RotateCcw className="h-4 w-4" /> Reset Data
-        </button>
-      </Card>
-
-      <Modal
-        open={konfirmasi}
-        onClose={() => setKonfirmasi(false)}
-        title="Reset semua data?"
-        size="max-w-md"
-        footer={
-          <>
-            <button onClick={() => setKonfirmasi(false)} className={btn.secondary}>
-              Batal
-            </button>
-            <button
-              onClick={() => {
-                resetData()
-                resetChat()
-                setKonfirmasi(false)
-                setDireset(true)
-              }}
-              className={`${btn.primary} bg-rose-600 hover:bg-rose-700`}
-            >
-              Ya, reset
-            </button>
-          </>
-        }
-      >
-        <p className="text-slate-600">
-          Semua perubahan (siswa, guru, nilai, tugas, poin sikap, chat beserta berkasnya, absensi, izin, presensi staf, SPP, perpustakaan) akan dikembalikan ke data contoh awal.
-        </p>
-      </Modal>
     </>
   )
 }

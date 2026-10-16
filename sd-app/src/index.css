@@ -3,8 +3,10 @@
 /* Tema merah putih — warna seragam SD */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  /* Huruf judul yang membulat dan ramah anak */
+  /* Huruf judul yang membulat dan ramah anak (portal) */
   --font-display: "Fredoka", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Halaman publik: judul sans tebal (Plus Jakarta Sans, rancangan huruf asal Indonesia) */
+  --font-judul: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
   --color-primary-50: #fff1f2;
   --color-primary-100: #ffe0e2;
@@ -17,6 +19,19 @@
   --color-primary-800: #95131e;
   --color-primary-900: #7c161f;
   --color-primary-950: #44060b;
+
+  /* Halaman publik: latar putih hangat, teks tinta, aksen kuning stabilo.
+     Kontras teks (WCAG): tinta-3 di kertas 5,6:1 · primary-700 di kertas 6,4:1 · krem di primary-700 5,1:1 */
+  --color-kertas: #fbf8f5;
+  --color-kertas-tua: #f4eee8;
+  --color-kartu: #ffffff;
+  --color-tinta: #1a1512;
+  --color-tinta-2: #4b4440;
+  --color-tinta-3: #6b625c;
+  --color-garis: #ebe3da;
+  --color-stabilo: #ffd54a;
+  /* Teks redup di atas latar merah (primary-700 ke atas: ≥ 5,1:1) */
+  --color-krem: #f5d8d3;
 
   --animate-melayang: melayang 6s ease-in-out infinite;
   --animate-goyang: goyang 2.5s ease-in-out infinite;
@@ -56,6 +71,14 @@
     font-family: var(--font-display);
     letter-spacing: 0;
   }
+
+  /*
+    Isi grid boleh lebih sempit dari isinya. Tanpa ini, kolom grid tanpa ukuran tetap (mis. `grid lg:grid-cols-2`
+    di HP) ikut melebar mengikuti teks `truncate`/tabel di dalamnya sampai keluar layar. Kelas min-w-* tetap menang.
+  */
+  :where(.grid) > * {
+    min-width: 0;
+  }
 }
 
 html {
@@ -64,6 +87,216 @@ html {
 
 body {
   @apply bg-white text-slate-800 antialiased;
+}
+
+/*
+  Lingkup halaman publik (beranda, profil, PPDB, dst. + login & 404). Portal tidak memakai kelas ini.
+  - Abu-abu dingin (slate) diganti abu-abu hangat (stone), termasuk di komponen yang dipakai bersama
+    portal seperti kalender, denah, dan formulir.
+  - Huruf judul (h1–h3 & kelas font-display) memakai Plus Jakarta Sans tebal, bukan Fredoka.
+*/
+.situs {
+  --color-slate-50: var(--color-stone-50);
+  --color-slate-100: var(--color-stone-100);
+  --color-slate-200: var(--color-stone-200);
+  --color-slate-300: var(--color-stone-300);
+  --color-slate-400: var(--color-stone-400);
+  --color-slate-500: var(--color-stone-500);
+  --color-slate-600: var(--color-stone-600);
+  --color-slate-700: var(--color-stone-700);
+  --color-slate-800: var(--color-stone-800);
+  --color-slate-900: var(--color-stone-900);
+  --color-slate-950: var(--color-stone-950);
+  --font-display: var(--font-judul);
+  background-color: var(--color-kertas);
+  color: var(--color-tinta);
+}
+/* Di dalam layer base agar kelas utilitas (font-bold, tracking-*, outline-*) tetap bisa menimpanya */
+@layer base {
+  .situs :is(h1, h2) {
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .situs h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .situs p {
+    text-wrap: pretty;
+  }
+  .situs ::selection {
+    background: var(--color-stabilo);
+    color: var(--color-tinta);
+  }
+  .situs :is(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-tinta);
+    outline-offset: 3px;
+  }
+}
+
+/*
+  Semua portal bergaya beranda situs: DashboardLayout memasang `situs portal-situs` untuk setiap akun.
+  Komponen portal di ui.jsx membawa penanda `ui-*`; di sini penanda itu diberi bentuk khas beranda (kartu
+  membulat tanpa bayangan, tombol pil, isian & tab membulat). Penting: ini hanya mengubah warna, bentuk
+  sudut, ketebalan huruf & bayangan — TIDAK mengubah ukuran (tinggi, lebar, padding, font-size) agar tata
+  letak & kerapatan tiap portal persis seperti sebelum reskin. Selektor dua kelas di layer utilities menang
+  dari kelas bawaan komponen, tetapi kelas penting (mis. `py-3!`) tetap berlaku.
+*/
+@layer utilities {
+  .portal-situs .ui-kartu {
+    border-radius: 1.75rem;
+    border-color: var(--color-garis);
+    box-shadow: none;
+  }
+  .portal-situs .ui-kartu-tautan {
+    border-radius: 1.75rem;
+  }
+  .portal-situs .ui-kartu h2 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .portal-situs .ui-judul-ikon {
+    /* ukuran (h-8 w-8) dipertahankan; hanya bentuk & warna yang jadi gaya beranda */
+    border-radius: 0.75rem;
+    background: var(--color-primary-600);
+    color: #fff;
+  }
+  .portal-situs .ui-tombol {
+    /* ukuran tetap (px-4 py-2.5 bawaan tombol); hanya bentuk pil & ketebalan huruf */
+    border-radius: 9999px;
+    font-weight: 700;
+  }
+  .portal-situs .ui-tombol-utama {
+    box-shadow: 0 12px 22px -12px rgb(29 26 22 / 0.55);
+  }
+  .portal-situs .ui-tombol-kedua {
+    border-color: var(--color-garis);
+    color: var(--color-tinta);
+  }
+  /* Di atas pita merah: tombol utama putih & tombol kedua bergaris putih, seperti kepala halaman situs */
+  .portal-situs .ui-pita .ui-tombol-utama {
+    background: #fff;
+    color: var(--color-primary-700);
+  }
+  .portal-situs .ui-pita .ui-tombol-utama:hover {
+    background: var(--color-primary-50);
+  }
+  .portal-situs .ui-pita .ui-tombol-kedua {
+    border-color: rgb(255 255 255 / 0.6);
+    background: transparent;
+    color: #fff;
+  }
+  .portal-situs .ui-pita .ui-tombol-kedua:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+  .portal-situs .ui-isian {
+    /* ukuran & font-size bawaan dipertahankan; hanya sudut & warna garis */
+    border-radius: 0.875rem;
+    border-color: var(--color-garis);
+  }
+  .portal-situs .ui-isian:focus {
+    border-color: var(--color-primary-600);
+  }
+  .portal-situs .ui-label {
+    font-weight: 600;
+    color: var(--color-tinta);
+  }
+  .portal-situs .ui-tab {
+    /* padding (p-1) dipertahankan; hanya sudut & warna latar */
+    border-radius: 9999px;
+    background: var(--color-kertas-tua);
+  }
+  .portal-situs .ui-tab-item {
+    /* padding-inline (px-4) dipertahankan; hanya sudut, ketebalan huruf & warna */
+    border-radius: 9999px;
+    font-weight: 700;
+    color: var(--color-tinta-2);
+  }
+  .portal-situs .ui-tab-item[aria-selected='true'] {
+    background: var(--color-primary-600);
+    color: #fff;
+    box-shadow: none;
+  }
+  .portal-situs .ui-tab-item[aria-selected='true'] span {
+    color: rgb(255 255 255 / 0.8);
+  }
+  .portal-situs .ui-lencana {
+    font-weight: 700;
+  }
+  .portal-situs .ui-modal {
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+  }
+  .portal-situs .ui-modal h3 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .portal-situs .ui-ikon-kosong {
+    border-radius: 9999px;
+    background: var(--color-primary-50);
+    color: var(--color-primary-600);
+  }
+  .portal-situs .ui-alert {
+    border-radius: 1rem;
+  }
+  /* Tautan "lihat semua" bergaya tautan berpanah situs */
+  .portal-situs .ui-tautan {
+    font-weight: 700;
+    color: var(--color-primary-700);
+  }
+  .portal-situs .ui-ubin {
+    border-radius: 1.25rem;
+  }
+  .portal-situs .ui-ikon-utama {
+    background: var(--color-primary-600);
+    color: #fff;
+  }
+  /* Judul selalu tebal 800 seperti situs (menang dari font-bold bawaan halaman portal) */
+  .portal-situs :is(h1, h2) {
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+  /* Pil penyaring: terpilih merah seperti penyaring di halaman Guru situs */
+  .portal-situs .ui-saring {
+    font-weight: 700;
+  }
+  .portal-situs .ui-saring[aria-pressed='true'] {
+    background: var(--color-primary-600);
+    color: #fff;
+  }
+  @media (min-width: 40rem) {
+    .portal-situs .ui-modal {
+      border-radius: 2rem;
+    }
+  }
+}
+
+/* Angka sejajar untuk jam, tanggal, dan biaya */
+.angka {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Coretan stabilo di belakang kata */
+.stabilo {
+  background-image: linear-gradient(transparent 52%, var(--color-stabilo) 52%, var(--color-stabilo) 92%, transparent 92%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding-inline: 0.12em;
+}
+
+/*
+  iPhone & iPad (Safari) memperbesar halaman sendiri saat kolom isian berhuruf < 16px disentuh, lalu
+  halaman tetap terbesar dan melebar. Khusus perangkat iOS, kolom isian kecil dijadikan 16px.
+  Di luar layer agar menang dari kelas utilitas text-sm; kolom berhuruf besar (kode OTP) tidak disentuh.
+*/
+@supports (-webkit-touch-callout: none) {
+  input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], .text-lg, .text-xl, .text-2xl, .text-3xl),
+  select,
+  textarea {
+    font-size: 16px;
+  }
 }
 
 /* Saat mencetak kuitansi/rapor, hanya area .area-cetak yang ikut tercetak */
@@ -83,7 +316,7 @@ body {
   }
 }
 
-/* Efek riak saat tombol diklik (dipakai TombolHubungi di Beranda) */
+/* Efek riak saat tombol diklik (TombolHubungi di Beranda) */
 @keyframes riak {
   from {
     transform: translate(-50%, -50%) scale(0);
@@ -96,20 +329,107 @@ body {
   animation: riak 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Elemen muncul perlahan saat di-scroll (komponen <Muncul>) */
+/* Elemen muncul perlahan saat di-scroll (komponen <Muncul>, hanya halaman publik) */
 .muncul {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(12px);
   transition:
-    opacity 0.7s ease,
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.5s ease-out,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .muncul-aktif {
   opacity: 1;
   transform: none;
 }
 
-/* Pola titik-titik dekoratif di latar berwarna */
+/* Pita teks berjalan (komponen PitaBerjalan). Isi digandakan, jadi geser -50% = satu putaran mulus. */
+@keyframes berjalan {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.pita-berjalan {
+  animation: berjalan 45s linear infinite;
+}
+.pita-berjalan:hover,
+.pita-diam .pita-berjalan {
+  animation-play-state: paused;
+}
+
+/* Bilah muat berlogo saat jaringan lambat (komponen BilahMuat) */
+.bilah-isi {
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bilah-logo {
+  transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Garis miring merah putih yang terus mengalir */
+@keyframes bilah-garis {
+  from {
+    background-position: 1.5rem 0;
+  }
+}
+.bilah-garis {
+  background-image: linear-gradient(
+    45deg,
+    rgb(255 255 255 / 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgb(255 255 255 / 0.2) 50%,
+    rgb(255 255 255 / 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1.5rem 1.5rem;
+  animation: bilah-garis 0.8s linear infinite;
+}
+/* Kilau yang menyapu isian */
+@keyframes bilah-kilau {
+  to {
+    transform: translateX(300%);
+  }
+}
+.bilah-kilau {
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.45), transparent);
+  animation: bilah-kilau 1.8s ease-in-out infinite;
+}
+/* Logo berayun pelan, dikelilingi cincin yang berdenyut */
+@keyframes logo-ayun {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+  50% {
+    transform: rotate(9deg) translateY(-1px);
+  }
+}
+.logo-ayun {
+  animation: logo-ayun 1.5s ease-in-out infinite;
+}
+@keyframes denyut {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+.cincin-denyut {
+  animation: denyut 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes bilah-keluar {
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+}
+.bilah-keluar {
+  animation: bilah-keluar 0.45s ease 0.3s forwards;
+}
+
+/* Pola titik-titik dekoratif di latar berwarna (portal) */
 .pola-titik {
   background-image: radial-gradient(rgb(255 255 255 / 0.18) 1.5px, transparent 1.5px);
   background-size: 22px 22px;
@@ -124,7 +444,7 @@ body {
   background: linear-gradient(to bottom, var(--color-primary-600) 50%, #ffffff 50%);
 }
 
-/* Panel yang berganti isi (mis. nilai karakter di Profil) tampil lembut */
+/* Panel yang berganti isi tampil lembut */
 @keyframes tampil-lembut {
   from {
     opacity: 0;
@@ -135,7 +455,173 @@ body {
   animation: tampil-lembut 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/*
+  Animasi halus seluruh situs (publik & portal). Aturan: hanya transform & opacity (tata letak dan
+  ukuran komponen tidak berubah), durasi pendek, masuk melambat & keluar lebih cepat, dan semuanya
+  hanya aktif bila pengguna TIDAK memilih "kurangi gerakan".
+*/
+:root {
+  --gerak-cepat: 160ms;
+  --gerak-sedang: 260ms;
+  --gerak-lambat: 420ms;
+  --ease-masuk: cubic-bezier(0.22, 1, 0.36, 1); /* melambat saat tiba */
+  --ease-keluar: cubic-bezier(0.4, 0, 1, 1); /* mempercepat saat pergi */
+}
+@keyframes pudar-masuk {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pudar-keluar {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes naik-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes laci-masuk {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes laci-keluar {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes lembar-masuk {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes lembar-keluar {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes panel-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+@keyframes panel-keluar {
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+@keyframes menu-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+@keyframes menu-keluar {
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+/* Elemen yang sedang menjalankan animasi keluar tidak lagi menangkap klik */
+[data-keluar] {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* Pindah halaman portal: bagian-bagian halaman muncul naik berurutan (jeda 40 ms, maks. 200 ms) */
+  .masuk-halaman > :not(.fixed) {
+    animation: naik-masuk var(--gerak-sedang) var(--ease-masuk) backwards;
+  }
+  .masuk-halaman > :nth-child(2) {
+    animation-delay: 40ms;
+  }
+  .masuk-halaman > :nth-child(3) {
+    animation-delay: 80ms;
+  }
+  .masuk-halaman > :nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .masuk-halaman > :nth-child(5) {
+    animation-delay: 160ms;
+  }
+  .masuk-halaman > :nth-child(n + 6) {
+    animation-delay: 200ms;
+  }
+  /* Pindah halaman publik: cukup memudar (bagian-bagiannya sudah punya animasi muncul saat di-scroll) */
+  .masuk-situs {
+    animation: pudar-masuk var(--gerak-sedang) ease-out;
+  }
+
+  /* Modal: lembar naik dari bawah di HP, membesar lembut di layar lebar; keluar lebih cepat */
+  .latar-modal {
+    animation: pudar-masuk var(--gerak-cepat) ease-out;
+  }
+  .panel-modal {
+    animation: lembar-masuk var(--gerak-sedang) var(--ease-masuk);
+  }
+  [data-keluar] .latar-modal {
+    animation: pudar-keluar var(--gerak-cepat) ease-in forwards;
+  }
+  [data-keluar] .panel-modal {
+    animation: lembar-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+  }
+  @media (min-width: 40rem) {
+    .panel-modal {
+      animation: panel-masuk var(--gerak-sedang) var(--ease-masuk);
+    }
+    [data-keluar] .panel-modal {
+      animation: panel-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+    }
+  }
+
+  /* Laci menu di HP meluncur dari kiri */
+  .laci {
+    animation: laci-masuk var(--gerak-sedang) var(--ease-masuk);
+  }
+  [data-keluar] .laci {
+    animation: laci-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+  }
+
+  /* Panel notifikasi turun dari ikon lonceng */
+  .menu-turun {
+    transform-origin: top right;
+    animation: menu-masuk var(--gerak-cepat) var(--ease-masuk);
+  }
+  .menu-turun[data-keluar] {
+    animation: menu-keluar 120ms var(--ease-keluar) forwards;
+  }
+
+  /* Tombol portal sedikit mengecil hanya selama ditekan (umpan balik sentuhan) */
+  .ui-tombol:active:not(:disabled) {
+    scale: 0.97;
+  }
+
+  /* Isi kartu teman muncul berurutan setelah kartunya tiba di tengah */
+  .isi-bertahap > * {
+    animation: naik-masuk var(--gerak-sedang) var(--ease-masuk) backwards;
+  }
+  .isi-bertahap > :nth-child(1) {
+    animation-delay: 160ms;
+  }
+  .isi-bertahap > :nth-child(2) {
+    animation-delay: 210ms;
+  }
+  .isi-bertahap > :nth-child(3) {
+    animation-delay: 260ms;
+  }
+  .isi-bertahap > :nth-child(n + 4) {
+    animation-delay: 310ms;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .tampil-lembut {
     animation: none;
   }
@@ -143,6 +629,15 @@ body {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .pita-berjalan,
+  .bilah-garis,
+  .logo-ayun,
+  .cincin-denyut {
+    animation: none;
+  }
+  .bilah-kilau {
+    display: none;
   }
   .animate-melayang,
   .animate-goyang,

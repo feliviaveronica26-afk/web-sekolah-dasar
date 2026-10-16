@@ -1,215 +1,317 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, CalendarDays, CheckCircle2, Clock3, Coffee, GraduationCap, Lightbulb, Puzzle, UserRound } from 'lucide-react'
-import JamSekolah from '../../components/JamSekolah'
+import { CalendarDays, CheckCircle2, Clock3, Coffee } from 'lucide-react'
 import KalenderAkademik from '../../components/KalenderAkademik'
 import { Muncul } from '../../components/Hiasan'
-import { Ikon, WARNA_CERIA } from '../../components/Ikon'
-import { PageHeader, SectionTitle, btn } from '../../components/ui'
-import { EKSKUL, ISTIRAHAT, JENJANG, MAPEL, MAPEL_RAPOR, SEKOLAH, SESI } from '../../data/dummy'
+import { IKON } from '../../components/Ikon'
+import { Foto, IndeksHalaman, JudulBagian, KepalaHalaman, selarasKertas, tombol, wadah } from '../../components/Situs'
+import { useData } from '../../context/DataContext'
+import { EKSKUL, ISTIRAHAT, JAM_SEKOLAH, JENJANG, KKTP, MAPEL, MAPEL_RAPOR, SEKOLAH, SESI } from '../../data/dummy'
+import { FOTO, FOTO_EKSKUL } from '../../data/foto'
+import { mapelDiampu } from '../../utils/jadwal'
 
 const PILAR = [
   {
-    icon: GraduationCap,
     judul: 'Intrakurikuler',
+    foto: FOTO.ruangKelas,
     desc: 'Pembelajaran mata pelajaran di kelas dengan pendekatan berdiferensiasi sesuai kemampuan tiap anak.',
     poin: ['Asesmen diagnostik di awal semester', 'Kelompok belajar sesuai kebutuhan', 'Rapor dengan deskripsi capaian'],
   },
   {
-    icon: Puzzle,
     judul: 'Projek P5',
+    foto: FOTO.kebun,
     desc: 'Projek Penguatan Profil Pelajar Pancasila: anak belajar lewat projek nyata bersama teman.',
     poin: ['Gaya Hidup Berkelanjutan: bank sampah kelas', 'Kearifan Lokal: festival budaya', 'Kewirausahaan: market day kelas 5–6'],
   },
   {
-    icon: Lightbulb,
     judul: 'Ekstrakurikuler',
+    foto: FOTO.pramuka,
     desc: 'Kegiatan setelah jam pelajaran untuk mengasah bakat, minat, dan kepemimpinan.',
     poin: [`${EKSKUL.length} pilihan kegiatan`, 'Pramuka wajib untuk kelas 3–6', 'Pentas & lomba setiap semester'],
   },
 ]
 
+const PROGRAM_RUTIN = [
+  ['Senin', 'Upacara bendera'],
+  ['Setiap pagi', 'Literasi 15 menit'],
+  ['Kamis', 'English Day'],
+  ['Jumat', 'Senam pagi & Jumat bersih'],
+]
+
 // Mapel yang baru diajarkan mulai kelas 3
 const MULAI_KELAS_3 = ['ipas', 'info']
 
+// Urutan baris jadwal harian: sesi belajar + istirahat di antaranya
+const JADWAL_HARIAN = SESI.flatMap((s, i) => [
+  { label: `Sesi ${i + 1}`, jam: `${s.mulai} – ${s.selesai}`, ket: '2 jam pelajaran' },
+  ...(i + 1 === ISTIRAHAT.setelahSesi ? [{ label: 'Istirahat', jam: `${ISTIRAHAT.mulai} – ${ISTIRAHAT.selesai}`, ket: 'Makan bekal & bermain', istirahat: true }] : []),
+])
+
 export default function Akademik() {
+  const { data } = useData()
+  // Pengajar mapel: guru mapel yang mengampunya (data guru dari server), selain itu wali kelas
+  const pengajar = (kode) => data.guru.find((g) => mapelDiampu(g).includes(kode))?.nama ?? 'Wali kelas'
+
   return (
     <>
-      <PageHeader
-        eyebrow={SEKOLAH.kurikulum}
-        title="Akademik & Kegiatan Belajar"
-        subtitle="Kurikulum, mata pelajaran, jam belajar, ekstrakurikuler, dan kalender akademik SD Harapan Gemilang."
+      <KepalaHalaman
+        jejak="Akademik"
+        judul="Belajar dengan cara yang paling cocok untuk setiap anak."
+        desc={`Kurikulum, mata pelajaran, jam belajar, ekstrakurikuler, dan kalender akademik ${SEKOLAH.nama}.`}
+        catatan={SEKOLAH.kurikulum}
+        foto={FOTO.kelasGuru}
       >
-        <div className="mt-7 flex flex-wrap gap-2">
-          {[
-            ['#kurikulum', 'Kurikulum'],
-            ['#mapel', 'Mata Pelajaran'],
-            ['#jam', 'Jam Belajar'],
-            ['#ekskul', 'Ekstrakurikuler'],
-            ['#kalender', 'Kalender'],
-          ].map(([href, label]) => (
-            <a key={href} href={href} className="rounded-full bg-white/15 px-4 py-2 text-sm font-semibold ring-1 ring-white/25 transition hover:bg-white hover:text-primary-700">
-              {label}
-            </a>
-          ))}
-        </div>
-      </PageHeader>
+        <IndeksHalaman
+          daftar={[
+            ['kurikulum', 'Kurikulum'],
+            ['mapel', 'Mata pelajaran'],
+            ['jam', 'Jam belajar'],
+            ['ekskul', 'Ekstrakurikuler'],
+            ['kalender', 'Kalender'],
+          ]}
+        />
+      </KepalaHalaman>
 
       {/* Kurikulum */}
-      <section id="kurikulum" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:px-6">
-        <SectionTitle eyebrow="Kurikulum Merdeka" title="Tiga pilar pembelajaran" desc="Setiap anak belajar dengan cara yang paling cocok untuknya — di kelas, lewat projek, dan lewat kegiatan minat bakat." />
-        <div className="grid gap-5 md:grid-cols-3">
-          {PILAR.map(({ icon: Icon, judul, desc, poin }, i) => (
-            <Muncul key={judul} jeda={i * 90}>
-              <div className={`h-full rounded-3xl p-7 ring-1 ${WARNA_CERIA[i].bg} ${WARNA_CERIA[i].ring}`}>
-                <span className={`grid h-14 w-14 place-items-center rounded-2xl ${WARNA_CERIA[i].ikon}`}>
-                  <Icon className="h-7 w-7" />
+      <section id="kurikulum" className={`${wadah} scroll-mt-24 py-20 lg:py-28`}>
+        <JudulBagian label={SEKOLAH.kurikulum} judul="Tiga pilar pembelajaran." desc="Di kelas, lewat projek, dan lewat kegiatan minat bakat." />
+        <ol className="grid gap-4 md:grid-cols-3">
+          {PILAR.map((p, i) => (
+            <Muncul as="li" key={p.judul} jeda={i * 90} className="group flex flex-col overflow-hidden rounded-[1.75rem] bg-kartu ring-1 ring-garis">
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <Foto foto={p.foto} alt="" className="transition duration-700 group-hover:scale-105" />
+                <span className="angka absolute left-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white text-lg font-extrabold text-primary-700 shadow">
+                  {i + 1}
                 </span>
-                <h3 className="mt-5 text-2xl font-bold text-slate-900">{judul}</h3>
-                <p className="mt-2 text-slate-600">{desc}</p>
-                <ul className="mt-5 space-y-2">
-                  {poin.map((p) => (
-                    <li key={p} className="flex gap-2 text-sm text-slate-700">
-                      <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${WARNA_CERIA[i].teks}`} /> {p}
+              </div>
+              <div className="p-6 sm:p-7">
+                <h3 className="text-2xl">{p.judul}</h3>
+                <p className="mt-2 leading-relaxed text-tinta-2">{p.desc}</p>
+                <ul className="mt-5 space-y-2.5">
+                  {p.poin.map((x) => (
+                    <li key={x} className="flex gap-2.5 text-[15px] leading-snug">
+                      <CheckCircle2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-primary-600" aria-hidden="true" />
+                      {x}
                     </li>
                   ))}
                 </ul>
               </div>
             </Muncul>
           ))}
-        </div>
+        </ol>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          {JENJANG.map((j, i) => (
-            <Muncul key={j.id} jeda={i * 100} className="rounded-3xl border border-slate-200 bg-white p-7">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className={`rounded-full px-3 py-1 text-xs font-bold ${i === 0 ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800'}`}>{j.kelas}</span>
-                <span className="text-sm text-slate-500">{j.usia}</span>
-              </div>
-              <h3 className="mt-3 text-2xl font-bold text-slate-900">{j.nama}</h3>
-              <p className="mt-1 text-slate-600">{j.fokus}</p>
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                {j.poin.map((p) => (
-                  <li key={p} className="flex gap-2 text-sm text-slate-700">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> {p}
-                  </li>
+        {/* Perbandingan jenjang */}
+        <div className="mt-16 overflow-x-auto rounded-[1.75rem] bg-kartu ring-1 ring-garis">
+          <table className="w-full min-w-[40rem] text-left">
+            <caption className="px-6 pt-6 text-left text-2xl font-extrabold tracking-tight sm:px-8">Fokus per jenjang</caption>
+            <thead>
+              <tr className="border-b border-garis">
+                <th scope="col" className="w-36 px-6 py-4 text-sm font-semibold text-tinta-3 sm:px-8" />
+                {JENJANG.map((j) => (
+                  <th key={j.id} scope="col" className="py-4 pr-8 align-bottom">
+                    <span className="block text-2xl font-extrabold tracking-tight">{j.nama}</span>
+                    <span className="mt-1.5 inline-block rounded-full bg-primary-50 px-3 py-1 text-sm font-semibold text-primary-700">
+                      {j.kelas} · {j.usia}
+                    </span>
+                  </th>
                 ))}
-              </ul>
-            </Muncul>
-          ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-garis align-top">
+                <th scope="row" className="px-6 py-5 text-sm font-semibold text-tinta-3 sm:px-8">
+                  Fokus
+                </th>
+                {JENJANG.map((j) => (
+                  <td key={j.id} className="py-5 pr-8 text-lg font-bold leading-snug">
+                    {j.fokus}
+                  </td>
+                ))}
+              </tr>
+              <tr className="align-top">
+                <th scope="row" className="px-6 py-5 text-sm font-semibold text-tinta-3 sm:px-8">
+                  Kegiatan
+                </th>
+                {JENJANG.map((j) => (
+                  <td key={j.id} className="py-5 pr-8">
+                    <ul className="space-y-2.5">
+                      {j.poin.map((x) => (
+                        <li key={x} className="flex gap-2.5 leading-snug">
+                          <CheckCircle2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-primary-600" aria-hidden="true" />
+                          {x}
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
       {/* Mata pelajaran */}
-      <section id="mapel" className="scroll-mt-28 bg-slate-50 py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="Mata Pelajaran" title="Yang dipelajari di kelas" desc="Seluruh mata pelajaran dinilai dengan Kriteria Ketercapaian Tujuan Pembelajaran (KKTP) 75." />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {MAPEL_RAPOR.map((kode, i) => (
-              <Muncul key={kode} jeda={(i % 5) * 50}>
-                <div className="h-full rounded-2xl bg-white p-4 ring-1 ring-slate-200">
-                  <span className={`inline-flex rounded-lg px-2.5 py-1 text-sm font-bold ${MAPEL[kode].warna}`}>{MAPEL[kode].nama}</span>
-                  <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-500">
-                    <UserRound className="h-3.5 w-3.5" /> {MAPEL[kode].guru}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold text-slate-600">{MULAI_KELAS_3.includes(kode) ? 'Kelas 3 – 6' : 'Kelas 1 – 6'}</p>
-                </div>
-              </Muncul>
-            ))}
+      <section id="mapel" className="scroll-mt-24 bg-kertas-tua/70 py-20 lg:py-28">
+        <div className={`${wadah} grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16`}>
+          <div>
+            <JudulBagian label="Mata pelajaran" judul="Yang dipelajari di kelas." className="" />
+            <p className="mt-5 text-lg leading-relaxed text-tinta-2">
+              Seluruh mata pelajaran dinilai dengan Kriteria Ketercapaian Tujuan Pembelajaran (KKTP) <b className="angka font-bold text-tinta">{KKTP}</b>.
+              Pendidikan Agama diberikan sesuai agama yang dianut setiap siswa.
+            </p>
+            <div className="mt-8 hidden aspect-[4/3] overflow-hidden rounded-[1.75rem] lg:block">
+              <Foto foto={FOTO.literasi} />
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-[1.75rem] bg-white ring-1 ring-garis">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-primary-600 text-sm text-white">
+                  <th scope="col" className="px-5 py-3.5 font-bold sm:px-6">
+                    Mata pelajaran
+                  </th>
+                  <th scope="col" className="py-3.5 pr-4 font-bold">
+                    Pengajar
+                  </th>
+                  <th scope="col" className="px-5 py-3.5 text-right font-bold sm:px-6">
+                    Kelas
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-garis">
+                {MAPEL_RAPOR.map((kode) => (
+                  <tr key={kode} className="transition hover:bg-kertas">
+                    <th scope="row" className="px-5 py-3.5 font-semibold sm:px-6">
+                      <span className="flex items-center gap-3">
+                        <span aria-hidden="true" className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-extrabold ${MAPEL[kode].warna}`}>
+                          {MAPEL[kode].nama[0]}
+                        </span>
+                        {MAPEL[kode].nama}
+                      </span>
+                    </th>
+                    <td className="py-3.5 pr-4 text-[15px] text-tinta-2">{pengajar(kode)}</td>
+                    <td className="angka whitespace-nowrap px-5 py-3.5 text-right text-[15px] font-semibold text-tinta-2 sm:px-6">
+                      {MULAI_KELAS_3.includes(kode) ? '3 – 6' : '1 – 6'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
       {/* Jam belajar */}
-      <section id="jam" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:px-6">
-        <SectionTitle eyebrow="Jam Belajar" title="Pembagian waktu harian" desc="Senin – Jumat. Satu sesi terdiri dari 2 jam pelajaran @35 menit." />
-        <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-          <Muncul className="rounded-3xl bg-white p-6 ring-1 ring-slate-200">
-            <ol className="space-y-3">
-              {SESI.map((s, i) => (
-                <li key={s.mulai}>
-                  <div className="flex items-center gap-4 rounded-2xl bg-slate-50 px-4 py-3">
-                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-600 font-display font-bold text-white">{i + 1}</span>
-                    <div>
-                      <p className="font-bold text-slate-900">Sesi {i + 1}</p>
-                      <p className="flex items-center gap-1.5 text-sm text-slate-500">
-                        <Clock3 className="h-3.5 w-3.5" /> {s.mulai} – {s.selesai} WIB
-                      </p>
-                    </div>
-                  </div>
-                  {i + 1 === ISTIRAHAT.setelahSesi && (
-                    <p className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-amber-700">
-                      <Coffee className="h-4 w-4" /> Istirahat {ISTIRAHAT.mulai} – {ISTIRAHAT.selesai}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </Muncul>
-          <Muncul jeda={120} className="space-y-6">
-            <JamSekolah />
-            <div className="rounded-3xl bg-amber-50 p-6 ring-1 ring-amber-100">
-              <h3 className="text-xl font-bold text-amber-900">Program rutin</h3>
-              <ul className="mt-3 grid gap-2 text-sm text-amber-900 sm:grid-cols-2">
-                {['Senin: upacara bendera', 'Setiap pagi: literasi 15 menit', 'Kamis: English Day', 'Jumat: senam pagi & Jumat bersih'].map((p) => (
-                  <li key={p} className="flex gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" /> {p}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Muncul>
-        </div>
-      </section>
-
-      {/* Ekstrakurikuler */}
-      <section id="ekskul" className="scroll-mt-28 bg-slate-50 py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="Bakat & Minat" title="Ekstrakurikuler" desc="Siswa dapat memilih hingga 2 ekskul lewat Portal Siswa. Pramuka wajib untuk kelas 3 – 6." />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {EKSKUL.map((e, i) => (
-              <Muncul key={e.id} jeda={(i % 3) * 80}>
-                <div className="group h-full rounded-3xl bg-white p-6 ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-xl">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className={`grid h-14 w-14 place-items-center rounded-2xl transition group-hover:rotate-[-8deg] ${e.warna}`}>
-                      <Ikon nama={e.ikon} className="h-7 w-7" />
-                    </span>
-                    {e.wajib && <span className="rounded-full bg-primary-100 px-2.5 py-1 text-xs font-bold text-primary-700">Wajib</span>}
-                  </div>
-                  <h3 className="mt-4 text-xl font-bold text-slate-900">{e.nama}</h3>
-                  <p className="mt-1 text-sm text-slate-600">{e.desc}</p>
-                  <dl className="mt-4 space-y-1.5 border-t border-slate-100 pt-4 text-sm">
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-slate-500">Jadwal</dt>
-                      <dd className="text-right font-semibold text-slate-800">
-                        {e.hari}, {e.jam}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-slate-500">Pembina</dt>
-                      <dd className="text-right font-semibold text-slate-800">{e.pembina}</dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-slate-500">Peserta</dt>
-                      <dd className="text-right font-semibold text-slate-800">{e.untuk}</dd>
-                    </div>
-                  </dl>
-                </div>
-              </Muncul>
+      <section id="jam" className={`${wadah} scroll-mt-24 py-20 lg:py-28`}>
+        <JudulBagian label="Jam belajar" judul="Pembagian waktu harian." desc="Senin sampai Jumat. Satu sesi terdiri dari 2 jam pelajaran @35 menit." />
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <ol className="space-y-3">
+            {JADWAL_HARIAN.map((b) => (
+              <li
+                key={b.label}
+                className={`grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 rounded-[1.25rem] p-4 sm:grid-cols-[auto_1fr_auto] sm:px-5 ${
+                  b.istirahat ? 'bg-stabilo' : 'bg-kartu ring-1 ring-garis'
+                }`}
+              >
+                <span
+                  className={`row-span-2 grid h-11 w-11 place-items-center rounded-xl sm:row-span-1 ${b.istirahat ? 'bg-tinta text-stabilo' : 'bg-primary-50 text-primary-700'}`}
+                >
+                  {b.istirahat ? <Coffee className="h-5 w-5" aria-hidden="true" /> : <Clock3 className="h-5 w-5" aria-hidden="true" />}
+                </span>
+                <span>
+                  <span className="block text-lg font-bold">{b.label}</span>
+                  <span className={`text-[15px] ${b.istirahat ? 'text-tinta-2' : 'text-tinta-3'}`}>{b.ket}</span>
+                </span>
+                <span className="angka text-xl font-extrabold tracking-tight sm:text-2xl">{b.jam}</span>
+              </li>
             ))}
+          </ol>
+          <div className="space-y-6">
+            <div className="rounded-[1.75rem] bg-primary-700 p-6 text-white sm:p-7">
+              <h3 className="text-2xl">Jam sekolah</h3>
+              <dl className="mt-5 grid grid-cols-2 gap-3">
+                {JAM_SEKOLAH.filter((j) => !j.guru).map((j) => (
+                  <div key={j.label} className="rounded-2xl bg-white/10 p-4">
+                    <dt className="text-sm text-krem">{j.label}</dt>
+                    <dd className="angka mt-1 text-2xl font-extrabold">{j.jam}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+            <div className="rounded-[1.75rem] bg-kartu p-6 ring-1 ring-garis sm:p-7">
+              <h3 className="text-2xl">Program rutin</h3>
+              <dl className="mt-4 divide-y divide-garis">
+                {PROGRAM_RUTIN.map(([hari, isi]) => (
+                  <div key={hari} className="grid grid-cols-[7.5rem_1fr] gap-4 py-3.5">
+                    <dt className="text-tinta-3">{hari}</dt>
+                    <dd className="font-bold">{isi}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Ekstrakurikuler */}
+      <section id="ekskul" className="scroll-mt-24 bg-primary-700 py-20 text-white lg:py-28">
+        <div className={wadah}>
+          <JudulBagian
+            terang
+            label="Bakat & minat"
+            judul="Ekstrakurikuler."
+            desc="Siswa bebas memilih ekskul lewat Portal Siswa selama jadwalnya tidak bentrok. Pramuka wajib untuk kelas 3 – 6."
+          />
+          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {EKSKUL.map((e, i) => {
+              const Icon = IKON[e.ikon]
+              return (
+                <Muncul as="li" key={e.id} jeda={(i % 3) * 70} className="flex flex-col overflow-hidden rounded-[1.75rem] bg-white/[0.08] ring-1 ring-inset ring-white/10">
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <Foto foto={FOTO_EKSKUL[e.id]} alt="" ikon={Icon} nada={i % 2 ? 'tua' : 'stabilo'} />
+                    {e.wajib && <span className="absolute left-4 top-4 rounded-full bg-stabilo px-3 py-1 text-xs font-extrabold text-tinta">Wajib</span>}
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="text-2xl">{e.nama}</h3>
+                    <p className="mt-2 leading-relaxed text-krem">{e.desc}</p>
+                    <dl className="mt-5 grid grid-cols-[5.5rem_1fr] gap-x-3 gap-y-1.5 border-t border-white/15 pt-4 text-[15px]">
+                      <dt className="text-krem">Jadwal</dt>
+                      <dd className="angka font-semibold">
+                        {e.hari}, {e.jam}
+                      </dd>
+                      <dt className="text-krem">Pembina</dt>
+                      <dd className="font-semibold">{e.pembina}</dd>
+                      <dt className="text-krem">Peserta</dt>
+                      <dd className="font-semibold">{e.untuk}</dd>
+                    </dl>
+                  </div>
+                </Muncul>
+              )
+            })}
+          </ul>
+        </div>
+      </section>
+
       {/* Kalender */}
-      <section id="kalender" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:px-6">
-        <SectionTitle eyebrow="Tahun Ajaran 2026/2027" title="Kalender Akademik" desc="Hari libur, ujian, dan kegiatan sekolah. Tanggal libur keagamaan bertanda perkiraan." />
-        <KalenderAkademik tanpaJudul />
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Link to="/ppdb" className={`${btn.primary} rounded-full! px-6 py-3`}>
-            Daftar PPDB <ArrowRight className="h-4 w-4" />
+      <section id="kalender" className={`${wadah} scroll-mt-24 py-20 lg:py-28`}>
+        <JudulBagian
+          label="Tahun ajaran 2026/2027"
+          judul="Kalender akademik."
+          desc="Hari libur, ujian, dan kegiatan sekolah. Tanggal libur keagamaan bertanda perkiraan."
+          aksi={
+            <p className="inline-flex items-center gap-2 rounded-full bg-kartu px-4 py-2 text-sm font-semibold text-tinta-2 ring-1 ring-garis">
+              <CalendarDays className="h-4 w-4 text-primary-600" aria-hidden="true" /> Geser bulan dengan tombol panah
+            </p>
+          }
+        />
+        <div className={selarasKertas}>
+          <KalenderAkademik tanpaJudul />
+        </div>
+        <div className="mt-12 flex flex-wrap gap-3">
+          <Link to="/ppdb" className={tombol.utama}>
+            Daftar PPDB
           </Link>
-          <Link to="/login" className={`${btn.secondary} rounded-full! px-6 py-3`}>
-            <CalendarDays className="h-4 w-4" /> Kalender di Portal
+          <Link to="/login" className={tombol.kedua}>
+            Lihat kalender di portal
           </Link>
         </div>
       </section>

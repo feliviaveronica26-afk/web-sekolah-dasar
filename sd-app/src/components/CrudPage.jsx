@@ -5,13 +5,17 @@ import { useData } from '../context/DataContext'
 
 /*
   Halaman kelola data generik (tambah, ubah, hapus, cari).
-  fields:  [{ name, label, type: 'text'|'number'|'select'|'textarea'|'date'|'checkboxes', options, required, full, placeholder, hint }]
+  fields:  [{ name, label, type: 'text'|'number'|'select'|'textarea'|'date'|'email'|'tel'|'checkboxes'|'judul', options, required, full, placeholder, hint, tampil?(form) }]
+           type 'judul' = judul bagian formulir (tanpa isian); tampil(form) = false menyembunyikan isian itu
   columns: [{ key, label, render?(item) }]
+  aksiBaris: fungsi (item) => tombol tambahan di kolom Aksi (sebelum Ubah & Hapus)
+  cariTambahan: fungsi (item) => teks lain yang ikut dicari (mis. nama anak pada data orang tua)
+  namaItem: fungsi (item) => nama yang tampil di konfirmasi hapus (bawaan: item.nama / item.judul)
   tanpaHeader: sembunyikan judul halaman (untuk ditanam di dalam tab)
   ringkasan: elemen tambahan di antara judul dan tabel (mis. kartu statistik)
   saring:   fungsi (item) => boolean untuk membatasi data yang boleh dilihat pengguna
 */
-export default function CrudPage({ title, desc, koleksi, itemLabel, fields, columns, searchKeys, filter, kosong, urutkan, validasi, tanpaHeader, ringkasan, saring }) {
+export default function CrudPage({ title, desc, koleksi, itemLabel, fields, columns, searchKeys, filter, kosong, urutkan, validasi, tanpaHeader, ringkasan, saring, aksiBaris, cariTambahan, namaItem }) {
   const { data, tambah, ubah, hapus } = useData()
   const [cari, setCari] = useState('')
   const [nilaiFilter, setNilaiFilter] = useState('')
@@ -19,12 +23,16 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
   const [editId, setEditId] = useState(null)
   const [error, setError] = useState('')
   const [hapusItem, setHapusItem] = useState(null)
+  const [galatHapus, setGalatHapus] = useState('')
+  const [menyimpan, setMenyimpan] = useState(false)
 
   const q = cari.trim().toLowerCase()
-  const milik = saring ? data[koleksi].filter(saring) : data[koleksi]
+  // Koleksi yang belum dimuat (mis. data lama di browser) dianggap kosong
+  const semua = data[koleksi] ?? []
+  const milik = saring ? semua.filter(saring) : semua
   let daftar = milik.filter(
     (item) =>
-      (!q || searchKeys.some((k) => String(item[k] ?? '').toLowerCase().includes(q))) &&
+      (!q || searchKeys.some((k) => String(item[k] ?? '').toLowerCase().includes(q)) || cariTambahan?.(item).toLowerCase().includes(q)) &&
       (!filter || !nilaiFilter || item[filter.key] === nilaiFilter),
   )
   if (urutkan) daftar = [...daftar].sort(urutkan)
@@ -43,13 +51,31 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
 
   const tutup = () => setForm(null)
 
-  const simpan = (e) => {
+  // Data disimpan di server: tunggu jawabannya, galat dari server ditampilkan di formulir
+  const simpan = async (e) => {
     e.preventDefault()
-    const pesanError = validasi?.(form, data[koleksi], editId)
+    if (menyimpan) return
+    const pesanError = validasi?.(form, semua, editId)
     if (pesanError) return setError(pesanError)
-    if (editId) ubah(koleksi, editId, form)
-    else tambah(koleksi, form)
+    setMenyimpan(true)
+    const galat = await (editId ? ubah(koleksi, editId, form, { diam: true }) : tambah(koleksi, form, { diam: true }))
+    setMenyimpan(false)
+    if (galat) return setError(galat)
     tutup()
+  }
+
+  const bukaHapus = (item) => {
+    setHapusItem(item)
+    setGalatHapus('')
+  }
+
+  const konfirmasiHapus = async () => {
+    if (menyimpan) return
+    setMenyimpan(true)
+    const galat = await hapus(koleksi, hapusItem.id, { diam: true })
+    setMenyimpan(false)
+    if (galat) return setGalatHapus(galat)
+    setHapusItem(null)
   }
 
   const tombolTambah = (
@@ -107,10 +133,11 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
                     ))}
                     <td className="px-5 py-3">
                       <div className="flex justify-end gap-1">
+                        {aksiBaris?.(item)}
                         <button onClick={() => bukaUbah(item)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Ubah">
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => setHapusItem(item)} className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600" aria-label="Hapus">
+                        <button onClick={() => bukaHapus(item)} className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600" aria-label="Hapus">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -131,11 +158,20 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
         {form && (
           <form id="crud-form" onSubmit={simpan} className="grid gap-4 sm:grid-cols-2">
             {error && (
-              <div className="sm:col-span-2">
+              // Gulir ke pesan galat (formulir panjang bisa sedang tergulir ke bawah)
+              <div key={error} ref={(el) => el?.scrollIntoView({ block: 'nearest' })} className="sm:col-span-2">
                 <Alert tone="error">{error}</Alert>
               </div>
             )}
             {fields.map((f) => {
+              if (f.tampil && !f.tampil(form)) return null
+              if (f.type === 'judul') {
+                return (
+                  <p key={f.name} className="border-t border-slate-100 pt-4 text-xs font-bold uppercase tracking-wider text-slate-500 first:border-t-0 first:pt-0 sm:col-span-2">
+                    {f.label}
+                  </p>
+                )
+              }
               const props = {
                 id: f.name,
                 value: form[f.name] ?? '',
@@ -193,12 +229,12 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
             })}
           </form>
         )}
-        <div className="mt-6 flex justify-end gap-2">
+        <div className="mt-6 flex flex-wrap justify-end gap-2">
           <button type="button" onClick={tutup} className={btn.secondary}>
             Batal
           </button>
-          <button type="submit" form="crud-form" className={btn.primary}>
-            Simpan
+          <button type="submit" form="crud-form" disabled={menyimpan} className={`${btn.primary} disabled:opacity-60`}>
+            {menyimpan ? 'Menyimpan…' : 'Simpan'}
           </button>
         </div>
       </Modal>
@@ -214,20 +250,19 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
             <button onClick={() => setHapusItem(null)} className={btn.secondary}>
               Batal
             </button>
-            <button
-              onClick={() => {
-                hapus(koleksi, hapusItem.id)
-                setHapusItem(null)
-              }}
-              className={`${btn.primary} bg-rose-600 hover:bg-rose-700`}
-            >
-              <Trash2 className="h-4 w-4" /> Hapus
+            <button onClick={konfirmasiHapus} disabled={menyimpan} className={`${btn.primary} bg-rose-600 hover:bg-rose-700 disabled:opacity-60`}>
+              <Trash2 className="h-4 w-4" /> {menyimpan ? 'Menghapus…' : 'Hapus'}
             </button>
           </>
         }
       >
+        {galatHapus && (
+          <div className="mb-3">
+            <Alert tone="error">{galatHapus}</Alert>
+          </div>
+        )}
         <p className="text-slate-600">
-          Data <span className="font-semibold text-slate-900">{hapusItem?.nama || hapusItem?.judul}</span> akan dihapus permanen.
+          Data <span className="font-semibold text-slate-900">{hapusItem && (namaItem?.(hapusItem) ?? (hapusItem.nama || hapusItem.judul))}</span> akan dihapus permanen.
         </p>
       </Modal>
     </>

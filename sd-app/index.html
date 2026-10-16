@@ -9,14 +9,145 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fredoka: judul portal. Plus Jakarta Sans: teks semua halaman & judul halaman publik. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap"
       rel="stylesheet"
     />
     <title>SD Harapan Gemilang</title>
+    <!-- Layar muat awal: tampil hanya jika aplikasi lambat diunduh (jaringan kurang stabil), lalu diganti React -->
+    <style>
+      .muat-awal {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 18px;
+        background: #fbf8f5;
+        color: #1a1512;
+        font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+        opacity: 0;
+        animation: muat-awal-muncul 0.4s ease 0.45s forwards;
+      }
+      .muat-awal-logo {
+        width: 76px;
+        height: 76px;
+        filter: drop-shadow(0 10px 18px rgb(68 6 11 / 0.25));
+        animation: muat-awal-apung 2.4s ease-in-out infinite;
+      }
+      .muat-awal-nama {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .muat-awal-kapsul {
+        width: min(280px, 80vw);
+        padding: 6px;
+        border-radius: 999px;
+        background: #fff;
+        box-shadow: 0 18px 40px -14px rgb(68 6 11 / 0.45), 0 0 0 1px rgb(0 0 0 / 0.05);
+      }
+      .muat-awal-jalur {
+        position: relative;
+        height: 36px;
+        border-radius: 999px;
+        background: #fff1f2;
+        overflow: hidden;
+      }
+      .muat-awal-isi {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 18%;
+        min-width: 40px;
+        border-radius: 999px;
+        background-color: #d91a28;
+        background-image: linear-gradient(45deg, rgb(255 255 255 / 0.2) 25%, transparent 25%, transparent 50%, rgb(255 255 255 / 0.2) 50%, rgb(255 255 255 / 0.2) 75%, transparent 75%, transparent);
+        background-size: 24px 24px;
+        animation:
+          muat-awal-garis 0.8s linear infinite,
+          muat-awal-maju 14s cubic-bezier(0.08, 0.75, 0.2, 1) forwards;
+      }
+      .muat-awal-lencana {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: #fff;
+        box-shadow: 0 4px 10px -2px rgb(68 6 11 / 0.5);
+      }
+      .muat-awal-lencana img {
+        width: 21px;
+        height: 21px;
+        animation: muat-awal-ayun 1.5s ease-in-out infinite;
+      }
+      .muat-awal-teks {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6b625c;
+      }
+      @keyframes muat-awal-muncul {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes muat-awal-apung {
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes muat-awal-garis {
+        from {
+          background-position: 24px 0;
+        }
+      }
+      @keyframes muat-awal-maju {
+        to {
+          width: 92%;
+        }
+      }
+      @keyframes muat-awal-ayun {
+        0%,
+        100% {
+          transform: rotate(-9deg);
+        }
+        50% {
+          transform: rotate(9deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .muat-awal-logo,
+        .muat-awal-lencana img {
+          animation: none;
+        }
+        .muat-awal-isi {
+          width: 60%;
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="muat-awal" role="status">
+        <img class="muat-awal-logo" src="/logo.png" alt="" width="76" height="76" />
+        <p class="muat-awal-nama">SD Harapan Gemilang</p>
+        <div class="muat-awal-kapsul" aria-hidden="true">
+          <div class="muat-awal-jalur">
+            <div class="muat-awal-isi">
+              <span class="muat-awal-lencana"><img src="/logo.png" alt="" /></span>
+            </div>
+          </div>
+        </div>
+        <p class="muat-awal-teks">Menyiapkan halaman…</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

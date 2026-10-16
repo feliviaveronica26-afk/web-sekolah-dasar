@@ -30,7 +30,7 @@ export default function PersetujuanIzin() {
     <>
       <DashHeader title="Persetujuan Izin" desc="Tinjau pengajuan izin dari orang tua. Izin yang disetujui otomatis tercatat di absensi." />
 
-      <div className="mb-5 inline-flex rounded-xl bg-slate-100 p-1">
+      <div className="mb-5 inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1">
         {[
           ['Menunggu', menunggu.length],
           ['Riwayat', riwayat.length],
@@ -38,7 +38,7 @@ export default function PersetujuanIzin() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+            className={`shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
           >
             {t} <span className="ml-1 text-xs text-slate-400">({n})</span>
           </button>

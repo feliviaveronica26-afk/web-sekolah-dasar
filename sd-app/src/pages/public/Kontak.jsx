@@ -1,48 +1,62 @@
 import { useState } from 'react'
-import { ArrowUpRight, Clock3, Mail, MapPin, MessageCircle, Navigation, Phone, Send } from 'lucide-react'
+import { ArrowUpRight, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react'
 import Faq from '../../components/Faq'
-import { Muncul } from '../../components/Hiasan'
-import { Alert, Card, JebakanBot, PageHeader, SectionTitle, btn, inputCls, labelCls } from '../../components/ui'
+import { Catatan, JudulBagian, KepalaHalaman, isian, labelIsian, tombol, wadah } from '../../components/Situs'
+import { Alert, JebakanBot } from '../../components/ui'
 import { FAQ, SEKOLAH } from '../../data/dummy'
+import { FOTO } from '../../data/foto'
 import { catatKirim, tungguKirim } from '../../utils/keamanan'
 
 const nomorWa = (no) => no.replace(/\D/g, '').replace(/^0/, '62')
 const petaUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SEKOLAH.alamat)}`
 
 const KANAL = [
-  { icon: MessageCircle, label: 'WhatsApp', nilai: SEKOLAH.whatsapp, href: `https://wa.me/${nomorWa(SEKOLAH.whatsapp)}`, cls: 'bg-emerald-500', ket: 'Respons tercepat' },
-  { icon: Phone, label: 'Telepon', nilai: SEKOLAH.telepon, href: `tel:${SEKOLAH.telepon.replace(/\D/g, '')}`, cls: 'bg-primary-600', ket: 'Jam kerja' },
-  { icon: Mail, label: 'Email', nilai: SEKOLAH.email, href: `mailto:${SEKOLAH.email}`, cls: 'bg-sky-500', ket: 'Dibalas 1×24 jam' },
-  { icon: Navigation, label: 'Datang langsung', nilai: 'Petunjuk arah', href: petaUrl, cls: 'bg-amber-400 text-amber-950', ket: 'Ruang Tata Usaha' },
+  { label: 'WhatsApp', icon: MessageCircle, nilai: SEKOLAH.whatsapp, href: `https://wa.me/${nomorWa(SEKOLAH.whatsapp)}`, ket: 'Respons tercepat pada jam kerja' },
+  { label: 'Telepon', icon: Phone, nilai: SEKOLAH.telepon, href: `tel:${SEKOLAH.telepon.replace(/\D/g, '')}`, ket: 'Tata Usaha, Senin – Jumat' },
+  { label: 'Email', icon: Mail, nilai: SEKOLAH.email, href: `mailto:${SEKOLAH.email}`, ket: 'Dibalas dalam 1×24 jam kerja' },
+  { label: 'Datang langsung', icon: MapPin, nilai: 'Petunjuk arah', href: petaUrl, ket: 'Ruang Tata Usaha, dekat gerbang utama' },
 ]
 
-// Peta ilustratif lokasi sekolah (pengganti peta interaktif)
-function PetaIlustrasi() {
+// Sketsa peta lokasi sekolah (pengganti peta interaktif)
+function SketsaPeta() {
   return (
-    <a href={petaUrl} target="_blank" rel="noreferrer" className="group relative block aspect-[4/3] overflow-hidden rounded-3xl bg-emerald-50 ring-1 ring-slate-200">
-      <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full" aria-hidden="true">
-        <rect width="400" height="300" fill="#ecfdf5" />
-        <path d="M0 210 C120 190 220 240 400 200 V300 H0Z" fill="#bae6fd" opacity=".7" />
-        <path d="M-10 120 H410" stroke="#fff" strokeWidth="26" />
-        <path d="M150 -10 V310" stroke="#fff" strokeWidth="22" />
-        <path d="M290 -10 L250 310" stroke="#fff" strokeWidth="16" />
-        <path d="M-10 120 H410 M150 -10 V310" stroke="#fde68a" strokeWidth="2" strokeDasharray="10 10" />
-        {[[30, 30], [200, 30], [320, 40], [30, 150], [320, 150], [190, 165]].map(([x, y], i) => (
-          <rect key={i} x={x} y={y} width="60" height="44" rx="8" fill="#d1fae5" />
-        ))}
-        <circle cx="60" cy="230" r="14" fill="#86efac" />
-        <circle cx="350" cy="250" r="18" fill="#86efac" />
-        <text x="40" y="112" fontSize="11" fill="#64748b" fontFamily="Plus Jakarta Sans, sans-serif">Jl. Merdeka</text>
-        <text x="158" y="290" fontSize="11" fill="#64748b" fontFamily="Plus Jakarta Sans, sans-serif">Jl. Melati</text>
+    <a href={petaUrl} target="_blank" rel="noreferrer" className="group relative block overflow-hidden rounded-[2rem] bg-kartu ring-1 ring-garis">
+      <svg viewBox="0 0 400 300" className="block h-auto w-full" role="img" aria-label={`Sketsa peta lokasi ${SEKOLAH.nama} di Jl. Merdeka. Buka di Google Maps.`}>
+        <g fill="none" stroke="var(--color-tinta)" strokeWidth="1.5" strokeLinecap="round">
+          {/* Jalan (garis ganda) */}
+          <path d="M-10 110 H410 M-10 134 H410" />
+          <path d="M140 -10 V110 M162 -10 V110 M140 134 V310 M162 134 V310" />
+          <path d="M288 -10 L270 110 M308 -10 L290 110 M266 134 L246 310 M286 134 L266 310" />
+          <path d="M-10 122 H410" strokeDasharray="6 8" strokeWidth="1" opacity="0.5" />
+          {/* Sungai */}
+          <path d="M-10 238 C 60 222, 110 260, 140 250 M162 246 C 200 236, 230 250, 252 246 M282 244 C 320 236, 360 256, 410 240" stroke="rgb(74 120 190 / 0.6)" strokeWidth="2" />
+          {/* Blok bangunan */}
+          {[
+            [24, 30, 92, 56],
+            [186, 26, 72, 34],
+            [330, 30, 54, 56],
+            [24, 160, 92, 52],
+            [300, 160, 84, 50],
+          ].map(([x, y, w, h]) => (
+            <rect key={`${x}-${y}`} x={x} y={y} width={w} height={h} fill="var(--color-kertas-tua)" strokeWidth="1" />
+          ))}
+          {/* Sekolah */}
+          <rect x="182" y="152" width="70" height="64" fill="var(--color-primary-100)" stroke="var(--color-primary-700)" strokeWidth="1.5" />
+          <path d="M182 152 l35 -18 l35 18" stroke="var(--color-primary-700)" />
+          {/* Pohon */}
+          <circle cx="60" cy="270" r="9" />
+          <circle cx="352" cy="270" r="11" />
+        </g>
+        <g fontFamily="Plus Jakarta Sans, sans-serif" fontSize="11" fill="var(--color-tinta-2)">
+          <text x="20" y="104">Jl. Merdeka</text>
+          <text x="168" y="296" transform="rotate(-90 168 296)">Jl. Melati</text>
+        </g>
       </svg>
-      <div className="absolute left-[44%] top-[22%] -translate-x-1/2 text-center">
-        <div className="relative mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary-600 text-white shadow-xl ring-4 ring-white transition group-hover:-translate-y-1">
-          <MapPin className="h-7 w-7" />
-          <span className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-primary-600" />
-        </div>
-        <span className="mt-3 inline-block rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-800 shadow">{SEKOLAH.nama}</span>
-      </div>
-      <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-primary-700 shadow">
+      <span className="absolute left-[54%] top-[38%] -translate-x-1/2 -translate-y-full text-center">
+        <span className="block rounded-full bg-primary-600 px-3 py-1 text-xs font-bold text-white shadow">{SEKOLAH.nama}</span>
+        <span aria-hidden="true" className="mx-auto block h-3 w-px bg-primary-700" />
+      </span>
+      <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-tinta px-4 py-2 text-xs font-bold text-white transition group-hover:bg-black">
         Buka di Google Maps <ArrowUpRight className="h-3.5 w-3.5" />
       </span>
     </a>
@@ -70,78 +84,98 @@ export default function Kontak() {
 
   return (
     <>
-      <PageHeader eyebrow="Kami Siap Membantu" title="Hubungi Kami" subtitle="Punya pertanyaan seputar sekolah, PPDB, atau administrasi? Pilih cara yang paling nyaman untuk Bapak/Ibu." />
+      <KepalaHalaman
+        jejak="Kontak"
+        judul="Ada pertanyaan? Kami siap membantu."
+        desc="Seputar sekolah, PPDB, atau administrasi. Pilih cara yang paling nyaman untuk Bapak/Ibu."
+        foto={FOTO.gedung}
+      />
 
-      <section className="relative z-10 mx-auto -mt-10 max-w-6xl px-4 sm:px-6">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {KANAL.map(({ icon: Icon, label, nilai, href, cls, ket }, i) => (
-            <Muncul key={label} jeda={i * 70}>
+      <section className={`${wadah} pt-14 lg:pt-20`}>
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {KANAL.map((k, i) => (
+            <li key={k.label}>
               <a
-                href={href}
-                target={href.startsWith('http') ? '_blank' : undefined}
+                href={k.href}
+                target={k.href.startsWith('http') ? '_blank' : undefined}
                 rel="noreferrer"
-                className="group flex h-full flex-col rounded-3xl bg-white p-5 shadow-lg shadow-slate-900/5 ring-1 ring-slate-100 transition hover:-translate-y-1 hover:shadow-xl"
+                className={`group flex h-full flex-col rounded-[1.75rem] p-6 transition hover:-translate-y-1 ${
+                  i === 0 ? 'bg-primary-600 text-white' : 'bg-kartu ring-1 ring-garis hover:shadow-[0_24px_50px_-30px_rgb(68_6_11/0.5)]'
+                }`}
               >
-                <span className={`grid h-12 w-12 place-items-center rounded-2xl text-white transition group-hover:scale-110 ${cls}`}>
-                  <Icon className="h-6 w-6" />
+                <span className={`grid h-12 w-12 place-items-center rounded-2xl ${i === 0 ? 'bg-white/15' : 'bg-primary-50 text-primary-700'}`}>
+                  <k.icon className="h-6 w-6" aria-hidden="true" />
                 </span>
-                <span className="mt-4 text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</span>
-                <span className={`mt-0.5 font-bold text-slate-900 [overflow-wrap:anywhere] ${nilai.includes('@') ? 'text-sm' : ''}`}>{nilai}</span>
-                <span className="mt-1 text-xs text-slate-500">{ket}</span>
+                <span className={`mt-6 text-sm font-bold uppercase tracking-[0.14em] ${i === 0 ? 'text-white/85' : 'text-primary-700'}`}>{k.label}</span>
+                <span className={`mt-1 block font-extrabold leading-snug tracking-tight ${k.nilai.includes('@') ? 'text-lg' : 'text-2xl'}`}>
+                  {/* Email dipatah setelah '@' agar tidak terpotong di tengah kata */}
+                  {k.nilai.includes('@') ? (
+                    <>
+                      {k.nilai.split('@')[0]}@<wbr />
+                      {k.nilai.split('@')[1]}
+                    </>
+                  ) : (
+                    k.nilai
+                  )}
+                </span>
+                <span className={`mt-1 block text-[15px] ${i === 0 ? 'text-white/85' : 'text-tinta-3'}`}>{k.ket}</span>
               </a>
-            </Muncul>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.2fr]">
-        <div className="space-y-5">
-          <PetaIlustrasi />
-          <Card className="p-6">
-            <div className="flex gap-4">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
-              <div>
-                <p className="font-bold text-slate-900">Alamat</p>
-                <p className="text-sm text-slate-600">{SEKOLAH.alamat}</p>
+      <section className={`${wadah} grid gap-6 py-6 pb-16 lg:grid-cols-[1fr_1.15fr] lg:pb-24`}>
+        <div className="space-y-4">
+          <SketsaPeta />
+          <dl className="divide-y divide-garis rounded-[2rem] bg-kartu px-6 py-2 text-[15px] ring-1 ring-garis">
+            {[
+              ['Alamat', SEKOLAH.alamat],
+              ['Jam operasional', SEKOLAH.jamOperasional],
+              ['Tutup', 'Sabtu, Minggu & hari libur nasional'],
+            ].map(([k, v]) => (
+              <div key={k} className="grid grid-cols-[8.5rem_1fr] gap-3 py-3.5">
+                <dt className="text-tinta-3">{k}</dt>
+                <dd className="font-semibold leading-relaxed">{v}</dd>
               </div>
-            </div>
-            <div className="mt-4 flex gap-4">
-              <Clock3 className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
-              <div>
-                <p className="font-bold text-slate-900">Jam Operasional</p>
-                <p className="text-sm text-slate-600">{SEKOLAH.jamOperasional}</p>
-                <p className="text-sm text-slate-600">Sabtu, Minggu & hari libur nasional: tutup</p>
-              </div>
-            </div>
-          </Card>
+            ))}
+          </dl>
         </div>
 
-        <Card className="p-6 sm:p-8">
-          <h2 className="text-2xl font-bold text-slate-900">Kirim Pesan</h2>
-          <p className="mt-1 text-sm text-slate-500">Kami akan membalas melalui WhatsApp pada jam kerja.</p>
-          {terkirim && (
-            <div className="mt-4">
-              <Alert>Terima kasih! Pesan Anda sudah kami terima.</Alert>
-            </div>
-          )}
-          {error && (
-            <div className="mt-4">
-              <Alert tone="error">{error}</Alert>
-            </div>
-          )}
-          <form onSubmit={kirim} className="relative mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-[2rem] bg-kartu p-6 ring-1 ring-garis sm:p-10">
+          <h2 className="text-4xl leading-tight">Kirim pesan</h2>
+          <Catatan className="mt-2">Kami balas lewat WhatsApp pada jam kerja.</Catatan>
+          <div aria-live="polite">
+            {terkirim && (
+              <div className="mt-5">
+                <Alert>Terima kasih! Pesan Anda sudah kami terima.</Alert>
+              </div>
+            )}
+            {error && (
+              <div className="mt-5" role="alert">
+                <Alert tone="error">{error}</Alert>
+              </div>
+            )}
+          </div>
+          <form onSubmit={kirim} className="relative mt-7 grid gap-5 sm:grid-cols-2">
             <JebakanBot value={jebakan} onChange={setJebakan} />
             <div>
-              <label className={labelCls} htmlFor="nama">Nama lengkap</label>
-              <input id="nama" required className={inputCls} placeholder="Nama Bapak/Ibu" />
+              <label className={labelIsian} htmlFor="nama">
+                Nama lengkap
+              </label>
+              <input id="nama" required className={isian} placeholder="Nama Bapak/Ibu" autoComplete="name" />
             </div>
             <div>
-              <label className={labelCls} htmlFor="hp">No. WhatsApp</label>
-              <input id="hp" required type="tel" className={inputCls} placeholder="08xx-xxxx-xxxx" />
+              <label className={labelIsian} htmlFor="hp">
+                No. WhatsApp
+              </label>
+              <input id="hp" required type="tel" className={isian} placeholder="08xx-xxxx-xxxx" autoComplete="tel" />
             </div>
             <div className="sm:col-span-2">
-              <label className={labelCls} htmlFor="topik">Topik</label>
-              <select id="topik" className={inputCls}>
+              <label className={labelIsian} htmlFor="topik">
+                Topik
+              </label>
+              <select id="topik" className={isian}>
                 <option>Informasi PPDB</option>
                 <option>Kunjungan sekolah</option>
                 <option>Akademik</option>
@@ -151,21 +185,23 @@ export default function Kontak() {
               </select>
             </div>
             <div className="sm:col-span-2">
-              <label className={labelCls} htmlFor="pesan">Pesan</label>
-              <textarea id="pesan" required rows={6} className={inputCls} placeholder="Tulis pertanyaan Anda..." />
+              <label className={labelIsian} htmlFor="pesan">
+                Pesan
+              </label>
+              <textarea id="pesan" required rows={6} className={isian} placeholder="Tulis pertanyaan Anda..." />
             </div>
             <div className="sm:col-span-2">
-              <button type="submit" className={`${btn.primary} w-full rounded-full! py-3 sm:w-auto sm:px-8`}>
-                <Send className="h-4 w-4" /> Kirim Pesan
+              <button type="submit" className={`${tombol.utama} w-full sm:w-auto sm:px-8`}>
+                <Send className="h-4 w-4" /> Kirim pesan
               </button>
             </div>
           </form>
-        </Card>
+        </div>
       </section>
 
-      <section className="bg-slate-50 py-16">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <SectionTitle eyebrow="FAQ" title="Mungkin jawabannya sudah ada di sini" />
+      <section className="bg-kertas-tua/70 py-20 lg:py-28">
+        <div className={`${wadah} grid gap-12 lg:grid-cols-[0.8fr_1.2fr]`}>
+          <JudulBagian label="Tanya jawab" judul="Mungkin jawabannya sudah ada di sini." className="lg:sticky lg:top-28 lg:self-start" />
           <Faq daftar={FAQ.slice(2)} />
         </div>
       </section>

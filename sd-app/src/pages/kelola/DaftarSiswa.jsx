@@ -5,7 +5,7 @@ import { teksJejak } from '../../components/PresensiOtp'
 import { Avatar, Badge, Card, DashHeader, EmptyState, Modal, Progres, STATUS_ABSEN, StatCard, btn, inputCls } from '../../components/ui'
 import { useLingkup } from '../../context/akses'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
-import { BIODATA, KELAS, KKTP } from '../../data/dummy'
+import { KELAS, KKTP } from '../../data/dummy'
 import { formatTanggal, parseKey, todayKey } from '../../utils/format'
 import { rekapNilai } from '../../utils/nilai'
 import { ekskulSiswa, infoSikap, ringkasSikap } from '../../utils/prestasi'
@@ -26,13 +26,15 @@ function DetailSiswa({ item, tanggal20, onClose }) {
   const { data } = useData()
   const { s, hadir, nilai, sikap } = item
   const hariIni = todayKey()
-  const bio = BIODATA[s.nis] ?? {}
+  const keluarga = (data.orangTua ?? []).find((k) => k.anak?.includes(s.nis))
   const ekskul = ekskulSiswa(data, s)
   const info = [
     ['NIS', s.nis],
     ['Jenis kelamin', s.jk === 'L' ? 'Laki-laki' : 'Perempuan'],
     ['Orang tua/wali', s.ortu || '–'],
-    ['Kontak orang tua', bio.teleponOrtu ?? '–'],
+    // Kontak keluarga hanya dikirim server ke wali kelasnya, Tata Usaha, BK, Kesiswaan, dan Kepala Sekolah
+    ['Kontak orang tua', keluarga?.whatsapp || (keluarga ? '–' : 'Hanya untuk wali kelas')],
+    ['Alamat', keluarga?.alamat || '–'],
     ['Ekstrakurikuler', ekskul.map((e) => e.nama).join(', ') || '–'],
   ]
 

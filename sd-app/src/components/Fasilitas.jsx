@@ -23,11 +23,13 @@ import {
 } from 'lucide-react'
 import { agendaPada } from './KalenderAkademik'
 import { TombolSalin } from './Spp'
-import { Alert, Badge, JebakanBot, btn, inputCls, labelCls } from './ui'
+import { isian, labelIsian, pilihan, tombol } from './Situs'
+import { Alert, Badge, JebakanBot } from './ui'
 import { useData } from '../context/DataContext'
 import { DENAH_GERBANG, DENAH_JALUR, DENAH_LAIN, DENAH_ZONA, FASILITAS, KUNJUNGAN, SEKOLAH, UKURAN_DENAH } from '../data/dummy'
 import { formatHari, isHariSekolah, parseKey, tambahHari, todayKey } from '../utils/format'
-import { catatKirim, kodeAcak, tungguKirim } from '../utils/keamanan'
+import { api } from '../utils/api'
+import { catatKirim, tungguKirim } from '../utils/keamanan'
 
 export const IKON_FASILITAS = {
   kelas: Building2,
@@ -222,7 +224,8 @@ const besok = () => tambahHari(todayKey(), 1)
 
 // Form penjadwalan kunjungan langsung ke sekolah
 export function FormKunjungan({ fasilitasAwal = [] }) {
-  const { data, tambah } = useData()
+  const { data, pesanKunjungan } = useData()
+  const [mengirim, setMengirim] = useState(false)
   const [form, setForm] = useState({
     nama: '',
     whatsapp: '',
@@ -243,45 +246,40 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
   const toggleFasilitas = (id) =>
     setForm({ ...form, fasilitas: form.fasilitas.includes(id) ? form.fasilitas.filter((x) => x !== id) : [...form.fasilitas, id] })
 
-  const kirim = (e) => {
+  const kirim = async (e) => {
     e.preventDefault()
+    if (mengirim) return
     if (libur) return setError('Kunjungan hanya tersedia pada hari sekolah (Senin – Jumat, bukan hari libur).')
     if (!form.sesi) return setError('Pilih sesi kunjungan.')
     if (terisi(form.sesi) >= KUNJUNGAN.kuotaPerSesi) return setError('Sesi ini sudah penuh. Silakan pilih sesi atau tanggal lain.')
     if (jebakan) return setError('Permintaan tidak dapat diproses. Muat ulang halaman lalu coba lagi.')
     const tunggu = tungguKirim('kunjungan', 3, 10)
     if (tunggu) return setError(`Terlalu banyak permintaan dari perangkat ini. Coba lagi dalam ${tunggu} menit.`)
-    const kunjungan = {
-      ...form,
-      jumlah: Number(form.jumlah),
-      // Kode acak 6 huruf agar status kunjungan orang lain tidak bisa ditebak
-      kode: `KJG-${kodeAcak(6)}`,
-      status: 'Menunggu',
-      dibuat: new Date().toISOString(),
-    }
-    tambah('kunjungan', kunjungan)
+    // Kuota sesi diperiksa ulang server; kode acak 6 huruf dibuat server agar tidak bisa ditebak
+    setMengirim(true)
+    const { kunjungan, galat } = await pesanKunjungan({ ...form, jumlah: Number(form.jumlah) })
+    setMengirim(false)
+    if (galat) return setError(galat)
     catatKirim('kunjungan', 10)
     setBerhasil(kunjungan)
   }
 
   if (berhasil) {
     return (
-      <div className="py-2 text-center">
-        <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-100 text-emerald-600">
-          <CheckCircle2 className="h-9 w-9" />
-        </span>
-        <p className="mt-4 text-xl font-extrabold text-slate-900">Permintaan kunjungan terkirim!</p>
-        <p className="mt-2 text-sm text-slate-600">
+      <div className="py-2">
+        <CheckCircle2 className="h-10 w-10 text-emerald-700" aria-hidden="true" />
+        <p className="mt-4 text-3xl font-extrabold tracking-tight leading-tight">Permintaan kunjungan terkirim.</p>
+        <p className="angka mt-2 text-tinta-2">
           {formatHari(berhasil.tanggal)}, pukul {berhasil.sesi} WIB
         </p>
-        <div className="mx-auto mt-5 max-w-xs rounded-2xl border-2 border-dashed border-primary-300 bg-primary-50 p-4">
-          <p className="text-xs text-primary-700">Kode kunjungan Anda</p>
-          <p className="mt-1 font-mono text-3xl font-extrabold tracking-wider text-primary-700">{berhasil.kode}</p>
-          <div className="mt-2">
+        <div className="mt-6 rounded-xl border-2 border-dashed border-tinta/40 bg-white p-5">
+          <p className="text-sm text-tinta-3">Kode kunjungan Anda</p>
+          <p className="mt-1 font-mono text-3xl font-bold tracking-wider text-primary-700">{berhasil.kode}</p>
+          <div className="mt-3">
             <TombolSalin teks={berhasil.kode} label="Salin kode" />
           </div>
         </div>
-        <p className="mt-5 text-sm text-slate-600">
+        <p className="mt-5 text-[15px] leading-relaxed text-tinta-2">
           Tata Usaha akan mengonfirmasi melalui WhatsApp <b>{berhasil.whatsapp}</b>. Simpan kode ini untuk mengecek status di halaman Fasilitas.
         </p>
       </div>
@@ -289,20 +287,24 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
   }
 
   return (
-    <form onSubmit={kirim} className="relative space-y-4">
+    <form onSubmit={kirim} className="relative space-y-5">
       <JebakanBot value={jebakan} onChange={setJebakan} />
-      {error && <Alert tone="error">{error}</Alert>}
-      <div className="grid gap-4 sm:grid-cols-2">
+      {error && (
+        <div role="alert">
+          <Alert tone="error">{error}</Alert>
+        </div>
+      )}
+      <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="kj-nama" className={labelCls}>Nama lengkap</label>
-          <input id="kj-nama" required value={form.nama} onChange={set('nama')} className={inputCls} placeholder="Nama Bapak/Ibu" />
+          <label htmlFor="kj-nama" className={labelIsian}>Nama lengkap</label>
+          <input id="kj-nama" required value={form.nama} onChange={set('nama')} className={isian} placeholder="Nama Bapak/Ibu" />
         </div>
         <div>
-          <label htmlFor="kj-wa" className={labelCls}>No. WhatsApp</label>
-          <input id="kj-wa" required type="tel" value={form.whatsapp} onChange={set('whatsapp')} className={inputCls} placeholder="08xx-xxxx-xxxx" />
+          <label htmlFor="kj-wa" className={labelIsian}>No. WhatsApp</label>
+          <input id="kj-wa" required type="tel" value={form.whatsapp} onChange={set('whatsapp')} className={isian} placeholder="08xx-xxxx-xxxx" />
         </div>
         <div>
-          <label htmlFor="kj-tanggal" className={labelCls}>Tanggal kunjungan</label>
+          <label htmlFor="kj-tanggal" className={labelIsian}>Tanggal kunjungan</label>
           <input
             id="kj-tanggal"
             type="date"
@@ -313,17 +315,17 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
               setForm({ ...form, tanggal: e.target.value, sesi: '' })
               setError('')
             }}
-            className={inputCls}
+            className={isian}
           />
           {form.tanggal && (
-            <p className={`mt-1 text-xs ${libur ? 'font-semibold text-rose-600' : 'text-slate-500'}`}>
+            <p className={`mt-1.5 text-sm ${libur ? 'font-semibold text-rose-700' : 'text-tinta-3'}`}>
               {libur ? 'Hari libur — pilih Senin sampai Jumat.' : formatHari(form.tanggal)}
             </p>
           )}
         </div>
         <div>
-          <label htmlFor="kj-jumlah" className={labelCls}>Jumlah pengunjung</label>
-          <select id="kj-jumlah" value={form.jumlah} onChange={set('jumlah')} className={inputCls}>
+          <label htmlFor="kj-jumlah" className={labelIsian}>Jumlah pengunjung</label>
+          <select id="kj-jumlah" value={form.jumlah} onChange={set('jumlah')} className={isian}>
             {Array.from({ length: KUNJUNGAN.maksOrang }, (_, i) => (
               <option key={i + 1} value={i + 1}>
                 {i + 1} orang
@@ -334,8 +336,10 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
       </div>
 
       <div>
-        <span className={labelCls}>Sesi</span>
-        <div className="grid grid-cols-3 gap-2">
+        <p id="kj-sesi-label" className={labelIsian}>
+          Sesi
+        </p>
+        <div role="group" aria-labelledby="kj-sesi-label" className="grid grid-cols-3 gap-2">
           {KUNJUNGAN.sesi.map((s) => {
             const sisa = KUNJUNGAN.kuotaPerSesi - terisi(s)
             const penuh = !form.tanggal || libur || sisa <= 0
@@ -344,13 +348,14 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
                 key={s}
                 type="button"
                 disabled={penuh}
+                aria-pressed={form.sesi === s}
                 onClick={() => setForm({ ...form, sesi: s })}
-                className={`rounded-xl border-2 px-2 py-2.5 text-center transition disabled:cursor-not-allowed disabled:opacity-40 ${
-                  form.sesi === s ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'
-                }`}
+                className={`px-2 text-center ${pilihan(form.sesi === s)}`}
               >
-                <span className="block text-sm font-bold">{s}</span>
-                <span className="block text-[11px] text-slate-500">{!form.tanggal ? 'Pilih tanggal' : sisa > 0 ? `Sisa ${sisa}` : 'Penuh'}</span>
+                <span className="angka block text-sm font-bold">{s}</span>
+                <span className={`block text-xs font-normal ${form.sesi === s ? 'text-krem' : 'text-tinta-3'}`}>
+                  {!form.tanggal ? 'Pilih tanggal' : sisa > 0 ? `Sisa ${sisa}` : 'Penuh'}
+                </span>
               </button>
             )
           })}
@@ -358,8 +363,8 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
       </div>
 
       <div>
-        <label htmlFor="kj-keperluan" className={labelCls}>Keperluan</label>
-        <select id="kj-keperluan" value={form.keperluan} onChange={set('keperluan')} className={inputCls}>
+        <label htmlFor="kj-keperluan" className={labelIsian}>Keperluan</label>
+        <select id="kj-keperluan" value={form.keperluan} onChange={set('keperluan')} className={isian}>
           {KUNJUNGAN.keperluan.map((k) => (
             <option key={k}>{k}</option>
           ))}
@@ -367,16 +372,17 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
       </div>
 
       <div>
-        <span className={labelCls}>Fasilitas yang ingin dilihat (opsional)</span>
-        <div className="flex flex-wrap gap-2">
+        <p id="kj-fasilitas-label" className={labelIsian}>
+          Fasilitas yang ingin dilihat (opsional)
+        </p>
+        <div role="group" aria-labelledby="kj-fasilitas-label" className="flex flex-wrap gap-2">
           {FASILITAS.map((f) => (
             <button
               key={f.id}
               type="button"
+              aria-pressed={form.fasilitas.includes(f.id)}
               onClick={() => toggleFasilitas(f.id)}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-                form.fasilitas.includes(f.id) ? 'border-primary-500 bg-primary-600 text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'
-              }`}
+              className={`py-2! text-sm! ${pilihan(form.fasilitas.includes(f.id))}`}
             >
               {f.nama}
             </button>
@@ -385,14 +391,14 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
       </div>
 
       <div>
-        <label htmlFor="kj-catatan" className={labelCls}>Catatan (opsional)</label>
-        <textarea id="kj-catatan" rows={3} value={form.catatan} onChange={set('catatan')} className={inputCls} placeholder="Misalnya: ingin bertanya tentang program ekstrakurikuler." />
+        <label htmlFor="kj-catatan" className={labelIsian}>Catatan (opsional)</label>
+        <textarea id="kj-catatan" rows={3} value={form.catatan} onChange={set('catatan')} className={isian} placeholder="Misalnya: ingin bertanya tentang program ekstrakurikuler." />
       </div>
 
-      <button type="submit" className={`${btn.primary} w-full py-3`}>
-        Kirim Permintaan Kunjungan
+      <button type="submit" disabled={mengirim} className={`${tombol.utama} w-full`}>
+        {mengirim ? 'Mengirim...' : 'Kirim Permintaan Kunjungan'}
       </button>
-      <p className="text-center text-xs text-slate-500">
+      <p className="text-center text-sm text-tinta-3">
         Kunjungan didampingi guru/staf {SEKOLAH.nama}. Mohon membawa kartu identitas.
       </p>
     </form>
@@ -401,46 +407,65 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
 
 // Cek status kunjungan dengan kode booking
 export function CekKunjungan() {
-  const { data } = useData()
   const [kode, setKode] = useState('')
   const [hasil, setHasil] = useState(undefined)
+  const [galat, setGalat] = useState('')
   const [batas, setBatas] = useState(0)
 
-  // Dibatasi agar kode orang lain tidak bisa ditebak berulang-ulang
-  const cek = (e) => {
+  // Dicocokkan di server; dibatasi agar kode orang lain tidak bisa ditebak berulang-ulang
+  const cek = async (e) => {
     e.preventDefault()
     const tunggu = tungguKirim('cek-kunjungan', 10, 10)
     setBatas(tunggu)
+    setGalat('')
     if (tunggu) return setHasil(undefined)
     catatKirim('cek-kunjungan', 10)
-    setHasil(data.kunjungan.find((k) => k.kode.toLowerCase() === kode.trim().toLowerCase()) ?? null)
+    try {
+      setHasil((await api('/kunjungan/cek', { method: 'POST', body: { kode: kode.trim() } })).kunjungan)
+    } catch (e) {
+      setHasil(undefined)
+      setGalat(e.message)
+    }
   }
 
   return (
     <div>
-      <form onSubmit={cek} className="flex gap-2">
-        <input value={kode} onChange={(e) => setKode(e.target.value)} placeholder="Contoh: KJG-7QX2MP" className={`${inputCls} font-mono uppercase`} aria-label="Kode kunjungan" />
-        <button type="submit" className={btn.primary} aria-label="Cek status">
-          <Search className="h-4 w-4" />
-        </button>
-      </form>
-      {batas > 0 && <p className="mt-3 text-sm text-rose-600">Terlalu banyak pengecekan. Coba lagi dalam {batas} menit.</p>}
-      {hasil === null && <p className="mt-3 text-sm text-rose-600">Kode tidak ditemukan. Periksa kembali kode Anda.</p>}
-      {hasil && (
-        <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm">
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-mono font-bold text-slate-800">{hasil.kode}</span>
-            <Badge className={STATUS_KUNJUNGAN[hasil.status]}>{hasil.status}</Badge>
-          </div>
-          <p className="mt-2 text-slate-700">
-            {formatHari(hasil.tanggal)} · {hasil.sesi}
-          </p>
-          <p className="text-slate-500">
-            {hasil.nama} · {hasil.jumlah} orang
-          </p>
-          {hasil.catatanTu && <p className="mt-2 rounded-lg bg-white px-3 py-2 text-slate-600">💬 {hasil.catatanTu}</p>}
+      <form onSubmit={cek}>
+        <label htmlFor="cek-kode" className={labelIsian}>
+          Kode kunjungan
+        </label>
+        <div className="flex gap-2">
+          <input id="cek-kode" value={kode} onChange={(e) => setKode(e.target.value)} placeholder="Contoh: KJG-7QX2MP" className={`${isian} font-mono uppercase`} />
+          <button type="submit" className={`${tombol.utama} shrink-0 px-4!`}>
+            <Search className="h-4 w-4" /> Cek
+          </button>
         </div>
-      )}
+      </form>
+      <div aria-live="polite">
+        {batas > 0 && <p className="mt-3 text-[15px] text-rose-700">Terlalu banyak pengecekan. Coba lagi dalam {batas} menit.</p>}
+        {galat && <p className="mt-3 text-[15px] text-rose-700">{galat}</p>}
+        {hasil === null && <p className="mt-3 text-[15px] text-rose-700">Kode tidak ditemukan. Periksa kembali kode Anda.</p>}
+        {hasil && (
+          <div className="mt-5 border-t border-garis pt-4 text-[15px]">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-mono font-bold">{hasil.kode}</span>
+              <Badge className={STATUS_KUNJUNGAN[hasil.status]}>{hasil.status}</Badge>
+            </div>
+            <p className="angka mt-2">
+              {formatHari(hasil.tanggal)} · {hasil.sesi}
+            </p>
+            <p className="text-tinta-3">
+              {hasil.nama} · {hasil.jumlah} orang
+            </p>
+            {hasil.catatanTu && (
+              <p className="mt-3 border-l-2 border-primary-600 pl-3 text-tinta-2">
+                <span className="block text-sm text-tinta-3">Catatan Tata Usaha</span>
+                {hasil.catatanTu}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

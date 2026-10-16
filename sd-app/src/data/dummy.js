@@ -1,6 +1,5 @@
 // Data contoh (dummy). Nanti diganti dengan data dari backend/API.
 import { toKey } from '../utils/format'
-import { bacaHash } from '../utils/keamanan'
 
 export const SEKOLAH = {
   nama: 'SD Harapan Gemilang',
@@ -360,8 +359,9 @@ export const KUNJUNGAN = {
   keperluan: ['Calon orang tua murid (PPDB)', 'Orang tua siswa', 'Instansi / mitra sekolah', 'Lainnya'],
 }
 
-// Ekstrakurikuler. Siswa boleh memilih maksimal MAKS_EKSKUL kegiatan pilihan;
-// `wajib` diikuti otomatis oleh siswa dengan kelas >= minKelas.
+// Ekstrakurikuler. Siswa boleh memilih kegiatan sebanyak apa pun selama jadwalnya tidak bentrok
+// (lihat ekskulBentrok di src/utils/prestasi.js); `wajib` diikuti otomatis oleh siswa dengan
+// kelas >= minKelas. Format `hari`: 'Selasa' atau 'Senin & Kamis', `jam`: '13.00 – 14.30'.
 export const EKSKUL = [
   { id: 'pramuka', minKelas: 3, wajib: true, nama: 'Pramuka', ikon: 'tenda', hari: 'Jumat', jam: '10.50 – 12.00', pembina: 'Kak Rudi Hartono', untuk: 'Wajib kelas 3 – 6', warna: 'bg-yellow-100 text-yellow-800', desc: 'Belajar tali-temali, baris-berbaris, dan kemandirian lewat kegiatan Siaga & Penggalang.' },
   { id: 'robotik', minKelas: 3, nama: 'Robotik', ikon: 'robot', hari: 'Selasa', jam: '13.00 – 14.30', pembina: 'Hendra Wijaya, S.Kom.', untuk: 'Kelas 3 – 6', warna: 'bg-cyan-100 text-cyan-800', desc: 'Merakit dan memprogram robot sederhana. Juara 1 tingkat kota 2026.' },
@@ -373,7 +373,6 @@ export const EKSKUL = [
   { id: 'bulutangkis', minKelas: 3, nama: 'Bulu Tangkis', ikon: 'raket', hari: 'Senin', jam: '13.00 – 14.30', pembina: 'Pelatih PB Harapan', untuk: 'Kelas 3 – 6', warna: 'bg-sky-100 text-sky-800', desc: 'Teknik dasar servis, smash, dan footwork bersama pelatih klub.' },
   { id: 'english', minKelas: 3, nama: 'English Club', ikon: 'bahasa', hari: 'Kamis', jam: '13.00 – 14.00', pembina: 'Maria Natalia, S.Pd.', untuk: 'Kelas 3 – 6', warna: 'bg-indigo-100 text-indigo-800', desc: 'Storytelling, spelling bee, dan permainan bahasa Inggris.' },
 ]
-export const MAKS_EKSKUL = 2
 
 // Kategori poin sikap (apresiasi & catatan perbaikan) yang diberikan guru
 export const SIKAP = {
@@ -407,10 +406,10 @@ export const GURU_AWAL = [
   { id: 'g2', nama: 'Andi Pratama, S.Pd.', nip: '198805122014031002', jabatan: 'Wali Kelas 4A', mapel: 'Guru Kelas', peran: ['wali_kelas'], kelas: '4A' },
   { id: 'g3', nama: 'Rina Marlina, S.Pd.', nip: '199001202015032003', jabatan: 'Wakasek Kurikulum', mapel: 'Guru Kelas 1A', peran: ['wali_kelas', 'wakasek_kurikulum'], kelas: '1A' },
   { id: 'g4', nama: 'Dewi Kartika, S.Pd.', nip: '198707072012032004', jabatan: 'Wali Kelas 6A', mapel: 'Guru Kelas', peran: ['wali_kelas'], kelas: '6A' },
-  { id: 'g5', nama: 'Budi Santoso, S.Pd.', nip: '198511302010011005', jabatan: 'Wakasek Kesiswaan', mapel: 'PJOK', peran: ['guru_mapel', 'wakasek_kesiswaan'], kelas: '' },
-  { id: 'g6', nama: 'Nur Aisyah, S.Pd.I.', nip: '199203182017032006', jabatan: 'Guru Mapel', mapel: 'Pendidikan Agama', peran: ['guru_mapel'], kelas: '' },
-  { id: 'g7', nama: 'Maria Natalia, S.Pd.', nip: '199406252019032007', jabatan: 'Guru Mapel', mapel: 'Bahasa Inggris', peran: ['guru_mapel'], kelas: '' },
-  { id: 'g8', nama: 'Hendra Wijaya, S.Kom.', nip: '199109092016011008', jabatan: 'Guru Mapel', mapel: 'Informatika', peran: ['guru_mapel'], kelas: '' },
+  { id: 'g5', nama: 'Budi Santoso, S.Pd.', nip: '198511302010011005', jabatan: 'Wakasek Kesiswaan', mapel: 'PJOK', peran: ['guru_mapel', 'wakasek_kesiswaan'], kelas: '', mapelDiampu: ['pjok', 'senam'] },
+  { id: 'g6', nama: 'Nur Aisyah, S.Pd.I.', nip: '199203182017032006', jabatan: 'Guru Mapel', mapel: 'Pendidikan Agama', peran: ['guru_mapel'], kelas: '', mapelDiampu: ['agama'] },
+  { id: 'g7', nama: 'Maria Natalia, S.Pd.', nip: '199406252019032007', jabatan: 'Guru Mapel', mapel: 'Bahasa Inggris', peran: ['guru_mapel'], kelas: '', mapelDiampu: ['bing'] },
+  { id: 'g8', nama: 'Hendra Wijaya, S.Kom.', nip: '199109092016011008', jabatan: 'Guru Mapel', mapel: 'Informatika', peran: ['guru_mapel'], kelas: '', mapelDiampu: ['info'] },
   { id: 'g9', nama: 'Sri Handayani, S.E.', nip: '', jabatan: 'Kepala Tata Usaha', mapel: '-', peran: ['tata_usaha'], kelas: '' },
   { id: 'g10', nama: 'Yusuf Hidayat, S.IP.', nip: '', jabatan: 'Pustakawan', mapel: '-', peran: ['pustakawan'], kelas: '' },
   { id: 'g11', nama: 'Agus Setiawan, S.T.', nip: '198602142011011011', jabatan: 'Wakasek Sarana & Prasarana', mapel: 'Matematika', peran: ['guru_mapel', 'wakasek_sarpras'], kelas: '' },
@@ -689,22 +688,32 @@ export const PPDB = {
   ],
 }
 
-// Mata pelajaran. `absensi: false` = kegiatan yang tidak dihitung dalam absensi per mapel.
+/*
+  Mata pelajaran. `absensi: false` = kegiatan yang tidak dihitung dalam absensi per mapel.
+  Pengampu tiap mapel tersimpan di database (Data Guru & Staf → "Mapel yang diampu"); mapel yang tidak
+  diampu guru mapel diajar wali kelas. `pengampu` hanya label kegiatan bersama yang tidak punya satu guru.
+*/
 export const MAPEL = {
-  upacara: { nama: 'Upacara Bendera', guru: 'Semua guru', warna: 'bg-primary-100 text-primary-700', absensi: false },
-  senam: { nama: 'Senam Pagi', guru: 'Budi Santoso, S.Pd.', warna: 'bg-lime-100 text-lime-700', absensi: false },
-  mtk: { nama: 'Matematika', guru: 'Andi Pratama, S.Pd.', warna: 'bg-sky-100 text-sky-700' },
-  bindo: { nama: 'Bahasa Indonesia', guru: 'Andi Pratama, S.Pd.', warna: 'bg-orange-100 text-orange-700' },
-  ipas: { nama: 'IPAS', guru: 'Andi Pratama, S.Pd.', warna: 'bg-emerald-100 text-emerald-700' },
-  pancasila: { nama: 'Pendidikan Pancasila', guru: 'Andi Pratama, S.Pd.', warna: 'bg-rose-100 text-rose-700' },
-  senbud: { nama: 'Seni Budaya', guru: 'Andi Pratama, S.Pd.', warna: 'bg-fuchsia-100 text-fuchsia-700' },
-  mulok: { nama: 'Bahasa Daerah', guru: 'Andi Pratama, S.Pd.', warna: 'bg-amber-100 text-amber-700' },
-  agama: { nama: 'Pendidikan Agama', guru: 'Nur Aisyah, S.Pd.I.', warna: 'bg-teal-100 text-teal-700' },
-  bing: { nama: 'Bahasa Inggris', guru: 'Maria Natalia, S.Pd.', warna: 'bg-indigo-100 text-indigo-700' },
-  pjok: { nama: 'PJOK', guru: 'Budi Santoso, S.Pd.', warna: 'bg-lime-100 text-lime-700' },
-  info: { nama: 'Informatika', guru: 'Hendra Wijaya, S.Kom.', warna: 'bg-cyan-100 text-cyan-700' },
-  pramuka: { nama: 'Pramuka', guru: 'Pembina Pramuka', warna: 'bg-yellow-100 text-yellow-800' },
+  upacara: { nama: 'Upacara Bendera', pengampu: 'Semua guru', warna: 'bg-primary-100 text-primary-700', absensi: false },
+  senam: { nama: 'Senam Pagi', warna: 'bg-lime-100 text-lime-700', absensi: false },
+  mtk: { nama: 'Matematika', warna: 'bg-sky-100 text-sky-700' },
+  bindo: { nama: 'Bahasa Indonesia', warna: 'bg-orange-100 text-orange-700' },
+  ipas: { nama: 'IPAS', warna: 'bg-emerald-100 text-emerald-700' },
+  pancasila: { nama: 'Pendidikan Pancasila', warna: 'bg-rose-100 text-rose-700' },
+  senbud: { nama: 'Seni Budaya', warna: 'bg-fuchsia-100 text-fuchsia-700' },
+  mulok: { nama: 'Bahasa Daerah', warna: 'bg-amber-100 text-amber-700' },
+  agama: { nama: 'Pendidikan Agama', warna: 'bg-teal-100 text-teal-700' },
+  bing: { nama: 'Bahasa Inggris', warna: 'bg-indigo-100 text-indigo-700' },
+  pjok: { nama: 'PJOK', warna: 'bg-lime-100 text-lime-700' },
+  info: { nama: 'Informatika', warna: 'bg-cyan-100 text-cyan-700' },
+  pramuka: { nama: 'Pramuka', pengampu: 'Pembina Pramuka', warna: 'bg-yellow-100 text-yellow-800' },
 }
+
+// Mapel yang bisa dipilih sebagai "mapel yang diampu" guru mapel (bukan kegiatan bersama)
+export const MAPEL_DIAMPU = Object.keys(MAPEL).filter((k) => !MAPEL[k].pengampu)
+
+// Pilihan biodata guru & staf (sama dengan validasi di GuruController Laravel)
+export const STATUS_PEGAWAI = ['PNS', 'PPPK', 'GTY', 'GTT', 'PTY', 'Honorer']
 
 // Pembagian waktu harian (1 sesi = 2 jam pelajaran @35 menit)
 export const SESI = [
@@ -733,9 +742,6 @@ export const JAM_SEKOLAH = [
 ]
 
 export const HARI_SEKOLAH = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
-
-// Mapel yang diajar guru mapel khusus (bukan wali kelas). Mapel lain diajar wali kelas masing-masing.
-export const MAPEL_GURU_KHUSUS = ['agama', 'bing', 'pjok', 'info']
 
 // Jadwal kelas 4A disusun manual; kelas lain dibuat dengan pola yang sama oleh buatJadwal().
 const JADWAL_4A = {
@@ -838,7 +844,7 @@ export const TUGAS_AWAL = [
   { id: 't10', kelas: '6A', mapel: 'mtk', judul: 'Latihan Soal Numerasi', deskripsi: 'Kerjakan 20 soal latihan numerasi di lembar kerja.', diberikan: relatif(-3), tenggat: relatif(2) },
 ]
 
-// Biodata lengkap (contoh hanya untuk siswa demo)
+// Biodata lengkap (contoh hanya untuk siswa demo). Alamat & kontak keluarga kini tersimpan di database (Data Orang Tua).
 export const BIODATA = {
   230401: {
     nisn: '0151234567',
@@ -846,14 +852,14 @@ export const BIODATA = {
     tanggalLahir: '2016-05-14',
     agama: 'Islam',
     golonganDarah: 'O',
-    alamat: 'Jl. Melati No. 12, Kel. Sukamaju, Kota Harapan',
-    teleponOrtu: '0812-1111-2222',
     ekskul: ['robotik', 'futsal'],
   },
 }
 
-// Akun demo — HANYA untuk tampilan frontend, bukan sistem login sungguhan
-// Akun role 'staf' terhubung ke data guru lewat `guruId`, sehingga jabatannya
+// Akun demo untuk tombol isi-cepat di halaman login. Akun sungguhan (termasuk kepala sekolah)
+// tersimpan di database Laravel (tabel users), dan password diperiksa di sana. Daftar ini sama
+// dengan seeder Laravel (database/seeders/data/akun-demo.json); hapus akun demo sebelum dipakai
+// sungguhan. Akun role 'staf' terhubung ke data guru lewat `guruId`, sehingga jabatannya
 // mengikuti pengaturan Kepala Sekolah di menu Data Guru & Staf.
 export const AKUN_DEMO = [
   { username: 'siswa', password: 'siswa123', role: 'siswa', label: 'Siswa', nama: 'Rafa Aditya', nis: '230401', kelas: '4A' },
@@ -868,14 +874,5 @@ export const AKUN_DEMO = [
   { username: 'bk', password: 'bk123', role: 'staf', label: 'Guru BK', nama: 'Laila Fitriani, S.Psi.', guruId: 'g12' },
   { username: 'satpam', password: 'satpam123', role: 'staf', label: 'Satpam', nama: 'Joko Susilo', guruId: 'g13' },
 ]
-
-// Akun pengguna sungguhan — TIDAK ditampilkan di daftar akun demo halaman login.
-// Username ditulis huruf kecil; saat login, huruf besar/kecil tidak dibedakan.
-// Password TIDAK disimpan di kode: yang ada hanya hash PBKDF2 dari sd-app/.env.local
-// (buat dengan `npm run hash-password`, lihat .env.example). Akun tanpa hash dinonaktifkan.
-// Pindahkan ke database Laravel saat backend siap.
-export const AKUN_TERDAFTAR = [
-  { username: 'raymond fernando', hash: bacaHash(import.meta.env.VITE_HASH_KEPSEK), role: 'kepsek', label: 'Kepala Sekolah', nama: 'Raymond Fernando' },
-].filter((a) => a.hash)
 
 export const LABEL_ROLE = { siswa: 'Siswa', ortu: 'Orang Tua', staf: 'Guru & Staf', kepsek: 'Kepala Sekolah' }

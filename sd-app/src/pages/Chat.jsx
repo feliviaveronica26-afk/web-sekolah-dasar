@@ -32,8 +32,8 @@ import {
 } from 'lucide-react'
 import { Avatar, Modal, btn, inputCls } from '../components/ui'
 import { useChat, useChatSaya } from '../context/ChatContext'
-import { useData } from '../context/DataContext'
-import { perkecilFoto, simpanBerkas, urlBerkas } from '../utils/berkasChat'
+import { useData, useSegarCepat } from '../context/DataContext'
+import { perkecilFoto, urlBerkas } from '../utils/berkasChat'
 import {
   MAKS_DURASI_SUARA,
   MAKS_TEKS,
@@ -56,7 +56,7 @@ import {
   profil,
   ringkas,
 } from '../utils/chat'
-import { formatTanggal, tambahHari, toKey, todayKey, uid } from '../utils/format'
+import { formatTanggal, tambahHari, toKey, todayKey } from '../utils/format'
 
 const PER_HALAMAN = 60
 const jam = (iso) => new Date(iso).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.')
@@ -121,18 +121,11 @@ function tautkan(teks) {
   )
 }
 
+// Berkas diambil langsung dari server; jika gagal dimuat (mis. sudah dihapus) tampil keterangan
 function useUrlBerkas(id) {
-  const [hasil, setHasil] = useState({ url: null, status: 'memuat' })
-  useEffect(() => {
-    let aktif = true
-    urlBerkas(id)
-      .then((url) => aktif && setHasil({ url, status: url ? 'siap' : 'hilang' }))
-      .catch(() => aktif && setHasil({ url: null, status: 'hilang' }))
-    return () => {
-      aktif = false
-    }
-  }, [id])
-  return hasil
+  const [hilang, setHilang] = useState(false)
+  useEffect(() => setHilang(false), [id])
+  return { url: urlBerkas(id), status: hilang ? 'hilang' : 'siap', onError: () => setHilang(true) }
 }
 
 function PemutarSuara({ url, durasi }) {
@@ -191,17 +184,16 @@ const IKON_DOKUMEN = {
 }
 
 function Lampiran({ l, onLihatFoto }) {
-  const { url, status } = useUrlBerkas(l.id)
-  if (status === 'memuat') return <div className="h-16 w-52 max-w-full animate-pulse rounded-xl bg-current/10" />
-  if (status === 'hilang') return <p className="rounded-xl bg-current/10 px-3 py-2 text-xs italic opacity-80">Berkas tidak tersedia di perangkat ini</p>
+  const { url, status, onError } = useUrlBerkas(l.id)
+  if (status === 'hilang') return <p className="rounded-xl bg-current/10 px-3 py-2 text-xs italic opacity-80">Berkas tidak bisa dimuat</p>
   if (l.jenis === 'foto') {
     return (
       <button type="button" onClick={() => onLihatFoto({ url, nama: l.nama })} className="block overflow-hidden rounded-xl" aria-label={`Lihat foto ${l.nama}`}>
-        <img src={url} alt={l.nama} loading="lazy" className="max-h-72 w-full max-w-xs object-cover" />
+        <img src={url} alt={l.nama} loading="lazy" onError={onError} className="max-h-72 w-full max-w-xs object-cover" />
       </button>
     )
   }
-  if (l.jenis === 'video') return <video src={url} controls preload="metadata" className="max-h-72 w-full max-w-xs rounded-xl bg-black" />
+  if (l.jenis === 'video') return <video src={url} controls preload="metadata" onError={onError} className="max-h-72 w-full max-w-xs rounded-xl bg-black" />
   if (l.jenis === 'suara') return <PemutarSuara url={url} durasi={l.durasi} />
   if (l.jenis === 'audio') {
     return (
@@ -378,6 +370,8 @@ const MENU_LAMPIRAN = [
 ]
 
 function Penyusun({ pid, onKirim }) {
+  const { batasBerkas } = useData()
+  const maksUkuran = Math.min(MAKS_UKURAN, batasBerkas ?? MAKS_UKURAN)
   const [teks, setTeks] = useState('')
   const [lampiran, setLampiran] = useState(null) // { blob, jenis, nama, pratinjau }
   const [menu, setMenu] = useState(false)
@@ -411,7 +405,7 @@ function Penyusun({ pid, onKirim }) {
     if (!file) return
     const jenis = jenisBerkas(file)
     if (!jenis) return setError('Jenis berkas ini tidak didukung. Kirim foto, video, audio/lagu, atau dokumen (PDF, Word, Excel, PowerPoint).')
-    if (file.size > MAKS_UKURAN) return setError(`Ukuran berkas maksimal ${formatUkuran(MAKS_UKURAN)} (berkas ini ${formatUkuran(file.size)}).`)
+    if (file.size > maksUkuran) return setError(`Ukuran berkas maksimal ${formatUkuran(maksUkuran)} (berkas ini ${formatUkuran(file.size)}).`)
     let blob = file
     let nama = namaAman(file.name)
     if (jenis === 'foto') {
@@ -423,24 +417,14 @@ function Penyusun({ pid, onKirim }) {
     teksRef.current?.focus()
   }
 
+  // Kirim ke server; berkas diunggah bersama pesannya
   const simpanDanKirim = async (isi, berkas) => {
     setSibuk(true)
     setError('')
-    try {
-      let meta
-      if (berkas) {
-        const id = `b${uid()}${uid()}`
-        await simpanBerkas(id, berkas.blob)
-        meta = { id, jenis: berkas.jenis, nama: berkas.nama, ukuran: berkas.blob.size, mime: berkas.blob.type, ...(berkas.durasi && { durasi: berkas.durasi }) }
-      }
-      onKirim({ ...(isi && { teks: isi }), ...(meta && { lampiran: meta }) })
-      return true
-    } catch (e) {
-      setError(e?.name === 'QuotaExceededError' ? 'Penyimpanan perangkat penuh. Hapus beberapa berkas lama lalu coba lagi.' : 'Berkas gagal dikirim. Coba lagi.')
-      return false
-    } finally {
-      setSibuk(false)
-    }
+    const galat = await onKirim({ teks: isi, berkas: berkas && { blob: berkas.blob, jenis: berkas.jenis, nama: berkas.nama, durasi: berkas.durasi } })
+    setSibuk(false)
+    if (galat) setError(galat)
+    return !galat
   }
 
   const kirim = async () => {
@@ -843,7 +827,7 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
       </div>
 
       {bisaKirim ? (
-        <Penyusun pid={pid} onKirim={(isi) => kirim(pid, saya, isi)} />
+        <Penyusun pid={pid} onKirim={(isi) => kirim(pid, isi)} />
       ) : (
         <p className="flex items-center justify-center gap-2 border-t border-slate-200 bg-white px-4 py-4 text-sm text-slate-500">
           <Lock className="h-4 w-4" /> Hanya guru yang dapat mengirim pesan di grup ini.
@@ -856,7 +840,7 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
           data={data}
           saya={saya}
           pengaturan={state.pengaturan[pid]}
-          onAtur={(x) => aturGrup(pid, x, saya)}
+          onAtur={(x) => aturGrup(pid, x)}
           onChat={(id) => {
             setInfoBuka(false)
             onChatPribadi(id)
@@ -876,7 +860,7 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
             </button>
             <button
               onClick={() => {
-                hapus(pid, akanDihapus.id, saya)
+                hapus(pid, akanDihapus.id)
                 setAkanDihapus(null)
               }}
               className={`${btn.primary} bg-rose-600 hover:bg-rose-700`}
@@ -905,6 +889,8 @@ const SARING = [
 export default function Chat() {
   const { data } = useData()
   const { saya, percakapan } = useChatSaya()
+  // Pesan baru dari perangkat lain diperiksa tiap beberapa detik selama halaman chat terbuka
+  useSegarCepat()
   const [params, setParams] = useSearchParams()
   const [cari, setCari] = useState('')
   const [saring, setSaring] = useState('semua')
@@ -950,7 +936,8 @@ export default function Chat() {
                   <button
                     key={k}
                     onClick={() => setSaring(k)}
-                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition ${saring === k ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    aria-pressed={saring === k}
+                    className={`ui-saring shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition ${saring === k ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                   >
                     {label}
                   </button>

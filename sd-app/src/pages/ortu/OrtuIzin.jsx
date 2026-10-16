@@ -17,14 +17,21 @@ export default function OrtuIzin() {
   const riwayat = data.izin.filter((i) => i.nis === user.anakNis)
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
-  const kirim = (e) => {
+  const [mengirim, setMengirim] = useState(false)
+
+  const kirim = async (e) => {
     e.preventDefault()
+    if (mengirim) return
     if (form.tanggalSelesai < form.tanggalMulai) {
       return setPesan({ tone: 'error', teks: 'Tanggal selesai tidak boleh sebelum tanggal mulai.' })
     }
-    ajukanIzin({ ...form, nis: anak.nis, namaSiswa: anak.nama, kelas: anak.kelas })
+    const formulir = e.target
+    setMengirim(true)
+    const galat = await ajukanIzin(form, { diam: true })
+    setMengirim(false)
+    if (galat) return setPesan({ tone: 'error', teks: galat })
     setForm(formAwal())
-    e.target.reset()
+    formulir.reset()
     setPesan({ tone: 'success', teks: 'Pengajuan izin terkirim. Wali kelas akan segera meninjaunya.' })
   }
 
@@ -99,7 +106,7 @@ export default function OrtuIzin() {
               <p className="mt-1 text-xs text-slate-500">Foto surat dokter atau surat izin (JPG, PNG, PDF).</p>
             </div>
 
-            <button type="submit" className={`${btn.primary} w-full`}>
+            <button type="submit" disabled={mengirim} className={`${btn.primary} w-full`}>
               <Send className="h-4 w-4" /> Kirim Pengajuan
             </button>
           </form>

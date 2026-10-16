@@ -5,10 +5,8 @@ import { Kuitansi, LegendaSpp, PilihBulan, QrDemo, StripBulan, TombolSalin, riwa
 import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
 import { BANK_VA, SEKOLAH, SPP } from '../../data/dummy'
-import { formatTanggal, uid } from '../../utils/format'
-import { buatNoTransaksi, bulanBisaDibayar, bulanWajibBayar, daftarBulan, kadaluarsa, rupiah, statusSpp, transaksiAktif } from '../../utils/spp'
-
-const BATAS_MENIT = 30
+import { formatTanggal } from '../../utils/format'
+import { bulanBisaDibayar, bulanWajibBayar, daftarBulan, kadaluarsa, rupiah, statusSpp, transaksiAktif } from '../../utils/spp'
 
 const MENU_BANK = {
   bca: 'm-Transfer → BCA Virtual Account',
@@ -57,7 +55,7 @@ function SisaWaktu({ sampai }) {
 
 export default function OrtuSpp() {
   const { user } = useAuth()
-  const { data, tambah, ubah, selesaikanTransaksi } = useData()
+  const { data, buatTransaksi: kirimTransaksi, batalkanTransaksi, selesaikanTransaksi } = useData()
   const [langkah, setLangkah] = useState(null) // null | 'bulan' | 'metode' | 'bayar' | 'sukses'
   const [terpilih, setTerpilih] = useState([])
   const [metode, setMetode] = useState('qris')
@@ -88,31 +86,17 @@ export default function OrtuSpp() {
     setLangkah('bulan')
   }
 
-  const buatTransaksi = () => {
-    const id = uid()
-    const infoBank = BANK_VA.find((b) => b.kode === bank)
-    const sekarang = new Date()
-    tambah('transaksi', {
-      id,
-      nis,
-      bulan: terpilih,
-      total,
-      metode,
-      bank: metode === 'va' ? bank : null,
-      metodeLabel: metode === 'qris' ? 'QRIS' : `VA ${infoBank.nama}`,
-      kode: metode === 'va' ? `${infoBank.prefix}${nis}${String(sekarang.getTime()).slice(-5)}` : `QRIS-${id}`,
-      noTransaksi: buatNoTransaksi(),
-      status: 'menunggu',
-      dibuat: sekarang.toISOString(),
-      kadaluarsa: new Date(sekarang.getTime() + BATAS_MENIT * 60000).toISOString(),
-    })
-    setTrxId(id)
+  // Nomor VA/QRIS, nomor transaksi, dan batas waktu bayar (30 menit) dibuat server
+  const buatTransaksi = async () => {
+    const baru = await kirimTransaksi({ bulan: terpilih, metode, bank: metode === 'va' ? bank : null })
+    if (!baru) return
+    setTrxId(baru.id)
     setTabPanduan('mbanking')
     setLangkah('bayar')
   }
 
-  const gantiCaraBayar = () => {
-    ubah('transaksi', trx.id, { status: 'dibatalkan' })
+  const gantiCaraBayar = async () => {
+    if (await batalkanTransaksi(trx.id)) return
     setTerpilih(trx.bulan)
     setMetode(trx.metode)
     if (trx.bank) setBank(trx.bank)
@@ -120,8 +104,8 @@ export default function OrtuSpp() {
   }
 
   // Mode demo: anggap pembayaran sudah diterima. Di produksi, status datang dari payment gateway.
-  const cekStatus = () => {
-    selesaikanTransaksi(trx.id)
+  const cekStatus = async () => {
+    if (await selesaikanTransaksi(trx.id)) return
     setLangkah('sukses')
   }
 
@@ -243,7 +227,7 @@ export default function OrtuSpp() {
           <>
             <Langkah aktif={0} />
             <PilihBulan data={data} nis={nis} terpilih={terpilih} onChange={setTerpilih} />
-            <div className="sticky bottom-0 -mx-6 -mb-5 mt-5 flex items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
+            <div className="sticky bottom-0 -mx-6 -mb-5 mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
               <div>
                 <p className="text-xs text-slate-500">Total ({terpilih.length} bulan)</p>
                 <p className="text-xl font-extrabold text-slate-900">{rupiah(total)}</p>
@@ -397,7 +381,7 @@ export default function OrtuSpp() {
                       </div>
                       <p className="mt-2 text-xs text-slate-500">Atas nama: {SEKOLAH.nama} – {anak.nama}</p>
                     </div>
-                    <div className="mt-5 inline-flex rounded-xl bg-slate-100 p-1">
+                    <div className="mt-5 inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1">
                       {[
                         ['mbanking', 'm-Banking'],
                         ['atm', 'ATM'],
@@ -405,7 +389,7 @@ export default function OrtuSpp() {
                         <button
                           key={k}
                           onClick={() => setTabPanduan(k)}
-                          className={`rounded-lg px-4 py-1.5 text-sm font-semibold ${tabPanduan === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                          className={`shrink-0 whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-semibold ${tabPanduan === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
                         >
                           {l}
                         </button>

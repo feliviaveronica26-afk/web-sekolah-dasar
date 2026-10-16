@@ -16,7 +16,7 @@ const TAB = {
 const nomorWa = (no) => no.replace(/\D/g, '').replace(/^0/, '62')
 
 export default function KelolaKunjungan() {
-  const { data, ubah } = useData()
+  const { data, prosesKunjungan } = useData()
   const [tab, setTab] = useState('Menunggu')
   const [catatan, setCatatan] = useState({})
 
@@ -27,8 +27,8 @@ export default function KelolaKunjungan() {
     .sort((a, b) => (tab === 'Riwayat' ? b.tanggal.localeCompare(a.tanggal) : a.tanggal.localeCompare(b.tanggal)) || a.sesi.localeCompare(b.sesi))
   const aktif = data.kunjungan.filter((k) => k.status === 'Dikonfirmasi')
 
-  const proses = (k, status) => {
-    ubah('kunjungan', k.id, { status, catatanTu: catatan[k.id]?.trim() || k.catatanTu || '' })
+  const proses = async (k, status) => {
+    if (await prosesKunjungan(k.id, status, catatan[k.id]?.trim() || k.catatanTu || '')) return
     setCatatan({ ...catatan, [k.id]: '' })
   }
 
@@ -43,12 +43,12 @@ export default function KelolaKunjungan() {
         <StatCard icon={Users} label="Total tamu terjadwal" value={aktif.reduce((acc, k) => acc + k.jumlah, 0)} hint="orang" tone="primary" />
       </div>
 
-      <div className="my-5 inline-flex rounded-xl bg-slate-100 p-1">
+      <div className="my-5 inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1">
         {Object.keys(TAB).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+            className={`shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
           >
             {t} <span className="ml-1 text-xs text-slate-400">({data.kunjungan.filter(TAB[t]).length})</span>
           </button>

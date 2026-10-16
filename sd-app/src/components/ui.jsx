@@ -1,21 +1,27 @@
-import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import { ChevronRight, X } from 'lucide-react'
+import { useGayaSitus } from '../context/akses'
 import { inisial } from '../utils/format'
-import { Awan, Bintang, Gelombang, Gumpalan } from './Hiasan'
+import { useAnimasiKeluar } from '../utils/gerak'
 
+/*
+  Kelas berawalan `ui-` adalah penanda untuk tampilan bergaya beranda di portal satpam (lihat `.portal-situs`
+  di index.css). Di portal lain penanda ini tidak memberi gaya apa pun.
+*/
 export const btn = {
   primary:
-    'inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+    'ui-tombol ui-tombol-utama inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
   secondary:
-    'inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-50',
+    'ui-tombol ui-tombol-kedua inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-50',
   danger:
-    'inline-flex items-center justify-center gap-2 rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400',
+    'ui-tombol ui-tombol-bahaya inline-flex items-center justify-center gap-2 rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400',
 }
 
 export const inputCls =
-  'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-100'
+  'ui-isian w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-100'
 
-export const labelCls = 'mb-1.5 block text-sm font-medium text-slate-700'
+export const labelCls = 'ui-label mb-1.5 block text-sm font-medium text-slate-700'
 
 // Latar & warna garis bawaan hanya dipakai jika className tidak menentukannya sendiri
 // (kelas Tailwind yang bertabrakan tidak dijamin urutannya)
@@ -23,48 +29,8 @@ export function Card({ className = '', children, ...props }) {
   const latar = /(^|\s)bg-/.test(className) ? '' : 'bg-white'
   const garis = /(^|\s)border-(?!0|2|4|8|[trblxy]|dashed|dotted|double|solid)/.test(className) ? '' : 'border-slate-200/80'
   return (
-    <div {...props} className={`rounded-2xl border shadow-sm ${garis} ${latar} ${className}`}>
+    <div {...props} className={`ui-kartu rounded-2xl border shadow-sm ${garis} ${latar} ${className}`}>
       {children}
-    </div>
-  )
-}
-
-// Banner judul untuk halaman publik. `gelombang` = warna latar bagian berikutnya (kelas teks).
-export function PageHeader({ title, subtitle, eyebrow, gelombang = 'text-white', children }) {
-  return (
-    <section className="relative overflow-hidden bg-linear-to-br from-primary-600 via-primary-600 to-primary-700 text-white">
-      <div className="pola-titik absolute inset-0" />
-      <Gumpalan className="absolute -right-24 -top-28 h-96 w-96 text-white/10" />
-      <Gumpalan className="absolute -bottom-40 left-1/4 h-80 w-80 rotate-45 text-primary-800/30" />
-      <Bintang className="absolute right-[20%] top-10 h-6 w-6 animate-melayang text-amber-300" />
-      <Bintang className="absolute bottom-24 right-[8%] h-4 w-4 text-white/60" />
-      <Awan className="absolute left-[58%] top-10 hidden h-8 w-16 animate-melayang text-white/20 md:block" />
-      <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-12 sm:px-6 sm:pb-24 sm:pt-16">
-        {eyebrow && (
-          <p className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider ring-1 ring-white/25">
-            <Bintang className="h-3.5 w-3.5 text-amber-300" /> {eyebrow}
-          </p>
-        )}
-        <h1 className="max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">{title}</h1>
-        {subtitle && <p className="mt-4 max-w-2xl text-lg text-primary-50">{subtitle}</p>}
-        {children}
-      </div>
-      <Gelombang warna={gelombang} />
-    </section>
-  )
-}
-
-// `rapat` = tanpa jarak bawah (mis. saat berdampingan dengan tautan)
-export function SectionTitle({ eyebrow, title, desc, center = true, rapat = false }) {
-  return (
-    <div className={`${rapat ? '' : 'mb-10'} ${center ? 'mx-auto max-w-2xl text-center' : ''}`}>
-      {eyebrow && (
-        <p className={`inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-700`}>
-          <Bintang className="h-3.5 w-3.5 text-amber-400" /> {eyebrow}
-        </p>
-      )}
-      <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">{title}</h2>
-      {desc && <p className="mt-3 text-lg text-slate-600">{desc}</p>}
     </div>
   )
 }
@@ -77,22 +43,62 @@ const TONE = {
   slate: 'bg-slate-100 text-slate-600',
 }
 
-export function StatCard({ icon: Icon, label, value, hint, tone = 'primary' }) {
-  return (
-    <Card className="p-4 sm:p-5">
-      <div className="flex items-start justify-between gap-2 sm:gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <p className="mt-1 text-xl font-extrabold text-slate-900 sm:text-2xl">{value}</p>
-          {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
-        </div>
-        {Icon && (
-          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg sm:h-11 sm:w-11 sm:rounded-xl ${TONE[tone]}`}>
-            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-          </span>
-        )}
+// Kartu angka berwarna penuh ala kartu bento beranda (dipakai portal satpam)
+const NADA = {
+  merah: {
+    kartu: 'border-primary-700! bg-primary-700 text-white',
+    label: 'text-krem',
+    nilai: 'text-white',
+    hint: 'text-white/75',
+    ikon: 'bg-white/15 text-white',
+  },
+  stabilo: {
+    kartu: 'border-stabilo! bg-stabilo text-tinta',
+    label: 'text-tinta/80',
+    nilai: 'text-tinta',
+    hint: 'text-tinta/70',
+    ikon: 'bg-tinta text-stabilo',
+  },
+  gelap: { kartu: 'border-tinta! bg-tinta text-white', label: 'text-white/75', nilai: 'text-white', hint: 'text-white/60', ikon: 'bg-white/10 text-stabilo' },
+}
+
+// `ke` (opsional) = alamat halaman rinciannya; kartu menjadi tautan dengan tanda panah.
+// `nada` (opsional: merah | stabilo | gelap) = kartu berwarna penuh.
+export function StatCard({ icon: Icon, label, value, hint, tone = 'primary', ke, nada }) {
+  const n = NADA[nada]
+  // Nilai panjang (mis. Rp172.200.000) mengecil mengikuti lebar kartu agar tidak keluar kartu
+  const ukuranNilai =
+    String(value).length > 9 ? 'text-[clamp(0.875rem,12cqw,1.5rem)] [overflow-wrap:anywhere]' : n ? 'text-3xl sm:text-4xl' : 'text-xl sm:text-2xl'
+  const isi = (
+    // Kartu sempit (< 10rem, mis. dua kartu per baris di HP): ikon di atas label agar label tidak terpotong.
+    // Mengikuti lebar kartu sendiri (container query), bukan lebar layar, jadi cocok di grid 2, 3, maupun 4 kolom.
+    <div className="flex flex-col-reverse items-start gap-2 @min-[10rem]:flex-row @min-[10rem]:justify-between sm:gap-3">
+      <div className="@container w-full min-w-0 @min-[10rem]:w-auto @min-[10rem]:flex-1">
+        <p className={`text-sm font-medium ${n?.label ?? 'text-slate-500'}`}>{label}</p>
+        <p className={`mt-1 font-extrabold tracking-tight ${n?.nilai ?? 'text-slate-900'} ${ukuranNilai}`}>{value}</p>
+        {hint && <p className={`mt-1 text-xs ${n?.hint ?? 'text-slate-500'}`}>{hint}</p>}
       </div>
-    </Card>
+      {Icon && (
+        <span className={`ui-ikon grid h-9 w-9 shrink-0 place-items-center rounded-lg sm:h-11 sm:w-11 sm:rounded-xl ${n?.ikon ?? TONE[tone]}`}>
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+        </span>
+      )}
+    </div>
+  )
+  if (!ke) return <Card className={`@container p-4 sm:p-5 ${n?.kartu ?? ''}`}>{isi}</Card>
+  return (
+    <Link
+      to={ke}
+      className="ui-kartu-tautan group block rounded-2xl outline-none transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary-400"
+    >
+      <Card className={`@container relative h-full p-4 transition group-hover:border-primary-200 group-hover:shadow-md sm:p-5 ${n?.kartu ?? ''}`}>
+        {isi}
+        <ChevronRight
+          className="absolute bottom-3 right-3 h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-primary-500"
+          aria-hidden="true"
+        />
+      </Card>
+    </Link>
   )
 }
 
@@ -119,7 +125,7 @@ export function Avatar({ nama = '', size = 'md', className = '' }) {
 }
 
 export function Badge({ children, className = 'bg-slate-100 text-slate-700' }) {
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${className}`}>{children}</span>
+  return <span className={`ui-lencana inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${className}`}>{children}</span>
 }
 
 export const STATUS_ABSEN = {
@@ -152,6 +158,12 @@ export function KategoriBadge({ kategori }) {
 }
 
 export function Modal({ open, onClose, title, children, footer, size = 'max-w-lg' }) {
+  const [tampil, keluar] = useAnimasiKeluar(open)
+  // Isi terakhir dipertahankan selama animasi keluar, karena pemanggil biasanya mengosongkan isinya
+  // bersamaan dengan menutup modal (mis. `{form && ...}`) sehingga panel akan mengempis sebelum hilang.
+  const terakhir = useRef({ title, children, footer })
+  if (open) terakhir.current = { title, children, footer }
+
   useEffect(() => {
     if (!open) return
     const onKey = (e) => e.key === 'Escape' && onClose()
@@ -163,23 +175,28 @@ export function Modal({ open, onClose, title, children, footer, size = 'max-w-lg
     }
   }, [open, onClose])
 
-  if (!open) return null
+  if (!tampil) return null
+  const isi = open ? { title, children, footer } : terakhir.current
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4" data-keluar={keluar || undefined}>
+      <div className="latar-modal absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
-        className={`relative flex max-h-[92vh] w-full ${size} flex-col rounded-t-3xl bg-white shadow-xl sm:rounded-3xl`}
+        className={`panel-modal ui-modal relative flex max-h-[92dvh] w-full ${size} flex-col rounded-t-3xl bg-white shadow-xl sm:rounded-3xl`}
       >
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+          <h3 className="text-lg font-bold text-slate-900">{isi.title}</h3>
           <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600" aria-label="Tutup">
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="overflow-y-auto px-6 py-5">{children}</div>
-        {footer && <div className="flex justify-end gap-2 border-t border-slate-100 px-6 py-4">{footer}</div>}
+        <div className="overflow-y-auto px-6 py-5">{isi.children}</div>
+        {isi.footer && (
+          <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:pb-4">
+            {isi.footer}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -189,7 +206,7 @@ export function EmptyState({ icon: Icon, title, desc }) {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
       {Icon && (
-        <span className="mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-400">
+        <span className="ui-ikon-kosong mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-400">
           <Icon className="h-7 w-7" />
         </span>
       )}
@@ -219,11 +236,25 @@ export function Alert({ tone = 'success', children }) {
     info: 'border-sky-200 bg-sky-50 text-sky-800',
     warning: 'border-amber-200 bg-amber-50 text-amber-800',
   }
-  return <div className={`rounded-xl border px-4 py-3 text-sm ${cls[tone]}`}>{children}</div>
+  return <div className={`ui-alert rounded-xl border px-4 py-3 text-sm ${cls[tone]}`}>{children}</div>
 }
 
-// Judul halaman di dalam dashboard
+// Judul halaman di dalam dashboard. Di portal satpam tampil sebagai pita merah seperti kepala halaman situs.
 export function DashHeader({ title, desc, action }) {
+  const situs = useGayaSitus()
+  if (situs)
+    return (
+      <div className="ui-pita relative isolate mb-6 overflow-hidden rounded-[2rem] bg-primary-700 px-6 py-7 text-white sm:px-9 sm:py-9">
+        <span aria-hidden="true" className="pointer-events-none absolute -right-28 -top-36 -z-10 h-96 w-96 rounded-full border-[4rem] border-white/[0.06]" />
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-[2rem] leading-tight text-white sm:text-[2.6rem]">{title}</h1>
+            {desc && <p className="mt-2 max-w-2xl leading-relaxed text-krem">{desc}</p>}
+          </div>
+          {action}
+        </div>
+      </div>
+    )
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -238,14 +269,14 @@ export function DashHeader({ title, desc, action }) {
 // Pilihan tab bergaya segmen. items: [[kunci, label, jumlah?]]
 export function Tabs({ value, onChange, items, className = '' }) {
   return (
-    <div className={`inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1 ${className}`} role="tablist">
+    <div className={`ui-tab inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1 ${className}`} role="tablist">
       {items.map(([k, label, n]) => (
         <button
           key={k}
           role="tab"
           aria-selected={value === k}
           onClick={() => onChange(k)}
-          className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition ${value === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          className={`ui-tab-item shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition ${value === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
         >
           {label}
           {n !== undefined && <span className="ml-1 text-xs text-slate-400">({n})</span>}
@@ -293,10 +324,11 @@ export function Cincin({ persen, ukuran = 84, tebal = 9, warna = 'text-emerald-5
 // Judul kartu dengan ikon dan tautan "lihat semua" opsional
 export function JudulKartu({ icon: Icon, judul, children }) {
   return (
-    <div className="mb-4 flex items-center justify-between gap-3">
+    // Tombol/tab di kanan turun ke baris berikutnya bila judul tidak muat (HP)
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
       <div className="flex min-w-0 items-center gap-2">
         {Icon && (
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary-50 text-primary-600">
+          <span className="ui-judul-ikon grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary-50 text-primary-600">
             <Icon className="h-4 w-4" />
           </span>
         )}

@@ -1,4 +1,7 @@
+import { useCallback, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Phone, Trophy, UserX } from 'lucide-react'
+import KartuTeman from '../../components/KartuTeman'
 import { Avatar, Card, DashHeader, EmptyState } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
@@ -9,14 +12,24 @@ import { formatTanggal } from '../../utils/format'
 export default function SiswaProfil() {
   const { user } = useAuth()
   const { data } = useData()
+  // { teman, asal (elemen kotak nama yang diklik), nomorAbsen }
+  const [pilihan, setPilihan] = useState(null)
+  const tutupKartu = useCallback(() => setPilihan(null), [])
   const siswa = data.siswa.find((s) => s.nis === user.nis)
 
   if (!siswa) return <EmptyState icon={UserX} title="Data siswa tidak ditemukan" desc="Silakan hubungi admin sekolah." />
 
   const bio = BIODATA[siswa.nis] ?? {}
+  // Alamat & kontak keluarga sendiri (server hanya mengirim data keluarga siswa yang login)
+  const keluarga = (data.orangTua ?? []).find((k) => k.anak?.includes(siswa.nis))
   const ekskul = ekskulSiswa(data, siswa)
   const waliKelas = data.guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === siswa.kelas)
   const temanSekelas = data.siswa.filter((s) => s.kelas === siswa.kelas && s.nis !== siswa.nis).sort((a, b) => a.nama.localeCompare(b.nama))
+  // Nomor absen = urutan nama di seluruh kelas (termasuk siswa yang login)
+  const urutanKelas = data.siswa
+    .filter((s) => s.kelas === siswa.kelas)
+    .sort((a, b) => a.nama.localeCompare(b.nama))
+    .map((s) => s.nis)
 
   const biodata = [
     ['Nama Lengkap', siswa.nama],
@@ -27,7 +40,7 @@ export default function SiswaProfil() {
     ['Tempat, Tanggal Lahir', bio.tanggalLahir && `${bio.tempatLahir}, ${formatTanggal(bio.tanggalLahir)}`],
     ['Agama', bio.agama],
     ['Golongan Darah', bio.golonganDarah],
-    ['Alamat', bio.alamat],
+    ['Alamat', keluarga?.alamat],
     ['Nama Orang Tua/Wali', siswa.ortu],
   ]
 
@@ -86,9 +99,9 @@ export default function SiswaProfil() {
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {ekskul.map((e) => (
-                  <span key={e.id} className={`rounded-full px-3 py-1.5 text-sm font-semibold ${e.warna}`}>
+                  <Link key={e.id} to="/dashboard/siswa/ekskul" className={`rounded-full px-3 py-1.5 text-sm font-semibold transition hover:brightness-95 ${e.warna}`}>
                     {e.nama}
-                  </span>
+                  </Link>
                 ))}
               </div>
             </Card>
@@ -108,9 +121,9 @@ export default function SiswaProfil() {
                 </div>
               ))}
             </dl>
-            {bio.teleponOrtu && (
+            {keluarga?.whatsapp && (
               <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 text-sm text-slate-600">
-                <Phone className="h-4 w-4" /> Kontak orang tua: <span className="font-semibold text-slate-800">{bio.teleponOrtu}</span>
+                <Phone className="h-4 w-4" /> Kontak orang tua: <span className="font-semibold text-slate-800">{keluarga.whatsapp}</span>
               </div>
             )}
           </Card>
@@ -119,17 +132,26 @@ export default function SiswaProfil() {
             <h2 className="font-bold text-slate-900">
               Teman Sekelas <span className="font-normal text-slate-400">({temanSekelas.length})</span>
             </h2>
+            <p className="mt-1 text-sm text-slate-500">Ketuk nama teman untuk melihat kartu data dirinya.</p>
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
               {temanSekelas.map((t) => (
-                <div key={t.nis} className="flex flex-col items-center rounded-2xl bg-slate-50 p-3 text-center">
+                <button
+                  key={t.nis}
+                  type="button"
+                  aria-haspopup="dialog"
+                  onClick={(e) => setPilihan({ teman: t, asal: e.currentTarget, nomorAbsen: urutanKelas.indexOf(t.nis) + 1 })}
+                  className="flex flex-col items-center rounded-2xl bg-slate-50 p-3 text-center transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-primary-100 active:translate-y-0 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                >
                   <Avatar nama={t.nama} />
                   <p className="mt-2 text-xs font-semibold leading-snug text-slate-700">{t.nama}</p>
-                </div>
+                </button>
               ))}
             </div>
           </Card>
         </div>
       </div>
+
+      {pilihan && <KartuTeman teman={pilihan.teman} asal={pilihan.asal} nomorAbsen={pilihan.nomorAbsen} data={data} onTutup={tutupKartu} />}
     </>
   )
 }

@@ -78,9 +78,7 @@ export default function SiswaLencana() {
             {lencana.map((l) => (
               <div
                 key={l.kode}
-                className={`relative flex flex-col items-center rounded-3xl p-4 text-center transition ${
-                  l.didapat ? 'bg-white shadow-md ring-1 ring-slate-100 hover:-translate-y-1' : 'bg-slate-50'
-                }`}
+                className={`relative flex flex-col items-center rounded-3xl p-4 text-center ${l.didapat ? 'bg-white shadow-md ring-1 ring-slate-100' : 'bg-slate-50'}`}
               >
                 <span
                   className={`grid h-20 w-20 place-items-center rounded-full text-4xl ${

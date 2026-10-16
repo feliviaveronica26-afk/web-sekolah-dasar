@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CheckCircle2, CloudOff, TriangleAlert, WifiOff, X } from 'lucide-react'
+import BilahMuat from './BilahMuat'
 
 const INTERVAL_CEK = 20000 // jeda antarpemeriksaan saat halaman sedang dilihat
 const BATAS_LAMBAT = 2500 // respons server lebih lama dari ini dianggap lambat
@@ -56,7 +57,7 @@ async function ukurServer() {
 /*
   Pemberitahuan saat koneksi terputus atau kurang stabil. "Kurang stabil" baru ditampilkan jika
   2 dari 3 pemeriksaan terakhir lambat/gagal (termasuk yang terakhir), agar tidak berkedip
-  karena gangguan sesaat.
+  karena gangguan sesaat. Di atasnya tampil bilah muat berlogo selama ada permintaan yang lambat.
 */
 export default function StatusJaringan() {
   const [status, setStatus] = useState(() => (typeof navigator !== 'undefined' && !navigator.onLine ? 'offline' : 'baik'))
@@ -125,25 +126,32 @@ export default function StatusJaringan() {
     if (status === 'baik' || status === 'pulih') setDitutup(null)
   }, [status])
 
-  if (status === 'baik' || ditutup === status) return null
-  const { ikon: Ikon, judul, teks, cls, peran } = PESAN[status]
+  const pesan = status !== 'baik' && ditutup !== status ? PESAN[status] : null
+  const { ikon: Ikon, judul, teks, cls, peran } = pesan ?? {}
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-3 z-[70] flex justify-center px-4">
-      <div role={peran} className={`tampil-lembut pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl px-4 py-3 shadow-2xl ${cls}`}>
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-black/10">
-          <Ikon className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold">{judul}</p>
-          {teks && <p className="text-xs opacity-90">{teks}</p>}
+    <div className="pointer-events-none fixed inset-x-0 top-3 z-[70] flex flex-col items-center gap-2 px-4">
+      <BilahMuat lemah={status === 'lemah' || status === 'terputus'} />
+      {pesan && (
+        <div role={peran} className={`tampil-lembut pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl px-4 py-3 shadow-2xl ${cls}`}>
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-black/10">
+            <Ikon className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold">{judul}</p>
+            {teks && <p className="text-xs opacity-90">{teks}</p>}
+          </div>
+          {status !== 'pulih' && (
+            <button
+              onClick={() => setDitutup(status)}
+              aria-label="Tutup pemberitahuan"
+              className="rounded-lg p-1.5 opacity-80 transition hover:bg-white/15 hover:opacity-100"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
-        {status !== 'pulih' && (
-          <button onClick={() => setDitutup(status)} aria-label="Tutup pemberitahuan" className="rounded-lg p-1.5 opacity-80 transition hover:bg-white/15 hover:opacity-100">
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
+      )}
     </div>
   )
 }

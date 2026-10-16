@@ -28,7 +28,7 @@ export default function LaporanKerusakan() {
       title="Laporan Kerusakan"
       desc="Catat kerusakan fasilitas sekolah dan pantau perbaikannya sampai selesai."
       ringkasan={
-        <div className="mb-6 grid grid-cols-3 gap-4">
+        <div className="mb-6 grid gap-3 min-[480px]:grid-cols-3 sm:gap-4">
           <StatCard icon={TriangleAlert} label="Baru dilaporkan" value={hitung('Dilaporkan')} tone="amber" />
           <StatCard icon={Hammer} label="Sedang diperbaiki" value={hitung('Diperbaiki')} tone="sky" />
           <StatCard icon={CircleCheck} label="Selesai" value={hitung('Selesai')} tone="emerald" />

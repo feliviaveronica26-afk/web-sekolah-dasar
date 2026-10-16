@@ -208,7 +208,8 @@ function PapanHarian({ onDetail, onKoreksi }) {
               <button
                 key={k}
                 onClick={() => setSaring(k)}
-                className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
+                aria-pressed={saring === k}
+                className={`ui-saring rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
                   saring === k ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
                 }`}
               >
@@ -315,8 +316,11 @@ function ModalKoreksi({ item, onClose }) {
   const [galat, setGalat] = useState('')
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
-  const simpan = (e) => {
+  const [menyimpan, setMenyimpan] = useState(false)
+
+  const simpan = async (e) => {
     e.preventDefault()
+    if (menyimpan) return
     if (form.status === 'H' && !form.masuk) return setGalat('Isi jam masuk untuk status Hadir.')
     if (form.status === 'H' && form.pulang && form.pulang <= form.masuk) return setGalat('Jam pulang harus setelah jam masuk.')
     if (!form.alasan.trim()) return setGalat('Alasan koreksi wajib diisi.')
@@ -324,7 +328,11 @@ function ModalKoreksi({ item, onClose }) {
       form.status === 'H'
         ? { status: 'H', masuk: dariJam(form.masuk), pulang: dariJam(form.pulang) }
         : { status: form.status, masuk: null, pulang: null, ket: form.ket.trim() }
-    koreksiPresensi(tanggal, g.id, perubahan, nama, form.alasan.trim())
+    // Nama pengoreksi & waktunya dicatat server
+    setMenyimpan(true)
+    const pesan = await koreksiPresensi(tanggal, g.id, perubahan, form.alasan.trim(), { diam: true })
+    setMenyimpan(false)
+    if (pesan) return setGalat(pesan)
     onClose()
   }
 
@@ -338,7 +346,7 @@ function ModalKoreksi({ item, onClose }) {
           <button onClick={onClose} className={btn.secondary}>
             Batal
           </button>
-          <button type="submit" form="form-koreksi" className={btn.primary}>
+          <button type="submit" form="form-koreksi" disabled={menyimpan} className={btn.primary}>
             <Check className="h-4 w-4" /> Simpan koreksi
           </button>
         </>
@@ -665,7 +673,7 @@ function Rekap({ onDetail }) {
 }
 
 function DaftarIzin() {
-  const { data, prosesIzinStaf, hapus } = useData()
+  const { data, prosesIzinStaf, batalkanIzinStaf } = useData()
   const akses = useAkses()
   const [saring, setSaring] = useState('Menunggu')
   const [catatan, setCatatan] = useState({})
@@ -680,8 +688,8 @@ function DaftarIzin() {
   const daftar = semua.filter(cocok)
   const jabatan = (id) => data.guru.find((g) => g.id === id)?.jabatan ?? ''
 
-  const proses = (id, status) => {
-    prosesIzinStaf(id, status, catatan[id]?.trim() || '', akses.nama)
+  const proses = async (id, status) => {
+    if (await prosesIzinStaf(id, status, catatan[id]?.trim() || '')) return
     setCatatan({ ...catatan, [id]: '' })
   }
 
@@ -692,7 +700,8 @@ function DaftarIzin() {
           <button
             key={k}
             onClick={() => setSaring(k)}
-            className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
+            aria-pressed={saring === k}
+            className={`ui-saring rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
               saring === k ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
             }`}
           >
@@ -779,7 +788,7 @@ function DaftarIzin() {
                   </div>
                 )}
                 {i.status === 'Menunggu' && !akses.kepsek && i.guruId === akses.guruId && (
-                  <button onClick={() => hapus('izinStaf', i.id)} className={`${btn.secondary} mt-4`}>
+                  <button onClick={() => batalkanIzinStaf(i.id)} className={`${btn.secondary} mt-4`}>
                     <X className="h-4 w-4" /> Batalkan pengajuan
                   </button>
                 )}
@@ -800,19 +809,23 @@ const CONTOH_ALASAN = {
 }
 
 function FormIzinStaf({ onClose, onTerkirim }) {
-  const { data, ajukanIzinStaf } = useData()
-  const akses = useAkses()
+  const { ajukanIzinStaf } = useData()
   const [form, setForm] = useState(() => ({ jenis: 'Sakit', tanggalMulai: todayKey(), tanggalSelesai: todayKey(), alasan: '', lampiran: '' }))
   const [galat, setGalat] = useState('')
-  const guru = data.guru.find((g) => g.id === akses.guruId)
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   const hari = form.tanggalSelesai >= form.tanggalMulai ? rentangHariSekolah(form.tanggalMulai, form.tanggalSelesai).length : 0
 
-  const kirim = (e) => {
+  const [menyimpan, setMenyimpan] = useState(false)
+
+  const kirim = async (e) => {
     e.preventDefault()
+    if (menyimpan) return
     if (form.tanggalSelesai < form.tanggalMulai) return setGalat('Tanggal selesai tidak boleh sebelum tanggal mulai.')
     if (!hari) return setGalat('Rentang tanggal tidak mencakup hari sekolah.')
-    ajukanIzinStaf({ ...form, alasan: form.alasan.trim(), guruId: guru.id, nama: guru.nama })
+    setMenyimpan(true)
+    const pesan = await ajukanIzinStaf({ ...form, alasan: form.alasan.trim() }, { diam: true })
+    setMenyimpan(false)
+    if (pesan) return setGalat(pesan)
     onTerkirim()
   }
 
@@ -826,7 +839,7 @@ function FormIzinStaf({ onClose, onTerkirim }) {
           <button onClick={onClose} className={btn.secondary}>
             Batal
           </button>
-          <button type="submit" form="form-izin-staf" className={btn.primary}>
+          <button type="submit" form="form-izin-staf" disabled={menyimpan} className={btn.primary}>
             <Send className="h-4 w-4" /> Kirim pengajuan
           </button>
         </>

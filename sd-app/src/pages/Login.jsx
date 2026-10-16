@@ -1,16 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Eye, EyeOff, Loader2, LogIn } from 'lucide-react'
-import { Bintang, Gumpalan } from '../components/Hiasan'
-import { Alert, btn, inputCls, labelCls } from '../components/ui'
+import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Merek } from '../components/Navbar'
+import { Foto, isian, labelIsian, tombol } from '../components/Situs'
+import { Alert } from '../components/ui'
 import { ALASAN_KELUAR_KEY, useAuth } from '../context/AuthContext'
 import { AKUN_DEMO, LABEL_ROLE, SEKOLAH } from '../data/dummy'
-import { BATAS_DIAM_MENIT, BATAS_SESI_JAM, sisaKunciLogin } from '../utils/keamanan'
+import { FOTO } from '../data/foto'
+import { BATAS_DIAM_MENIT, BATAS_SESI_JAM } from '../utils/keamanan'
 
 const PESAN_KELUAR = {
   diam: `Anda keluar otomatis karena tidak ada aktivitas selama ${BATAS_DIAM_MENIT} menit. Silakan masuk kembali.`,
   kedaluwarsa: `Sesi Anda sudah berakhir (lebih dari ${BATAS_SESI_JAM} jam sejak masuk). Silakan masuk kembali.`,
+  berakhir: 'Sesi Anda sudah berakhir. Silakan masuk kembali.',
 }
+
+const PORTAL = [
+  ['Siswa', 'Jadwal, tugas, nilai, dan lencana'],
+  ['Orang tua', 'Kehadiran, SPP, izin, dan chat wali kelas'],
+  ['Guru & staf', 'Presensi, nilai, dan layanan sekolah'],
+  ['Kepala sekolah', 'Laporan dan kebijakan'],
+]
 
 const formatTunggu = (detik) => (detik >= 60 ? `${Math.floor(detik / 60)} menit ${detik % 60} detik` : `${detik} detik`)
 
@@ -24,17 +34,18 @@ export default function Login() {
   const [error, setError] = useState('')
   const [manual, setManual] = useState(null)
   const [memproses, setMemproses] = useState(false)
-  const [kunci, setKunci] = useState(() => sisaKunciLogin())
+  // Sisa detik penguncian dari server setelah terlalu banyak percobaan salah
+  const [kunci, setKunci] = useState(0)
   const [alasanKeluar] = useState(() => sessionStorage.getItem(ALASAN_KELUAR_KEY))
   const usernameRef = useRef(null)
 
   useEffect(() => sessionStorage.removeItem(ALASAN_KELUAR_KEY), [])
 
-  // Hitung mundur penguncian login setelah terlalu banyak percobaan salah
+  // Hitung mundur penguncian login
   useEffect(() => {
     if (!kunci) return
-    const t = setInterval(() => setKunci(sisaKunciLogin()), 1000)
-    return () => clearInterval(t)
+    const t = setTimeout(() => setKunci((k) => Math.max(0, k - 1)), 1000)
+    return () => clearTimeout(t)
   }, [kunci])
 
   if (user) return <Navigate to={`/dashboard/${user.role}`} replace />
@@ -70,81 +81,84 @@ export default function Login() {
     usernameRef.current?.focus()
   }
 
+  const kartuAkun = (aktif) =>
+    `min-h-11 rounded-xl border px-2 py-2 text-center transition ${aktif ? 'border-primary-700 bg-primary-700 text-white' : 'border-garis bg-white text-tinta hover:border-primary-600/60'}`
+
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Panel kiri */}
-      <div className="relative hidden overflow-hidden bg-linear-to-br from-primary-600 to-primary-800 p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="pola-titik absolute inset-0" />
-        <Gumpalan className="absolute -right-28 -top-28 h-[26rem] w-[26rem] text-white/10" />
-        <Bintang className="absolute right-16 top-32 h-7 w-7 animate-melayang text-amber-300" />
-        <Link to="/" className="relative flex items-center gap-3">
-          <img src="/logo.png" alt="" className="h-14 w-14 object-contain drop-shadow-lg" />
-          <span className="font-display text-2xl font-bold">{SEKOLAH.nama}</span>
-        </Link>
-        <div className="relative">
-          <h1 className="text-5xl font-bold leading-tight">Satu portal untuk seluruh warga sekolah.</h1>
-          <p className="mt-4 max-w-md text-lg text-primary-50">
-            Pantau kehadiran, nilai, tugas, dan kabar sekolah dengan mudah dari mana saja.
-          </p>
-          <div className="mt-8 grid max-w-lg grid-cols-2 gap-3">
-            {[
-              ['🎒', 'Siswa', 'Tugas, nilai, lencana'],
-              ['👨‍👩‍👧', 'Orang Tua', 'Kehadiran, SPP, pesan'],
-              ['🧑‍🏫', 'Guru & Staf', 'Absensi, nilai, layanan'],
-              ['🏫', 'Kepala Sekolah', 'Laporan & kebijakan'],
-            ].map(([e, j, d]) => (
-              <div key={j} className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur">
-                <p className="text-2xl">{e}</p>
-                <p className="mt-2 font-display text-lg font-bold">{j}</p>
-                <p className="text-sm text-primary-100">{d}</p>
+    <div className="situs grid min-h-screen lg:grid-cols-[0.9fr_1.1fr]">
+      {/* Panel merah berlatar foto */}
+      <div className="relative isolate hidden flex-col justify-between overflow-hidden bg-primary-800 p-12 text-white lg:flex xl:p-16">
+        <span aria-hidden="true" className="absolute inset-0 -z-20">
+          <Foto foto={FOTO.sahabat} alt="" prioritas />
+        </span>
+        <span aria-hidden="true" className="absolute inset-0 -z-10 bg-primary-800/[0.88]" />
+        <span className="w-fit rounded-2xl bg-white px-4 py-2.5">
+          <Merek />
+        </span>
+        <div>
+          <p className="inline-flex rounded-full bg-stabilo px-3.5 py-1.5 text-sm font-bold text-tinta">Selamat datang kembali</p>
+          <p className="mt-5 max-w-md text-5xl font-extrabold leading-[1.05] tracking-tight">Satu portal untuk seluruh warga sekolah.</p>
+          <dl className="mt-10 grid max-w-lg grid-cols-2 gap-3">
+            {PORTAL.map(([j, d]) => (
+              <div key={j} className="rounded-2xl bg-white/10 p-4 text-[15px] ring-1 ring-inset ring-white/15 backdrop-blur-sm">
+                <dt className="font-bold">{j}</dt>
+                <dd className="mt-1 leading-snug text-krem">{d}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
-        <p className="relative text-sm text-primary-200">{SEKOLAH.slogan}</p>
+        <p className="text-sm font-semibold text-krem">{SEKOLAH.slogan}.</p>
       </div>
 
-      {/* Form */}
-      <div className="flex flex-col justify-center px-4 py-10 sm:px-12">
+      {/* Formulir */}
+      <main className="flex flex-col justify-center px-4 py-10 sm:px-12">
         <div className="mx-auto w-full max-w-md">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-primary-600">
+          <Link to="/" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-tinta-2 hover:text-tinta">
             <ArrowLeft className="h-4 w-4" /> Kembali ke beranda
           </Link>
-          <img src="/logo.png" alt="" className="mt-8 h-16 w-16 object-contain lg:hidden" />
-          <h2 className="mt-6 text-4xl font-bold text-slate-900">Masuk ke Portal</h2>
-          <p className="mt-2 text-slate-500">Silakan masuk menggunakan akun yang diberikan sekolah.</p>
+          <div className="mt-6 lg:hidden">
+            <Merek />
+          </div>
+          <h1 className="mt-8 text-[2.75rem] leading-tight sm:text-5xl">Masuk ke portal</h1>
+          <p className="mt-3 text-tinta-2">Silakan masuk menggunakan akun yang diberikan sekolah.</p>
 
-          <form onSubmit={masuk} className="mt-8 space-y-4">
-            {alasanKeluar && PESAN_KELUAR[alasanKeluar] && !error && <Alert tone="info">{PESAN_KELUAR[alasanKeluar]}</Alert>}
-            {kunci > 0 ? (
-              <Alert tone="error">
-                Login dikunci sementara karena terlalu banyak percobaan yang salah. Coba lagi dalam <b>{formatTunggu(kunci)}</b>.
-              </Alert>
-            ) : (
-              error && <Alert tone="error">{error}</Alert>
-            )}
+          <form onSubmit={masuk} className="mt-8 space-y-5">
+            <div aria-live="polite">
+              {alasanKeluar && PESAN_KELUAR[alasanKeluar] && !error && <Alert tone="info">{PESAN_KELUAR[alasanKeluar]}</Alert>}
+              {kunci > 0 ? (
+                <Alert tone="error">
+                  Login dikunci sementara karena terlalu banyak percobaan yang salah. Coba lagi dalam <b>{formatTunggu(kunci)}</b>.
+                </Alert>
+              ) : (
+                error && <Alert tone="error">{error}</Alert>
+              )}
+            </div>
             <div>
-              <label htmlFor="username" className={labelCls}>Username</label>
+              <label htmlFor="username" className={labelIsian}>
+                Username
+              </label>
               <input
                 id="username"
                 ref={usernameRef}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className={inputCls}
+                className={isian}
                 placeholder="Masukkan username"
                 autoComplete="username"
                 required
               />
             </div>
             <div>
-              <label htmlFor="password" className={labelCls}>Password</label>
+              <label htmlFor="password" className={labelIsian}>
+                Password
+              </label>
               <div className="relative">
                 <input
                   id="password"
                   type={lihat ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`${inputCls} pr-11`}
+                  className={`${isian} pr-12`}
                   placeholder="Masukkan password"
                   autoComplete="current-password"
                   required
@@ -152,46 +166,33 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setLihat(!lihat)}
-                  className="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-600"
+                  className="absolute inset-y-0 right-0 grid w-12 place-items-center text-tinta-3 hover:text-tinta"
                   aria-label={lihat ? 'Sembunyikan password' : 'Tampilkan password'}
                 >
                   {lihat ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={memproses || kunci > 0} className={`${btn.primary} w-full py-3`}>
-              {memproses ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />} {memproses ? 'Memeriksa...' : 'Masuk'}
+            <button type="submit" disabled={memproses || kunci > 0} className={`${tombol.utama} w-full`}>
+              {memproses && <Loader2 className="h-4 w-4 animate-spin" />} {memproses ? 'Memeriksa...' : 'Masuk'}
             </button>
           </form>
 
-          <div className="mt-8 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+          <div className="mt-10 rounded-[1.75rem] bg-kertas-tua/70 p-5">
             {Object.entries(LABEL_ROLE).map(([role, label]) => (
-              <div key={role} className="mt-3 first:mt-0">
-                <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</p>
+              <div key={role} className="mt-4 first:mt-0">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-tinta-3">{label}</p>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {/* Peran tanpa akun demo (Kepala Sekolah): kolom dikosongkan, diisi manual */}
                   {!AKUN_DEMO.some((a) => a.role === role) && (
-                    <button
-                      type="button"
-                      onClick={() => isiManual(role)}
-                      className={`rounded-xl border bg-white px-2 py-2 text-center transition hover:border-primary-300 hover:bg-primary-50 ${
-                        manual === role ? 'border-primary-400 ring-2 ring-primary-100' : 'border-slate-200'
-                      }`}
-                    >
-                      <span className="block text-sm font-bold text-slate-800">{label}</span>
+                    <button type="button" onClick={() => isiManual(role)} aria-pressed={manual === role} className={kartuAkun(manual === role)}>
+                      <span className="block text-sm font-semibold">{label}</span>
                     </button>
                   )}
                   {AKUN_DEMO.filter((a) => a.role === role).map((a) => (
-                    <button
-                      key={a.username}
-                      type="button"
-                      onClick={() => isiDemo(a)}
-                      className={`rounded-xl border bg-white px-2 py-2 text-center transition hover:border-primary-300 hover:bg-primary-50 ${
-                        username === a.username ? 'border-primary-400 ring-2 ring-primary-100' : 'border-slate-200'
-                      }`}
-                    >
-                      <span className="block text-sm font-bold text-slate-800">{a.label}</span>
-                      <span className="block text-xs text-slate-500">{a.username}</span>
+                    <button key={a.username} type="button" onClick={() => isiDemo(a)} aria-pressed={username === a.username} className={kartuAkun(username === a.username)}>
+                      <span className="block text-sm font-semibold">{a.label}</span>
+                      <span className={`block text-xs ${username === a.username ? 'text-white/80' : 'text-tinta-3'}`}>{a.username}</span>
                     </button>
                   ))}
                 </div>
@@ -199,7 +200,7 @@ export default function Login() {
             ))}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

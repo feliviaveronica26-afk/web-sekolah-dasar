@@ -24,7 +24,7 @@ export default function Konseling() {
       desc="Catatan layanan BK untuk setiap siswa. Bersifat rahasia — hanya Guru BK dan Kepala Sekolah yang dapat melihatnya."
       ringkasan={
         <>
-          <div className="mb-4 grid grid-cols-3 gap-4">
+          <div className="mb-4 grid gap-3 min-[480px]:grid-cols-3 sm:gap-4">
             <StatCard icon={HeartHandshake} label="Dalam proses" value={hitung('Dalam Proses')} tone="sky" />
             <StatCard icon={Eye} label="Perlu pemantauan" value={hitung('Perlu Pemantauan')} tone="amber" />
             <StatCard icon={CircleCheck} label="Selesai" value={hitung('Selesai')} tone="emerald" />

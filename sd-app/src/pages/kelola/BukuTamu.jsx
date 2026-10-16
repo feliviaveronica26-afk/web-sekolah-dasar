@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { CalendarClock, DoorOpen, LogIn, LogOut, Plus, UserCheck, Users } from 'lucide-react'
 import { Alert, Badge, Card, DashHeader, EmptyState, Modal, StatCard, btn, inputCls, labelCls } from '../../components/ui'
+import { useGayaSitus } from '../../context/akses'
 import { useData } from '../../context/DataContext'
 import { KEPERLUAN_TAMU } from '../../data/dummy'
 import { formatHari, jamSekarang, todayKey } from '../../utils/format'
@@ -13,6 +14,8 @@ export default function BukuTamu() {
   const [tanggal, setTanggal] = useState(hariIni)
   const [form, setForm] = useState(null) // null = modal tertutup
   const [pesan, setPesan] = useState('')
+  // Portal satpam: kartu angka bergaya bento beranda situs (Kepala Sekolah tetap tampilan portal biasa)
+  const situs = useGayaSitus()
 
   const tamuHariIni = data.bukuTamu.filter((t) => t.tanggal === hariIni)
   const diDalam = tamuHariIni.filter((t) => !t.keluar)
@@ -22,14 +25,16 @@ export default function BukuTamu() {
     .sort((a, b) => a.sesi.localeCompare(b.sesi))
   const sudahDatang = (k) => data.bukuTamu.some((t) => t.kodeKunjungan === k.kode)
 
-  const catatMasuk = (tamu) => {
-    tambah('bukuTamu', { ...tamu, tanggal: hariIni, masuk: jamSekarang(), keluar: '' })
+  // Tanggal & jam masuk dicatat server
+  const catatMasuk = async (tamu) => {
+    if (await tambah('bukuTamu', tamu)) return false
     setPesan(`${tamu.nama} tercatat masuk pukul ${jamSekarang()}.`)
+    return true
   }
 
-  const simpan = (e) => {
+  const simpan = async (e) => {
     e.preventDefault()
-    catatMasuk({ ...form, jumlah: Number(form.jumlah) || 1 })
+    if (!(await catatMasuk({ ...form, jumlah: Number(form.jumlah) || 1 }))) return
     setForm(null)
     setTanggal(hariIni)
   }
@@ -66,9 +71,16 @@ export default function BukuTamu() {
       )}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        <StatCard icon={Users} label="Tamu hari ini" value={tamuHariIni.length} hint={`${tamuHariIni.reduce((a, t) => a + Number(t.jumlah), 0)} orang`} tone="sky" />
-        <StatCard icon={DoorOpen} label="Masih di dalam" value={diDalam.length} hint="belum tercatat keluar" tone="amber" />
-        <StatCard icon={CalendarClock} label="Kunjungan terjadwal" value={terjadwal.length} hint="hari ini" tone="emerald" />
+        <StatCard
+          icon={Users}
+          label="Tamu hari ini"
+          value={tamuHariIni.length}
+          hint={`${tamuHariIni.reduce((a, t) => a + Number(t.jumlah), 0)} orang`}
+          tone="sky"
+          nada={situs ? 'merah' : undefined}
+        />
+        <StatCard icon={DoorOpen} label="Masih di dalam" value={diDalam.length} hint="belum tercatat keluar" tone="amber" nada={situs ? 'stabilo' : undefined} />
+        <StatCard icon={CalendarClock} label="Kunjungan terjadwal" value={terjadwal.length} hint="hari ini" tone="emerald" nada={situs ? 'gelap' : undefined} />
       </div>
 
       {terjadwal.length > 0 && (
@@ -77,7 +89,7 @@ export default function BukuTamu() {
           <p className="text-sm text-slate-500">Sudah dikonfirmasi Tata Usaha. Cocokkan kode booking saat tamu tiba.</p>
           <ul className="mt-4 space-y-2">
             {terjadwal.map((k) => (
-              <li key={k.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-slate-50 px-4 py-3">
+              <li key={k.id} className="ui-ubin flex flex-wrap items-center gap-3 rounded-xl bg-slate-50 px-4 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-slate-800">
                     {k.nama} <span className="font-mono text-xs text-slate-400">{k.kode}</span>
@@ -145,7 +157,11 @@ export default function BukuTamu() {
                       ) : t.tanggal === hariIni ? (
                         <button
                           onClick={() => ubah('bukuTamu', t.id, { keluar: jamSekarang() })}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+                          className={`inline-flex items-center gap-1.5 text-xs ${
+                            situs
+                              ? 'min-h-9 rounded-full bg-stabilo px-3.5 font-bold text-tinta hover:bg-amber-300'
+                              : 'rounded-lg bg-amber-50 px-3 py-1.5 font-semibold text-amber-800 hover:bg-amber-100'
+                          }`}
                         >
                           <LogOut className="h-3.5 w-3.5" /> Catat Keluar
                         </button>

@@ -14,7 +14,8 @@ export const SEMESTER = `Ganjil ${SPP.tahunAjaran}`
 export function RingkasanNilai({ siswa }) {
   const { data } = useData()
   const r = rekapNilai(data, siswa)
-  const peringkat = peringkatKelas(data, siswa)
+  // Siswa & orang tua tidak menerima nilai teman sekelas, jadi peringkatnya dihitung server
+  const peringkat = data.peringkat[siswa.nis] ?? peringkatKelas(data, siswa)
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       <StatCard icon={TrendingUp} label="Rata-rata nilai" value={r.rataRata ?? '–'} hint={predikat(r.rataRata).label} tone="sky" />
@@ -236,14 +237,13 @@ export function KartuRapor({ siswa, bisaEdit = false }) {
             {ubah ? (
               <div className="mt-2 print:hidden">
                 <textarea value={draf} onChange={(e) => setDraf(e.target.value)} rows={3} className="w-full rounded-xl border border-amber-200 bg-white p-3 text-sm focus:outline-none focus:ring-4 focus:ring-amber-100" />
-                <div className="mt-2 flex justify-end gap-2">
+                <div className="mt-2 flex flex-wrap justify-end gap-2">
                   <button onClick={() => setUbah(false)} className={btn.secondary}>
                     Batal
                   </button>
                   <button
-                    onClick={() => {
-                      simpanCatatanWali(siswa.nis, draf.trim())
-                      setUbah(false)
+                    onClick={async () => {
+                      if (!(await simpanCatatanWali(siswa.nis, draf.trim()))) setUbah(false)
                     }}
                     className={btn.primary}
                   >

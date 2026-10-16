@@ -1,29 +1,20 @@
 import { useEffect, useState } from 'react'
 import { BookOpen, Camera, ChevronLeft, ChevronRight, Flag, FlaskConical, Monitor, Music, Sprout, Store, Tent, Trophy, X } from 'lucide-react'
 import { Muncul } from '../../components/Hiasan'
-import { PageHeader } from '../../components/ui'
-import { GALERI } from '../../data/dummy'
+import { Foto, KepalaHalaman, wadah } from '../../components/Situs'
+import { GALERI, SEKOLAH } from '../../data/dummy'
+import { FOTO, fotoUntuk } from '../../data/foto'
 import { formatTanggal } from '../../utils/format'
 
-// Sementara memakai ilustrasi ikon. Ganti dengan foto asli di folder public/galeri/
+// Foto: isi `foto: '/galeri/nama-berkas.jpg'` pada data GALERI (berkas di public/galeri/).
+// Tanpa itu, dipakai foto yang cocok dengan judul (src/data/foto.js), atau bidang warna berikon.
 const IKON = { flag: Flag, trophy: Trophy, book: BookOpen, tent: Tent, music: Music, monitor: Monitor, sprout: Sprout, flask: FlaskConical, store: Store }
-const GRADASI = {
-  Kegiatan: 'from-primary-400 to-primary-700',
-  Prestasi: 'from-amber-300 to-orange-500',
-  Pembelajaran: 'from-sky-400 to-indigo-500',
-  Ekstrakurikuler: 'from-emerald-400 to-teal-600',
-}
-// Pola ukuran kartu agar susunan galeri terasa dinamis
-const UKURAN = ['md:row-span-2', '', '', 'md:col-span-2', '', 'md:row-span-2', '', '', '']
+const NADA = { Kegiatan: 'merah', Prestasi: 'tua', Pembelajaran: 'papan', Ekstrakurikuler: 'tua' }
 
-function Gambar({ g, besar = false }) {
-  const Icon = IKON[g.ikon] ?? Camera
-  return (
-    <div className={`relative h-full w-full overflow-hidden bg-linear-to-br ${GRADASI[g.kategori]}`}>
-      <div className="pola-titik absolute inset-0" />
-      <Icon className={`absolute text-white/25 transition duration-500 group-hover:scale-110 group-hover:-rotate-6 ${besar ? 'right-8 top-8 h-40 w-40' : 'right-4 top-4 h-16 w-16'}`} />
-    </div>
-  )
+// `hias`: judul sudah tertulis di sebelah foto, jadi teks alt dikosongkan agar tidak dibaca dua kali
+function Gambar({ g, besar = false, className = '', hias = false }) {
+  const foto = fotoUntuk(g, { pakaiKategori: false })
+  return <Foto foto={foto} alt={foto && !hias ? g.judul : ''} ikon={IKON[g.ikon] ?? Camera} nada={NADA[g.kategori]} besar={besar} className={className} />
 }
 
 export default function Galeri() {
@@ -53,72 +44,95 @@ export default function Galeri() {
 
   return (
     <>
-      <PageHeader eyebrow="Dokumentasi" title="Galeri Kegiatan" subtitle="Momen-momen berharga keseharian siswa SD Harapan Gemilang." />
-      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="mb-8 flex flex-wrap justify-center gap-2">
+      <KepalaHalaman
+        jejak="Galeri"
+        judul="Momen kecil yang berharga."
+        desc={`Dokumentasi keseharian siswa ${SEKOLAH.nama}: di kelas, di lapangan, dan di panggung.`}
+        foto={FOTO.tawa}
+      />
+
+      <section className={`${wadah} py-12 lg:py-16`}>
+        <div role="group" aria-label="Saring menurut kategori" className="flex flex-wrap gap-2">
           {daftarKategori.map((k) => (
             <button
               key={k}
+              type="button"
+              aria-pressed={kategori === k}
               onClick={() => {
                 setKategori(k)
                 setIndeks(null)
               }}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                kategori === k ? 'bg-primary-600 text-white shadow-md shadow-primary-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              className={`inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-[15px] font-bold transition ${
+                kategori === k ? 'bg-primary-600 text-white' : 'bg-kartu text-tinta-2 ring-1 ring-inset ring-garis hover:text-tinta hover:ring-tinta/30'
               }`}
             >
-              {k}
-              <span className="ml-1.5 text-xs opacity-70">{k === 'Semua' ? GALERI.length : GALERI.filter((g) => g.kategori === k).length}</span>
+              {k}{' '}
+              <span className={`angka rounded-full px-2 py-0.5 text-xs ${kategori === k ? 'bg-white/20' : 'bg-kertas-tua text-tinta-3'}`}>
+                {k === 'Semua' ? GALERI.length : GALERI.filter((g) => g.kategori === k).length}
+              </span>
             </button>
           ))}
         </div>
 
-        <div className="grid grid-flow-dense auto-rows-[180px] grid-cols-2 gap-4 md:grid-cols-4">
-          {daftar.map((g, i) => (
-            <Muncul key={g.id} jeda={(i % 4) * 60} className={kategori === 'Semua' ? UKURAN[i % UKURAN.length] : ''}>
-              <button onClick={() => setIndeks(i)} className="group relative h-full w-full overflow-hidden rounded-3xl text-left focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-300">
-                <Gambar g={g} />
-                <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 via-black/20 to-transparent p-4 pt-10">
-                  <p className="text-xs font-semibold text-white/80">{g.kategori}</p>
-                  <p className="font-display text-lg font-bold leading-tight text-white">{g.judul}</p>
-                </div>
-              </button>
-            </Muncul>
-          ))}
-        </div>
-        <p className="mt-6 text-center text-sm text-slate-500">Foto asli kegiatan akan segera ditambahkan. Ikuti {`@sdharapangemilang`} untuk dokumentasi terbaru.</p>
+        <ul className="mt-8 grid auto-rows-[15rem] gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[17rem]">
+          {daftar.map((g, i) => {
+            const utama = i === 0 && kategori === 'Semua'
+            return (
+              <Muncul as="li" key={g.id} jeda={(i % 3) * 60} className={utama ? 'sm:col-span-2 sm:row-span-2' : ''}>
+                <button type="button" onClick={() => setIndeks(i)} className="group relative isolate block h-full w-full overflow-hidden rounded-[1.75rem] text-left text-white">
+                  <span className="absolute inset-0 -z-20">
+                    <Gambar g={g} besar={utama} hias className="transition duration-700 group-hover:scale-105" />
+                  </span>
+                  <span aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/20 to-black/0" />
+                  <span className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+                    <span className="block text-sm">
+                      <span className="rounded-full bg-white/20 px-2.5 py-0.5 font-bold backdrop-blur">{g.kategori}</span>
+                      <span className="angka ml-2 text-white/80">{formatTanggal(g.tanggal)}</span>
+                    </span>
+                    <span className={`mt-2 block font-extrabold leading-snug tracking-tight ${utama ? 'text-3xl sm:text-4xl' : 'text-xl'}`}>{g.judul}</span>
+                  </span>
+                </button>
+              </Muncul>
+            )
+          })}
+        </ul>
+        <p className="mt-10 text-[15px] text-tinta-3">Dokumentasi lengkap setiap kegiatan ada di Instagram {SEKOLAH.instagram}.</p>
       </section>
 
       {dipilih && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-4 backdrop-blur-sm" onClick={() => setIndeks(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/95 p-4" onClick={() => setIndeks(null)}>
           <div role="dialog" aria-modal="true" aria-label={dipilih.judul} className="relative w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setIndeks(null)} className="absolute -top-12 right-0 rounded-full bg-white/10 p-2 text-white hover:bg-white/20" aria-label="Tutup">
-              <X className="h-6 w-6" />
+            <button
+              type="button"
+              onClick={() => setIndeks(null)}
+              className="absolute -top-14 right-0 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-bold text-white hover:bg-white/10"
+            >
+              <X className="h-5 w-5" /> Tutup
             </button>
-            <div className="group aspect-video overflow-hidden rounded-3xl">
+            <div className="aspect-video overflow-hidden rounded-[1.75rem]">
               <Gambar g={dipilih} besar />
             </div>
-            <div className="mt-4 flex items-start justify-between gap-4 text-white">
+            <div className="mt-5 flex items-start justify-between gap-6 text-white">
               <div>
                 <p className="text-sm text-white/70">
-                  {dipilih.kategori} · {formatTanggal(dipilih.tanggal)}
+                  {dipilih.kategori} · <span className="angka">{formatTanggal(dipilih.tanggal)}</span>
                 </p>
-                <p className="font-display text-2xl font-bold">{dipilih.judul}</p>
-                <p className="mt-1 text-white/80">{dipilih.desc}</p>
+                <p className="mt-1 text-3xl font-extrabold leading-tight tracking-tight">{dipilih.judul}</p>
+                <p className="mt-2 leading-relaxed text-white/75">{dipilih.desc}</p>
               </div>
-              <p className="shrink-0 text-sm text-white/60">
+              <p className="angka shrink-0 text-sm text-white/70">
                 {indeks + 1} / {daftar.length}
               </p>
             </div>
             {daftar.length > 1 && (
-              <>
-                <button onClick={() => geser(-1)} className="absolute left-2 top-[28%] rounded-full bg-white/90 p-2.5 text-slate-800 shadow-lg hover:bg-white sm:-left-14" aria-label="Sebelumnya">
-                  <ChevronLeft className="h-6 w-6" />
+              <div className="mt-6 flex gap-3">
+                <button type="button" onClick={() => geser(-1)} className="inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-bold text-white ring-1 ring-inset ring-white/30 hover:bg-white/10">
+                  <ChevronLeft className="h-4 w-4" /> Sebelumnya
                 </button>
-                <button onClick={() => geser(1)} className="absolute right-2 top-[28%] rounded-full bg-white/90 p-2.5 text-slate-800 shadow-lg hover:bg-white sm:-right-14" aria-label="Berikutnya">
-                  <ChevronRight className="h-6 w-6" />
+                <button type="button" onClick={() => geser(1)} className="inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-bold text-white ring-1 ring-inset ring-white/30 hover:bg-white/10">
+                  Berikutnya <ChevronRight className="h-4 w-4" />
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>

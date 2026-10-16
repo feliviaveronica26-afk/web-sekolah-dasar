@@ -23,6 +23,8 @@ const KATA_MUTIARA = [
   'Jaga kebersihan kelas, karena kelas bersih bikin belajar nyaman. 🌱',
 ]
 
+const BASE = '/dashboard/siswa'
+
 const menit = (jam) => {
   const [h, m] = jam.split('.').map(Number)
   return h * 60 + m
@@ -75,7 +77,10 @@ export default function SiswaDashboard() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white/15 p-4 ring-1 ring-white/20 backdrop-blur lg:w-72">
+          <Link
+            to={`${BASE}/lencana`}
+            className="block rounded-2xl bg-white/15 p-4 ring-1 ring-white/20 backdrop-blur transition hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-white lg:w-72"
+          >
             <div className="flex items-center justify-between">
               <p className="font-display text-lg font-bold">
                 Level {level.level} · {level.gelar}
@@ -92,17 +97,17 @@ export default function SiswaDashboard() {
               <span className="rounded-full bg-white/20 px-3 py-1 font-semibold">🔥 {streak} hari hadir</span>
               <span className="rounded-full bg-white/20 px-3 py-1 font-semibold">⭐ {Math.max(0, sikap.total)} poin</span>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
 
       <IsiPresensiOtp className="mb-6" />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard icon={CalendarCheck} label="Kehadiranku" value={`${kehadiran.persen}%`} hint="20 hari sekolah terakhir" tone="emerald" />
-        <StatCard icon={ClipboardList} label="Tugas belum selesai" value={tugasAktif.length} hint={`dari ${tugasKelas.length} tugas`} tone="amber" />
-        <StatCard icon={TrendingUp} label="Rata-rata nilai" value={nilai.rataRata ?? '–'} hint="semester ini" tone="sky" />
-        <StatCard icon={Star} label="Lencana" value={`${didapat.length}/${lencana.length}`} hint="sudah didapat" tone="primary" />
+        <StatCard icon={CalendarCheck} label="Kehadiranku" value={`${kehadiran.persen}%`} hint="20 hari sekolah terakhir" tone="emerald" ke={`${BASE}/presensi`} />
+        <StatCard icon={ClipboardList} label="Tugas belum selesai" value={tugasAktif.length} hint={`dari ${tugasKelas.length} tugas`} tone="amber" ke={`${BASE}/tugas`} />
+        <StatCard icon={TrendingUp} label="Rata-rata nilai" value={nilai.rataRata ?? '–'} hint="semester ini" tone="sky" ke={`${BASE}/nilai`} />
+        <StatCard icon={Star} label="Lencana" value={`${didapat.length}/${lencana.length}`} hint="sudah didapat" tone="primary" ke={`${BASE}/lencana`} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-5">
@@ -119,11 +124,14 @@ export default function SiswaDashboard() {
               <ol className="mt-4 space-y-2">
                 {jadwal.sesi.map((kode, i) => (
                   <li key={kode + i}>
-                    <div className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${i === sesiAktif ? 'bg-primary-50 ring-2 ring-primary-300' : 'bg-slate-50'}`}>
+                    <Link
+                      to={`${BASE}/jadwal`}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition ${i === sesiAktif ? 'bg-primary-50 ring-2 ring-primary-300' : 'bg-slate-50 hover:bg-slate-100'}`}
+                    >
                       <span className="w-12 shrink-0 text-xs font-semibold text-slate-500">{SESI[i].mulai}</span>
                       <span className={`rounded-lg px-2.5 py-1 text-sm font-semibold ${MAPEL[kode].warna}`}>{MAPEL[kode].nama}</span>
                       {i === sesiAktif && <span className="ml-auto animate-pulse text-xs font-bold text-primary-600">● Sekarang</span>}
-                    </div>
+                    </Link>
                     {i + 1 === ISTIRAHAT.setelahSesi && (
                       <p className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-400">
                         <Coffee className="h-3.5 w-3.5" /> Istirahat {ISTIRAHAT.mulai} – {ISTIRAHAT.selesai}
@@ -184,14 +192,20 @@ export default function SiswaDashboard() {
           </JudulKartu>
           <div className="flex flex-wrap gap-2">
             {didapat.map((l) => (
-              <span key={l.kode} title={l.nama} className={`grid h-12 w-12 place-items-center rounded-2xl bg-linear-to-br text-2xl shadow-sm ${l.warna}`}>
+              <Link
+                key={l.kode}
+                to={`${BASE}/lencana`}
+                title={l.nama}
+                aria-label={`Lencana ${l.nama}`}
+                className={`grid h-12 w-12 place-items-center rounded-2xl bg-linear-to-br text-2xl shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${l.warna}`}
+              >
                 {l.emoji}
-              </span>
+              </Link>
             ))}
             {didapat.length === 0 && <p className="text-sm text-slate-500">Belum ada lencana. Ayo kumpulkan!</p>}
           </div>
           {berikutnya && (
-            <div className="mt-5 rounded-2xl bg-slate-50 p-4">
+            <Link to={`${BASE}/lencana`} className="mt-5 block rounded-2xl bg-slate-50 p-4 transition hover:bg-slate-100">
               <p className="text-xs font-semibold text-slate-500">Lencana berikutnya</p>
               <p className="mt-1 font-bold text-slate-900">
                 {berikutnya.emoji} {berikutnya.nama}
@@ -199,7 +213,7 @@ export default function SiswaDashboard() {
               <p className="text-xs text-slate-500">{berikutnya.syarat}</p>
               <Progres nilai={berikutnya.progres * 100} warna="bg-amber-400" className="mt-2" />
               <p className="mt-1 text-xs font-semibold text-slate-600">{berikutnya.teks}</p>
-            </div>
+            </Link>
           )}
         </Card>
 
@@ -215,16 +229,18 @@ export default function SiswaDashboard() {
           ) : (
             <ul className="space-y-2">
               {ekskul.map((e) => (
-                <li key={e.id} className="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-2.5">
-                  <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${e.warna}`}>
-                    <Ikon nama={e.ikon} className="h-5 w-5" />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-bold text-slate-800">{e.nama}</span>
-                    <span className="block text-xs text-slate-500">
-                      {e.hari} · {e.jam}
+                <li key={e.id}>
+                  <Link to={`${BASE}/ekskul`} className="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-2.5 transition hover:bg-slate-100">
+                    <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${e.warna}`}>
+                      <Ikon nama={e.ikon} className="h-5 w-5" />
                     </span>
-                  </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold text-slate-800">{e.nama}</span>
+                      <span className="block text-xs text-slate-500">
+                        {e.hari} · {e.jam}
+                      </span>
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -240,9 +256,11 @@ export default function SiswaDashboard() {
           </JudulKartu>
           <ul className="space-y-2">
             {agenda.map((e) => (
-              <li key={e.judul + e.mulai} className={`rounded-xl px-4 py-3 ${JENIS_AGENDA[e.jenis].soft}`}>
-                <p className="text-sm font-bold">{e.judul}</p>
-                <p className="text-xs opacity-80">{rentangAgenda(e)}</p>
+              <li key={e.judul + e.mulai}>
+                <Link to={`${BASE}/kalender`} className={`block rounded-xl px-4 py-3 transition hover:brightness-95 ${JENIS_AGENDA[e.jenis].soft}`}>
+                  <p className="text-sm font-bold">{e.judul}</p>
+                  <p className="text-xs opacity-80">{rentangAgenda(e)}</p>
+                </Link>
               </li>
             ))}
           </ul>
@@ -250,17 +268,24 @@ export default function SiswaDashboard() {
       </div>
 
       <Card className="mt-6 p-6">
-        <JudulKartu icon={Megaphone} judul="Pengumuman" />
+        <JudulKartu icon={Megaphone} judul="Pengumuman">
+          <Link to={`${BASE}/pengumuman`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            Semua <ArrowRight className="h-4 w-4" />
+          </Link>
+        </JudulKartu>
         <div className="grid gap-4 md:grid-cols-2">
           {pengumuman.map((p) => (
-            <div key={p.id} className="rounded-2xl bg-slate-50 p-4">
+            <Link key={p.id} to={`${BASE}/pengumuman?buka=${encodeURIComponent(p.id)}`} className="group block rounded-2xl bg-slate-50 p-4 transition hover:bg-slate-100">
               <div className="flex items-center gap-2">
                 <KategoriBadge kategori={p.kategori} />
                 <span className="text-xs text-slate-500">{formatTanggal(p.tanggal)}</span>
               </div>
               <p className="mt-2 font-semibold text-slate-800">{p.judul}</p>
               <p className="mt-1 line-clamp-2 text-sm text-slate-600">{p.isi}</p>
-            </div>
+              <p className="mt-2 flex items-center gap-1 text-sm font-semibold text-primary-600">
+                Baca selengkapnya <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </p>
+            </Link>
           ))}
         </div>
       </Card>

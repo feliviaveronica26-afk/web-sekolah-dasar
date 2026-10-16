@@ -33,7 +33,8 @@ function pelajaranSekarang(kelas) {
 
 function DetailRuang({ kelas, sorot }) {
   const { data } = useData()
-  const siswa = data.siswa.filter((s) => s.kelas === kelas)
+  // Jumlah siswa per kelas dari server (pengunjung & siswa tidak menerima daftar siswa kelas lain)
+  const jumlah = data.jumlahSiswa[kelas] ?? {}
   const wali = data.guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === kelas)
   const lantai = GEDUNG_KELAS.find((l) => [...l.utara, ...l.selatan].includes(kelas))?.lantai
   const sekarang = pelajaranSekarang(kelas)
@@ -67,7 +68,7 @@ function DetailRuang({ kelas, sorot }) {
           <div>
             <dt className="text-xs text-slate-500">Siswa</dt>
             <dd className="font-semibold text-slate-800">
-              {siswa.length} siswa · {siswa.filter((s) => s.jk === 'L').length} L, {siswa.filter((s) => s.jk === 'P').length} P
+              {(jumlah.L ?? 0) + (jumlah.P ?? 0)} siswa · {jumlah.L ?? 0} L, {jumlah.P ?? 0} P
             </dd>
           </div>
         </div>

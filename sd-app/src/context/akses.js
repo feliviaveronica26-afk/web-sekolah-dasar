@@ -1,6 +1,6 @@
 import { useAuth } from './AuthContext'
 import { useData } from './DataContext'
-import { MAPEL } from '../data/dummy'
+import { mapelDiampu } from '../utils/jadwal'
 import { mapelRapor } from '../utils/nilai'
 
 // Jabatan di Portal Guru & Staf beserta menu yang dibukanya.
@@ -10,7 +10,7 @@ export const PERAN = {
   guru_mapel: { label: 'Guru Mapel', menu: ['kelas', 'absensi', 'nilai', 'tugas', 'sikap'] },
   wakasek_kurikulum: { label: 'Wakasek Kurikulum', menu: ['jadwal', 'kalender', 'pengumuman', 'nilai', 'rapor'] },
   wakasek_kesiswaan: { label: 'Wakasek Kesiswaan', menu: ['siswa', 'kehadiran', 'sikap'] },
-  tata_usaha: { label: 'Tata Usaha', menu: ['siswa', 'spp', 'ppdb', 'kunjungan'] },
+  tata_usaha: { label: 'Tata Usaha', menu: ['siswa', 'ortu', 'spp', 'ppdb', 'kunjungan'] },
   pustakawan: { label: 'Pustakawan', menu: ['perpustakaan'] },
   wakasek_sarpras: { label: 'Wakasek Sarana & Prasarana', menu: ['inventaris', 'kerusakan'] },
   guru_bk: { label: 'Guru BK', menu: ['konseling', 'sikap', 'siswa', 'kehadiran'] },
@@ -22,8 +22,9 @@ export const MENU_UMUM = ['presensi', 'chat']
 
 // Kepala Sekolah memegang akses tertinggi: semua menu kelola + pengaturan jabatan guru & staf.
 // Absensi kelas, persetujuan izin, dan pesan orang tua tidak termasuk karena itu tugas harian wali kelas.
+// Keuangan sekolah khusus Kepala Sekolah selama login staf belum diperiksa server.
 export const MENU_KEPSEK = [
-  'presensi', 'chat', 'kelas', 'siswa', 'guru', 'kehadiran', 'nilai', 'rapor', 'sikap', 'konseling', 'tugas', 'spp', 'ppdb', 'kunjungan', 'bukutamu',
+  'presensi', 'chat', 'kelas', 'siswa', 'ortu', 'guru', 'kehadiran', 'nilai', 'rapor', 'sikap', 'konseling', 'tugas', 'keuangan', 'spp', 'ppdb', 'kunjungan', 'bukutamu',
   'pengumuman', 'perpustakaan', 'inventaris', 'kerusakan', 'jadwal', 'kalender',
 ]
 
@@ -52,6 +53,16 @@ export function useAkses() {
   }
 }
 
+/*
+  Portal satpam memakai tampilan bergaya beranda situs (merah putih, huruf Plus Jakarta Sans tebal, kartu
+  membulat, tombol pil). Halaman yang dipakai bersama (Presensi Staf, Chat, Buku Tamu) hanya berganti gaya
+  untuk akun satpam; urutan & isi halaman tetap sama dengan portal lain.
+*/
+export function useGayaSitus() {
+  const { kepsek, peran } = useAkses()
+  return !kepsek && peran.includes('satpam')
+}
+
 const urutKelas = (daftar) => [...new Set(daftar)].filter(Boolean).sort()
 
 /*
@@ -67,10 +78,9 @@ export function useLingkup(menu) {
   const semuaKelas = urutKelas(data.siswa.map((s) => s.kelas))
   const punyaPeran = (p) => akses.peran.includes(p)
 
-  // Mapel yang diampu guru mapel khusus (agama, bahasa Inggris, PJOK, informatika, ...)
-  const namaGuruMapel = data.guru.filter((g) => g.peran?.includes('guru_mapel')).map((g) => g.nama)
-  const mapelKhusus = Object.keys(MAPEL).filter((k) => namaGuruMapel.includes(MAPEL[k].guru))
-  const mapelSaya = Object.keys(MAPEL).filter((k) => MAPEL[k].guru === akses.nama)
+  // Mapel yang diampu guru mapel (agama, bahasa Inggris, PJOK, informatika, ...); sisanya diajar wali kelas
+  const mapelKhusus = data.guru.flatMap(mapelDiampu)
+  const mapelSaya = mapelDiampu(data.guru.find((g) => g.id === akses.guruId))
 
   const penuh =
     akses.kepsek ||
@@ -92,7 +102,7 @@ export function useLingkup(menu) {
     if (penuh) return daftar
     const boleh = new Set()
     if (k === akses.kelas) daftar.filter((m) => !mapelKhusus.includes(m)).forEach((m) => boleh.add(m))
-    if (punyaPeran('guru_mapel')) daftar.filter((m) => mapelSaya.includes(m)).forEach((m) => boleh.add(m))
+    daftar.filter((m) => mapelSaya.includes(m)).forEach((m) => boleh.add(m))
     return daftar.filter((m) => boleh.has(m))
   }
 

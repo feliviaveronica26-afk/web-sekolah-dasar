@@ -1,12 +1,58 @@
-import { useState } from 'react'
-import { AlertTriangle, Banknote, CheckCircle2, Search, TrendingUp, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { AlertTriangle, Banknote, Camera, CheckCircle2, History, Search, TrendingUp, Users, X } from 'lucide-react'
 import { Alert, Badge, Card, DashHeader, EmptyState, Modal, StatCard, btn, inputCls } from '../../components/ui'
-import { Kuitansi, LegendaSpp, PilihBulan, StripBulan } from '../../components/Spp'
+import { Kuitansi, LegendaSpp, PilihBulan, StripBulan, riwayatPembayaran } from '../../components/Spp'
 import { useData } from '../../context/DataContext'
 import { KELAS, SPP } from '../../data/dummy'
 import { ringkasSpp } from '../../utils/ringkasan'
-import { STATUS_SPP, bulanIni, buatNoTransaksi, bulanWajibBayar, bulanBisaDibayar, daftarBulan, namaBulan, rupiah } from '../../utils/spp'
-import { todayKey } from '../../utils/format'
+import { formatTanggal } from '../../utils/format'
+import { STATUS_SPP, bulanIni, bulanWajibBayar, bulanBisaDibayar, daftarBulan, namaBulan, rupiah } from '../../utils/spp'
+
+// Foto bukti pembayaran; src memakai endpoint berwenang (/api/spp/bukti/:id, cookie TU).
+function BuktiFoto({ bukti, className = 'max-h-64' }) {
+  if (!bukti) return null
+  const url = `/api/spp/bukti/${bukti.id}`
+  return (
+    <a href={url} target="_blank" rel="noreferrer" className="mt-1.5 block w-fit">
+      <img src={url} alt="Bukti pembayaran" className={`${className} w-auto rounded-xl object-contain ring-1 ring-slate-200`} />
+    </a>
+  )
+}
+
+// Riwayat pembayaran satu siswa beserta foto buktinya (untuk dilihat ulang kapan saja)
+function RiwayatSpp({ siswa, data }) {
+  const riwayat = riwayatPembayaran(data, siswa.nis)
+  return (
+    <>
+      <div className="mb-4 rounded-2xl bg-slate-50 px-4 py-3">
+        <p className="font-bold text-slate-900">{siswa.nama}</p>
+        <p className="text-sm text-slate-500">
+          NIS {siswa.nis} · Kelas {siswa.kelas}
+        </p>
+      </div>
+      {riwayat.length === 0 ? (
+        <EmptyState icon={Banknote} title="Belum ada pembayaran" desc="Siswa ini belum punya riwayat pembayaran SPP." />
+      ) : (
+        <div className="space-y-3">
+          {riwayat.map((t) => (
+            <div key={t.noTransaksi} className="rounded-2xl border border-slate-200 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-slate-800">{daftarBulan(t.bulan)}</p>
+                  <p className="text-xs text-slate-500">
+                    {formatTanggal(t.tanggal)} · {t.metode} · No. {t.noTransaksi}
+                  </p>
+                </div>
+                <span className="shrink-0 font-bold text-slate-900">{rupiah(t.bulan.length * SPP.nominal)}</span>
+              </div>
+              {t.bukti ? <BuktiFoto bukti={t.bukti} className="max-h-48" /> : <p className="mt-2 text-xs text-slate-400">Tanpa foto bukti</p>}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
 
 const PER_HALAMAN = 50
 
@@ -17,8 +63,19 @@ export default function KelolaSpp() {
   const [hanyaMenunggak, setHanyaMenunggak] = useState(false)
   const [tunai, setTunai] = useState(null) // siswa yang sedang dicatat pembayarannya
   const [terpilih, setTerpilih] = useState([])
+  const [bukti, setBukti] = useState(null) // File foto bukti pembayaran (opsional)
+  const [buktiUrl, setBuktiUrl] = useState(null) // pratinjau lokal
   const [kuitansi, setKuitansi] = useState(null)
+  const [riwayat, setRiwayat] = useState(null) // siswa yang riwayat pembayarannya sedang dilihat
   const [batas, setBatas] = useState(PER_HALAMAN) // jumlah baris yang ditampilkan
+
+  // Pratinjau foto bukti dari file lokal, dibersihkan saat ganti/batal
+  useEffect(() => {
+    if (!bukti) return setBuktiUrl(null)
+    const url = URL.createObjectURL(bukti)
+    setBuktiUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [bukti])
 
   const r = ringkasSpp(data)
   const q = cari.trim().toLowerCase()
@@ -29,14 +86,23 @@ export default function KelolaSpp() {
   const bukaTunai = (siswa) => {
     const wajib = bulanWajibBayar(data, siswa.nis)
     setTerpilih(wajib.length ? wajib : bulanBisaDibayar(data, siswa.nis).slice(0, 1))
+    setBukti(null)
     setTunai(siswa)
   }
 
-  const simpanTunai = () => {
-    const pembayaran = { noTransaksi: buatNoTransaksi(), tanggal: todayKey(), metode: 'Tunai', bulan: terpilih }
-    catatTunai(tunai.nis, terpilih, pembayaran.noTransaksi)
-    setKuitansi({ siswa: tunai, pembayaran })
+  const pilihBukti = (e) => {
+    const f = e.target.files?.[0]
+    if (f) setBukti(f)
+    e.target.value = '' // agar file yang sama bisa dipilih lagi setelah dihapus
+  }
+
+  // Nomor kuitansi & tanggal dari server; kuitansi hanya tampil jika pembayaran tersimpan
+  const simpanTunai = async () => {
+    const hasil = await catatTunai(tunai.nis, terpilih, bukti)
+    if (!hasil) return
+    setKuitansi({ siswa: tunai, pembayaran: { ...hasil, metode: 'Tunai', bulan: terpilih } })
     setTunai(null)
+    setBukti(null)
   }
 
   return (
@@ -128,13 +194,21 @@ export default function KelolaSpp() {
                       )}
                     </td>
                     <td className="px-5 py-3 text-right">
-                      <button
-                        onClick={() => bukaTunai(s)}
-                        disabled={bulanBisaDibayar(data, s.nis).length === 0}
-                        className="rounded-lg px-3 py-1.5 text-sm font-semibold text-primary-600 hover:bg-primary-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent"
-                      >
-                        Catat Tunai
-                      </button>
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          onClick={() => setRiwayat(s)}
+                          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                        >
+                          <History className="h-4 w-4" /> Riwayat
+                        </button>
+                        <button
+                          onClick={() => bukaTunai(s)}
+                          disabled={bulanBisaDibayar(data, s.nis).length === 0}
+                          className="rounded-lg px-3 py-1.5 text-sm font-semibold text-primary-600 hover:bg-primary-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent"
+                        >
+                          Catat Tunai
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -167,10 +241,37 @@ export default function KelolaSpp() {
               </p>
             </div>
             <PilihBulan data={data} nis={tunai.nis} terpilih={terpilih} onChange={setTerpilih} />
+
+            <div className="mt-4">
+              <p className="mb-1.5 block text-sm font-medium text-slate-700">
+                Foto bukti pembayaran <span className="font-normal text-slate-400">(opsional)</span>
+              </p>
+              {buktiUrl ? (
+                <div className="relative w-fit">
+                  <img src={buktiUrl} alt="Pratinjau bukti pembayaran" className="max-h-44 w-auto rounded-xl object-contain ring-1 ring-slate-200" />
+                  <button
+                    type="button"
+                    onClick={() => setBukti(null)}
+                    className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-rose-600 text-white shadow-md hover:bg-rose-700"
+                    aria-label="Hapus foto bukti"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm font-semibold text-slate-500 transition hover:border-primary-400 hover:text-primary-600">
+                  <Camera className="h-6 w-6" />
+                  Ambil atau unggah foto bukti
+                  <span className="text-xs font-normal text-slate-400">Struk, kuitansi, atau uang tunai yang diterima</span>
+                  <input type="file" accept="image/*" capture="environment" onChange={pilihBukti} className="hidden" />
+                </label>
+              )}
+            </div>
+
             <div className="mt-4">
               <Alert tone="info">Pastikan uang tunai sudah diterima sebelum menyimpan. Kuitansi akan langsung dibuat.</Alert>
             </div>
-            <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
               <div>
                 <p className="text-xs text-slate-500">{terpilih.length ? daftarBulan(terpilih) : 'Belum ada bulan dipilih'}</p>
                 <p className="text-xl font-extrabold text-slate-900">{rupiah(terpilih.length * SPP.nominal)}</p>
@@ -184,7 +285,21 @@ export default function KelolaSpp() {
       </Modal>
 
       <Modal open={!!kuitansi} onClose={() => setKuitansi(null)} title="Pembayaran Tersimpan">
-        {kuitansi && <Kuitansi siswa={kuitansi.siswa} pembayaran={kuitansi.pembayaran} />}
+        {kuitansi && (
+          <>
+            <Kuitansi siswa={kuitansi.siswa} pembayaran={kuitansi.pembayaran} />
+            {kuitansi.pembayaran.bukti && (
+              <div className="mt-4">
+                <p className="mb-1 text-sm font-medium text-slate-700">Foto bukti pembayaran</p>
+                <BuktiFoto bukti={kuitansi.pembayaran.bukti} />
+              </div>
+            )}
+          </>
+        )}
+      </Modal>
+
+      <Modal open={!!riwayat} onClose={() => setRiwayat(null)} title="Riwayat Pembayaran">
+        {riwayat && <RiwayatSpp siswa={riwayat} data={data} />}
       </Modal>
     </>
   )

@@ -8,10 +8,60 @@ Website sekolah + portal siswa, orang tua, guru & staf, dan kepala sekolah. Dibu
 npm install
 npm run dev            # buka http://localhost:5173
 npm run build          # build produksi ke folder dist/
-npm run hash-password  # buat/ganti password akun Kepala Sekolah (disimpan sebagai hash)
 ```
 
 > Catatan: proyek ini sengaja memakai Vite 6. Vite 8 memakai binary `rolldown` yang diblokir Windows Smart App Control.
+
+### Backend Laravel & MySQL
+
+**Semua data** tersimpan di backend Laravel + MySQL (folder `laravel/` di samping `sd-app/`, database
+`sd_harapan_gemilang`): akun & login, guru, siswa, presensi, nilai, tugas, sikap, ekskul, SPP,
+perpustakaan, PPDB, kunjungan, buku tamu, sarpras, konseling, pengumuman, keuangan, dan chat
+(beserta berkasnya). Browser tidak lagi menyimpan data sekolah. Jalankan Laravel di samping `npm run dev`:
+
+```bash
+php artisan migrate               # buat tabel (sekali, atau setiap ada tabel baru)
+php artisan db:seed               # isi data awal yang belum ada (tabel yang sudah berisi tidak ditimpa)
+php artisan serve --host=127.0.0.1 --port=8000
+php artisan akun:password "raymond fernando"   # ganti password akun (diketik tersembunyi)
+```
+
+Website memanggil `/api/...`, lalu proxy di `vite.config.js` meneruskannya ke Laravel (ubah alamatnya
+lewat variabel `API_LARAVEL`). Karena itu Laravel cukup mendengar di `127.0.0.1`, dan HP di jaringan
+yang sama tetap bisa memakai data yang sama lewat alamat website.
+
+- **Data per pengguna** (`GET /api/data`, `laravel/app/Support/DataSekolah.php`): setiap orang hanya
+  menerima data yang boleh ia lihat. Siswa & orang tua: data milik siswa itu + teman sekelas (tanpa
+  nilai teman; peringkat kelas dihitung server). Guru & staf: data sekolah, kecuali konseling (Guru BK),
+  SPP (TU), data lengkap PPDB/kunjungan (TU), dan alasan izin/terlambat rekan. Pengunjung: pengumuman,
+  guru tanpa NIP, katalog buku, dan kuota PPDB/kunjungan tanpa data pribadi.
+- **Hak mengubah** diperiksa server untuk setiap perubahan (`app/Support/Akses.php`, sama dengan
+  `src/context/akses.js`): mis. wali kelas hanya kelasnya, guru mapel hanya mapelnya, siswa hanya
+  ekskul/tugas/pesanan bukunya sendiri.
+- **Perubahan dari perangkat lain** ikut tampil: website menanyakan `GET /api/versi` tiap 15 detik
+  (3 detik di halaman presensi & chat) dan hanya memuat ulang bagian yang berubah. Saat kembali ke tab,
+  semua data dimuat ulang, jadi perubahan yang dibuat langsung di MySQL Workbench juga terlihat.
+- **Data acuan** (jadwal, mapel, ekskul, SPP, pilihan formulir) dan **data contoh** dibuat dari
+  `src/data/dummy.js`. Setelah mengubah data acuan, jalankan `npm run ekspor-laravel` (menulis
+  `resources/data/referensi.json` & `database/seeders/data/contoh.json` di folder Laravel) agar
+  aturan di server ikut berubah.
+- Daftar guru terbuka untuk umum (halaman Guru), tetapi **NIP hanya dikirim ke Kepala Sekolah**.
+- **Login** lewat `POST /api/masuk`: akun di tabel `users` (kolom `username`, `role`, `guru_id`, `nis`,
+  `kelas`, `anak_nis`, `aktif`), password bcrypt. Sesi disimpan Laravel (tabel `sessions`) dan
+  dikenali lewat cookie HttpOnly; permintaan yang mengubah data membawa token CSRF (`X-XSRF-TOKEN`).
+  Hak akses diperiksa server (`peran:kepsek`), bukan hanya disembunyikan di menu.
+- Tambah/ubah/hapus guru hanya untuk Kepala Sekolah.
+- Jika Laravel mati saat halaman terbuka, data yang sudah tampil tetap ada dan perubahan ditolak
+  dengan pesan yang jelas (Data Guru & Staf menampilkan status sambungannya). Jika website dibuka saat
+  Laravel mati, portal menampilkan "Server data tidak bisa dihubungi" dengan tombol Coba lagi.
+- **Keuangan Sekolah** (menu Administrasi, khusus Kepala Sekolah): buku kas pemasukan & pengeluaran
+  (tabel `transaksi_kas`), saldo, surplus/defisit, grafik arus kas per bulan, rincian per kategori,
+  dan unduh laporan CSV. Membaca pun wajib sesi kepsek, dan datanya tidak disimpan di browser.
+  Pembayaran SPP masuk otomatis dari data SPP (digabung per hari) agar tidak tercatat dua kali.
+  Kategori ada di `src/utils/keuangan.js` dan `TransaksiKas::KATEGORI` di Laravel (harus sama).
+- **Batas server lokal:** `php artisan serve` di Windows melayani satu permintaan sekaligus, dan
+  `php.ini` bawaan membatasi unggahan 2 MB (berkas chat). Untuk dipakai banyak orang, pasang di web
+  server sungguhan (Apache/Nginx + PHP-FPM) dan naikkan `upload_max_filesize`/`post_max_size`.
 
 ## Akun demo
 
@@ -29,27 +79,88 @@ npm run hash-password  # buat/ganti password akun Kepala Sekolah (disimpan sebag
 | Guru & Staf    | Guru BK           | bk        | bk123        |
 | Guru & Staf    | Satpam            | satpam    | satpam123    |
 
-Portal Kepala Sekolah tidak punya akun demo; aksesnya hanya lewat akun terdaftar
-(`AKUN_TERDAFTAR` di `src/data/dummy.js`), yang tidak ditampilkan di halaman login.
-Password-nya **tidak** disimpan di kode: `.env.local` (tidak ikut ke Git) hanya berisi hash
-`VITE_HASH_KEPSEK`. Untuk membuat atau mengganti password, jalankan `npm run hash-password`
-(password diketik tersembunyi), lalu jalankan ulang `npm run dev`.
+Akun demo dibuat oleh seeder Laravel (`AkunSeeder`) dan **harus dihapus sebelum website dipakai
+sungguhan**. Portal Kepala Sekolah tidak punya akun demo: akunnya dibuat dari `HASH_KEPSEK` di `.env`
+Laravel (hash dari website versi lama), dan saat login pertama password-nya otomatis disimpan ulang
+dengan bcrypt. Password tidak pernah ditulis di kode; ganti dengan `php artisan akun:password "<username>"`.
+
+### Akun guru, staf, dan orang tua
+
+- **Satu per satu:** Kepala Sekolah membuat akun (atau mengatur ulang password) guru & staf dari menu
+  **Data Guru & Staf**, Tata Usaha/Kepala Sekolah membuat akun orang tua dari menu **Data Orang Tua**.
+  Password awal acak hanya tampil sekali di layar itu.
+- **Massal:** `php artisan akun:buat staf` atau `php artisan akun:buat ortu` membuat akun untuk yang belum
+  punya. Username staf diambil dari nama (mis. `siti.nurhaliza`), username orang tua `ortu` + NIS anak
+  pertama (mis. `ortu230402`). Password awal **tidak** ditampilkan di terminal; daftarnya ditulis ke CSV di
+  `storage/app/private/akun-awal/` Laravel (tidak ikut git). Bagikan, lalu hapus berkasnya.
+- **Wajib ganti password:** akun dengan password awal langsung diminta membuat password sendiri setelah
+  login, dan server menolak perubahan data apa pun sebelum itu. Semua akun bisa mengganti password lewat
+  **Ganti Password** di menu samping; perangkat lain yang login dengan akun itu ikut dikeluarkan.
+
+### Data guru & orang tua
+
+- **Biodata guru & staf** (TTL, agama, alamat, WhatsApp, email, pendidikan, status kepegawaian, mulai
+  bertugas) tersimpan di tabel `guru`. Biodata pribadi hanya terlihat oleh Kepala Sekolah dan pemiliknya.
+- **Mapel yang diampu** guru mapel diatur di Data Guru & Staf (kolom `mapel_diampu`). Guru mapel menilai &
+  mengabsen mapel itu di semua kelas; mapel lain diajar wali kelas. Mengganti nama/gelar guru tidak lagi
+  memengaruhi haknya. Satu mapel hanya boleh diampu satu guru mapel.
+- **Data orang tua** per keluarga (ayah, ibu, wali, pekerjaan, WhatsApp, email, alamat) ada di tabel
+  `orang_tua`; siswa merujuknya lewat `orang_tua_id`, jadi kakak-adik cukup satu data. Yang bisa melihat:
+  Kepala Sekolah, Tata Usaha, Guru BK, dan Wakasek Kesiswaan (semua), wali kelas (kelasnya), siswa & orang
+  tua (keluarganya sendiri). Orang tua memperbarui kontaknya sendiri di **Data Keluarga** Portal Orang Tua.
 
 ## Tampilan
 
-- Huruf judul **Fredoka** (membulat, ramah anak) dan huruf isi **Plus Jakarta Sans**, dimuat di `index.html`.
-- Warna utama merah putih (`--color-primary-*` di `src/index.css`) dengan aksen kuning, biru, dan hijau.
-- Hiasan & ilustrasi SVG (gedung sekolah, gelombang, bintang, animasi muncul saat di-scroll) ada di
-  `src/components/Hiasan.jsx` — ganti dengan foto asli sekolah bila sudah tersedia.
-- Grafik tanpa pustaka tambahan di `src/components/Grafik.jsx` (batang & garis, satu warna data,
-  tooltip saat hover/fokus keyboard).
+**Halaman publik** (beranda, profil, akademik, guru, fasilitas, berita, galeri, PPDB, kontak, login, 404)
+memakai gaya **modern merah putih** yang kaya foto: latar merah di pembuka setiap halaman dengan foto
+berbingkai bulat, kolase foto di beranda, kartu "bento" (foto + bidang warna), kartu ekskul & fasilitas
+berfoto, contoh tampilan Portal Orang Tua di ponsel, berita bergambar, dan galeri foto. Merah seragam tetap
+dominan; kuning stabilo sebagai aksen, merah marun untuk linimasa harian & footer.
+
+- Huruf **Plus Jakarta Sans** (rancangan huruf asal Indonesia) untuk judul (tebal 800) dan isi.
+- Token warna (`--color-kertas`, `kartu`, `tinta`, `garis`, `stabilo`, `krem`) ada di `src/index.css`. Kontras
+  teks sudah dihitung (≥ 4,5:1); teks di atas merah memakai `primary-700` ke atas (putih/`krem`/`stabilo`),
+  `primary-600` hanya untuk tombol & bidang berteks putih. Gaya publik hanya aktif di dalam kelas `.situs`
+  (dipasang di `PublicLayout`, `Login`, `NotFound`), jadi **portal tidak ikut berubah**.
+- Komponen khusus publik di `src/components/Situs.jsx`: latar merah & jejak halaman, kepala halaman
+  berfoto, judul bagian, label pil, tombol pil, isian formulir, pita teks berjalan (bisa dijeda), dan `Foto`.
+- **Foto** ada di `public/foto/` (WebP). Saat ini berisi **foto contoh dari Unsplash** (lisensi Unsplash,
+  daftar fotografer di `public/foto/KREDIT.md`). Untuk memakai foto asli sekolah, timpa berkas dengan nama
+  yang sama, lalu sesuaikan teks `alt` di `src/data/foto.js`. File itu juga memetakan foto ke fasilitas,
+  ekskul, serta berita/galeri (lewat kata kunci judul). Galeri bisa memakai foto sendiri per kegiatan dengan
+  mengisi `foto: '/galeri/nama-berkas.jpg'` pada data `GALERI` di `src/data/dummy.js`.
+- Hindari pola template generik: gradasi warna-warni, gumpalan, gelombang, bintang lima palsu, dan emoji.
+  Gradasi gelap di atas foto hanya dipakai agar teks di atasnya tetap terbaca.
+
+**Portal** tetap memakai huruf judul **Fredoka** (membulat, ramah anak), komponen di `src/components/ui.jsx`,
+dan hiasan di `src/components/Hiasan.jsx`. Grafik tanpa pustaka tambahan ada di `src/components/Grafik.jsx`
+(batang & garis, satu warna data, tooltip saat hover/fokus keyboard).
+
+### Responsif
+
+Semua halaman (publik & portal) diperiksa di lebar 320 (HP kecil), 360, 390, 414, 768 & 820 (tablet),
+1024, 1280, 1440, dan 1920 px: tidak ada halaman yang melebar ke samping, teks keluar kotak, atau kartu
+terpotong. Aturan yang dipakai:
+
+- **Menu samping portal** tampil tetap mulai 1280 px (`xl`). Di bawahnya (HP, tablet, laptop kecil) menu
+  dibuka lewat tombol ☰ agar isi halaman mendapat lebar penuh.
+- **Grid tidak melebar karena isinya**: `src/index.css` memberi `min-width: 0` pada setiap anak `.grid`, jadi
+  teks `truncate` atau tabel lebar tidak lagi mendorong kolom keluar layar. Tabel lebar memakai
+  `overflow-x-auto` (digeser di dalam kartunya).
+- **Kartu statistik** (`StatCard`) memakai *container query*: ikon pindah ke atas label bila kartunya sempit,
+  dan nominal panjang (mis. Rp172.200.000) mengecil mengikuti lebar kartu.
+- **Grafik** mengukur lebar wadahnya sendiri (`ResizeObserver`), jadi tulisan sumbu tetap 11 px di HP
+  maupun di layar lebar.
+- Baris berisi teks + tombol/nominal memakai `flex-wrap` atau bersusun di HP; bilah tab bisa digeser.
+- **iPhone/iPad**: kolom isian dibuat 16 px agar Safari tidak memperbesar halaman sendiri saat mengetik.
+  Jendela (modal) memakai tinggi layar yang terlihat (`dvh`), jadi tidak tertutup bilah alamat.
 
 ## Isi portal
 
 | Portal | Menu |
 |---|---|
-| Siswa | Beranda (level, XP, runtutan hadir, jadwal "sekarang"), **Presensi Hari Ini** (kode OTP), **Chat Kelas**, Jadwal, Tugas & PR, **Nilai Saya** + rapor sementara, Absensi per Mapel, **Lencana & Poin**, **Ekstrakurikuler** (pilih maks. 2), **Perpustakaan** (katalog & pesan buku), Kalender, Profil |
-| Orang Tua | Beranda ringkasan ananda, **Nilai & Rapor**, **Catatan Sikap**, **Tugas Ananda**, Absensi, **Chat**, Izin, Pengumuman, Pembayaran SPP, Kalender |
+| Siswa | Beranda (level, XP, runtutan hadir, jadwal "sekarang"; setiap kartu membuka halamannya), **Presensi Hari Ini** (kode OTP), **Chat Kelas**, **Pengumuman**, Jadwal, Tugas & PR, **Nilai Saya** + rapor sementara, Absensi per Mapel, **Lencana & Poin**, **Ekstrakurikuler** (boleh lebih dari satu, asal jadwal tidak bentrok), **Perpustakaan** (katalog & pesan buku), Kalender, Profil |
+| Orang Tua | Beranda ringkasan ananda, **Nilai & Rapor**, **Catatan Sikap**, **Tugas Ananda**, Absensi, **Chat**, Izin, Pengumuman, Pembayaran SPP, **Data Keluarga**, Kalender |
 | Guru & Staf | **Presensi Staf** & **Chat** (semua jabatan) + menu sesuai jabatan — wali kelas: **Daftar Siswa**, **Presensi Siswa** (OTP, harian & per pelajaran), Izin, **Input Nilai**, **Tugas Kelas**, **Poin Sikap**, **Rapor Kelas**; guru mapel: Daftar Siswa, Presensi Siswa untuk pelajaran yang diajarnya, Input Nilai & Tugas untuk mapelnya; plus menu BK, sarpras, TU, perpustakaan, satpam |
 | Kepala Sekolah | Dashboard (kehadiran guru & staf, tren kehadiran siswa, perbandingan antarkelas, daftar "perlu perhatian", PPDB, SPP), persetujuan izin & koreksi presensi staf, dan seluruh menu kelola |
 
@@ -97,9 +208,9 @@ umum di kelasnya, sedangkan Pendidikan Agama, Bahasa Inggris, PJOK, dan Informat
   memakai data dari guru pengampu.
 
 Pengaturan masa berlaku & batas percobaan ada di `src/utils/otp.js`; aturan pelajaran & status per
-pelajaran ada di `src/utils/jadwal.js`. **Penting:** di versi frontend
-ini kode tersimpan di browser, jadi presensi OTP hanya bisa dicoba di browser yang sama (mis. tab guru
-dan tab siswa). Untuk dipakai sungguhan, pembuatan & pemeriksaan kode harus dipindah ke backend.
+pelajaran ada di `src/utils/jadwal.js`. Kode OTP **dibuat dan diperiksa di server**
+(`PresensiOtpController`) dan tidak pernah dikirim ke perangkat siswa, jadi guru dan siswa bisa
+memakai HP/laptop masing-masing.
 
 ## Presensi guru & staf
 
@@ -122,14 +233,15 @@ Presensi Kepala Sekolah dicatat pada data guru & staf berjabatan *Kepala Sekolah
 ## Pembayaran SPP
 
 Orang tua membayar lewat menu **Pembayaran SPP** (QRIS atau Virtual Account), Tata Usaha
-mencatat pembayaran tunai di menu **Keuangan SPP**. Saat ini pembayaran masih **simulasi**;
-untuk produksi perlu payment gateway (mis. Midtrans/Xendit) di backend yang mengirim
-konfirmasi otomatis (webhook) — lihat `selesaikanTransaksi` di `src/context/DataContext.jsx`.
+mencatat pembayaran tunai di menu **Keuangan SPP**. Nomor VA, nomor transaksi, dan kuitansi dibuat
+server, dan bulan yang sudah lunas tidak bisa dibayar dua kali. Pembayaran online masih **simulasi**
+(tombol "Saya Sudah Bayar"); untuk produksi perlu payment gateway (mis. Midtrans/Xendit) yang
+mengirim konfirmasi otomatis (webhook) ke Laravel — lihat `SppController::selesaikan`.
 
 ## PPDB online
 
 Formulir pendaftaran 4 langkah ada di `/ppdb#daftar`. Pendaftar mendapat nomor pendaftaran
-dan bisa cek status dengan nomor + tanggal lahir anak. Panitia (Tata Usaha & Kepala Sekolah)
+(dibuat server, tidak bisa ganda) dan bisa cek status dengan nomor + tanggal lahir anak. Panitia (Tata Usaha & Kepala Sekolah)
 memverifikasi di menu **PPDB Online**. Kuota, syarat usia, dan daftar berkas diatur di `PPDB`
 pada `src/data/dummy.js`. Berkas saat ini hanya dicatat nama filenya — penyimpanan file asli
 memerlukan backend.
@@ -178,13 +290,12 @@ Guru di grup adalah **pengelola**: bisa menghapus pesan yang tidak pantas dan me
 **"hanya guru yang dapat mengirim"** (untuk pengumuman). Anggota grup dihitung otomatis dari data siswa,
 guru, dan jadwal. Fitur "Pesan Wali Kelas" yang lama sudah digabung ke chat (pesan lamanya ikut pindah).
 
-Agar tidak membebani web: halaman chat dimuat terpisah saat dibuka, data chat disimpan terpisah dari
-data sekolah (`sdhg-chat-v1`), dan isi berkas disimpan di IndexedDB (`src/utils/berkasChat.js`) yang
-baru dibaca saat pesannya tampil. Aturan siapa-boleh-chat ada di `src/utils/chat.js`.
-
-**Batasan saat ini:** sebelum backend tersambung, chat hanya bisa dicoba di browser yang sama (mis. tab
-guru & tab orang tua). Rekam suara butuh `localhost` atau HTTPS. Saat backend siap, `ChatContext` &
-`berkasChat` diganti dengan API + penyimpanan berkas di server (dan WebSocket untuk pesan seketika).
+Pesan tersimpan di tabel `chat_pesan`, tanda dibaca di `chat_dibaca`, dan isi berkas di
+`storage/app/private/chat` Laravel. Berkas hanya bisa dibuka anggota percakapannya; dokumen selalu
+diunduh (tidak dibuka di browser), dan isi berkas diperiksa sesuai jenisnya (mis. foto harus benar-benar
+gambar). Aturan siapa-boleh-chat ada di `src/utils/chat.js` dan `app/Support/ChatSekolah.php` (harus
+sama). Pesan baru diambil tiap 3 detik selama halaman chat terbuka. Rekam suara butuh `localhost`
+atau HTTPS. Ukuran berkas terbesar mengikuti `php.ini` server (bawaan 2 MB, maks. 25 MB).
 
 ## Notifikasi jaringan
 
@@ -194,17 +305,24 @@ terakhir lambat > 2,5 detik atau gagal), lalu "Koneksi kembali normal" saat puli
 berupa permintaan kecil ke server setiap 20 detik selama halaman dibuka, ditambah laporan kualitas
 jaringan dari browser (Chrome/Android).
 
+**Bilah muat berlogo** (`src/components/BilahMuat.jsx`): kapsul merah-putih bergaris dengan logo
+sekolah di ujung isian (logo berayun, cincin berdenyut, kilau berjalan). Muncul hanya bila permintaan
+ke server belum selesai setelah 0,8 detik (0,15 detik bila jaringan sudah diketahui lemah), sehingga
+di jaringan normal tidak terlihat. Kemajuannya perkiraan (makin pelan mendekati 92%), lalu penuh dan
+menghilang saat selesai. Semua permintaan `api()` dihitung lewat `src/utils/muat.js`, kecuali
+pemeriksaan berkala di latar belakang yang memakai `api(path, { latar: true })` (versi data, chat,
+sesi). Saat aplikasi pertama dibuka, `index.html` menampilkan layar muat awal bergaya sama sampai
+React siap.
+
 ## Keamanan
 
-Lapisan yang sudah ada di frontend:
-
-- **Password tidak ikut ke kode.** Akun sungguhan memakai hash PBKDF2-SHA256 (310.000 iterasi,
-  `src/utils/keamanan.js`). Setelah login, sesi menyimpan token turunan password, sehingga sesi
-  yang dibuat manual lewat DevTools (tanpa password) ditolak.
-- **Batas percobaan login**: 5 kali salah → login dikunci 1 menit, berlipat setiap terkunci lagi
-  (maks. 30 menit).
-- **Keluar otomatis** setelah 30 menit tanpa aktivitas atau 12 jam sejak login (penting untuk
-  komputer sekolah yang dipakai bersama).
+- **Login di server (Laravel).** Password disimpan bcrypt di tabel `users`; sesi berupa cookie
+  HttpOnly yang tidak bisa dibaca atau dipalsukan dari JavaScript, ditambah perlindungan CSRF.
+  Lama pemeriksaan sama untuk username yang ada maupun tidak, sehingga username tidak bisa ditebak.
+- **Batas percobaan login** (server): 5 kali salah per username & alamat → dikunci 5 menit,
+  ditambah batas permintaan per alamat yang longgar (banyak perangkat sekolah bisa berbagi satu alamat).
+- **Keluar otomatis** setelah 30 menit tanpa aktivitas (`SESSION_LIFETIME=30`) atau 12 jam sejak
+  login (middleware `BatasSesi`); akun yang dinonaktifkan langsung keluar.
 - **Content Security Policy** (disisipkan saat build) memblokir skrip sisipan/XSS; header keamanan
   lain (anti-clickjacking, nosniff, Referrer-Policy, Permissions-Policy, HSTS) ada di
   `public/_headers` (Netlify/Cloudflare Pages) dan `vite preview`.
@@ -214,30 +332,35 @@ Lapisan yang sudah ada di frontend:
 - **CSV aman**: sel yang diawali `= + - @` dinetralkan agar tidak dijalankan sebagai rumus Excel.
 - Peringatan di konsol browser agar pengguna tidak menempelkan kode atas suruhan orang lain.
 
-**Batasan yang perlu diketahui:** selama data masih di `localStorage`, siapa pun yang memegang
-perangkat bisa membaca data lewat DevTools, dan batas percobaan bisa direset dengan menghapus data
-browser. Perlindungan penuh harus dibuat di backend Laravel saat sudah tersambung: login & sesi di
-server (mis. Sanctum), `throttle` untuk login/OTP/formulir, CSRF, validasi input, HTTPS + HSTS,
-serta header yang sama dengan `public/_headers` di konfigurasi Apache/Nginx.
+- **Data sekolah tidak disimpan di browser.** Saat keluar, data pengguna sebelumnya langsung dibuang
+  dari memori; data lama versi sebelumnya (`sdhg-data-v3`, `sdhg-chat-v1`, IndexedDB chat) dihapus.
+
+**Batasan yang perlu diketahui:** untuk dipakai sungguhan perlu HTTPS + HSTS dan header yang sama
+dengan `public/_headers` di konfigurasi Apache/Nginx, serta menghapus akun demo.
 
 ## Status saat ini (frontend)
 
-- Data masih **dummy** dan disimpan di `localStorage` browser dengan kunci `sdhg-data-v3`
-  (lihat `src/context/DataContext.jsx`). Perubahan disinkronkan antartab di browser yang sama.
-- Login masih di browser (`src/context/AuthContext.jsx`). Sudah memakai hash, batas percobaan, dan
-  sesi berbatas waktu, tetapi tetap **belum aman untuk produksi** sampai pindah ke backend (lihat Keamanan).
-- Saat backend siap, cukup ganti isi kedua context tersebut dengan pemanggilan API.
+- Semua data memakai Laravel + MySQL (`src/utils/api.js`, `src/context/DataContext.jsx`,
+  `src/context/ChatContext.jsx`, `src/context/AuthContext.jsx`; lihat Backend Laravel & MySQL).
+- Data contoh (432 siswa, absensi 20 hari, nilai, SPP, dll.) diisi seeder Laravel dari
+  `scripts/data-contoh.js`. Tombol "Reset Data Demo" dihapus karena data kini dipakai bersama;
+  untuk mengulang data contoh, kosongkan tabelnya lalu jalankan `php artisan db:seed`.
+- Biodata lengkap siswa demo (`BIODATA`: NISN, TTL, agama, golongan darah) dan data acuan (jadwal,
+  kalender, fasilitas) masih di `src/data/dummy.js`. Biodata guru & staf serta data orang tua sudah di
+  database (lihat "Data guru & orang tua").
 
 ## Struktur
 
 ```
 src/
-  components/     Layout, navbar, footer, komponen UI, CrudPage, Spp (pembayaran), Hiasan (ilustrasi),
+  components/     Layout, navbar, footer, Situs (komponen halaman publik), komponen UI portal, CrudPage,
+                  Spp (pembayaran), Hiasan (animasi muncul & hiasan portal),
                   Grafik, Nilai (rincian & rapor), Presensi (kartu absen staf), Faq, Ikon,
-                  DenahKelas (denah gedung kelas), StatusJaringan (notifikasi koneksi)
+                  DenahKelas (denah gedung kelas), StatusJaringan (notifikasi koneksi), BilahMuat (bilah muat berlogo)
   context/        AuthContext (login), DataContext (data + aksi), ChatContext (chat), akses (jabatan & menu)
   pages/Chat.jsx  Chat untuk semua portal (dimuat terpisah)
-  data/dummy.js   Data contoh sekolah — ubah di sini untuk konten
+  data/dummy.js   Data acuan & konten sekolah (jadwal, mapel, ekskul, fasilitas, kalender, PPDB)
+  data/foto.js    Daftar foto halaman publik & pemetaannya ke fasilitas, ekskul, berita, galeri
   pages/public/   Beranda, Profil, Akademik, Guru, Fasilitas, Berita, Galeri, PPDB, Kontak
   pages/siswa/    Dashboard, Presensi (OTP), Jadwal, Absensi per Mapel, Tugas, Nilai, Lencana, Ekskul, Perpustakaan, Profil
   pages/ortu/     Dashboard, Nilai, Sikap, Tugas, Pembayaran SPP, Absensi Anak, Izin, Pengumuman
@@ -248,8 +371,9 @@ src/
                   Keuangan SPP, Buku Tamu, Pengumuman, Perpustakaan, Inventaris Sarpras,
                   Laporan Kerusakan, Jadwal
   utils/          Helper tanggal, SPP, nilai & rapor, prestasi (lencana/level), presensi staf, OTP presensi siswa,
-                  jadwal & presensi per pelajaran, keamanan (hash, batas login, anti-spam, CSV), chat & berkas chat,
-                  ringkasan statistik
-scripts/          hash-password.mjs (membuat hash password akun sungguhan)
+                  jadwal & presensi per pelajaran, keamanan (anti-spam, CSV), API server, chat & berkas chat,
+                  ringkasan statistik, muat (penghitung permintaan untuk bilah muat)
+scripts/          data-contoh.js (data contoh untuk seeder) & ekspor-laravel.mjs (npm run ekspor-laravel)
 public/_headers   Header keamanan untuk hosting statis
+public/foto/      Foto halaman publik (WebP) + KREDIT.md
 ```

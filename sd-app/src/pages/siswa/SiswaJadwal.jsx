@@ -7,14 +7,14 @@ import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
 import { HARI_SEKOLAH, ISTIRAHAT, JADWAL, MAPEL, SESI, lantaiKelas } from '../../data/dummy'
 import { namaHari, todayKey } from '../../utils/format'
-import { guruPelajaran } from '../../utils/jadwal'
+import { namaPengampu } from '../../utils/jadwal'
 
 // `kelas` & `aksi` dipakai saat halaman ini ditampilkan di portal guru & staf
 export default function SiswaJadwal({ kelas: kelasProp, aksi }) {
   const { user } = useAuth()
   const { data } = useData()
   const kelas = kelasProp ?? user.kelas
-  const guruDari = (kode) => guruPelajaran(data.guru, kelas, kode)?.nama ?? MAPEL[kode].guru
+  const guruDari = (kode) => namaPengampu(data.guru, kelas, kode)
   const jadwal = JADWAL[kelas] ?? {}
   const hariIni = namaHari(todayKey())
   const [hariDipilih, setHariDipilih] = useState(HARI_SEKOLAH.includes(hariIni) ? hariIni : 'Senin')

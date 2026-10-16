@@ -34,10 +34,11 @@ import OrtuDashboard from './pages/ortu/OrtuDashboard'
 import OrtuSpp from './pages/ortu/OrtuSpp'
 import OrtuAbsensi from './pages/ortu/OrtuAbsensi'
 import OrtuIzin from './pages/ortu/OrtuIzin'
-import OrtuPengumuman from './pages/ortu/OrtuPengumuman'
+import Pengumuman from './pages/Pengumuman'
 import OrtuNilai from './pages/ortu/OrtuNilai'
 import OrtuSikap from './pages/ortu/OrtuSikap'
 import OrtuTugas from './pages/ortu/OrtuTugas'
+import OrtuKeluarga from './pages/ortu/OrtuKeluarga'
 
 import StafDashboard from './pages/staf/StafDashboard'
 import PresensiSiswa from './pages/staf/PresensiSiswa'
@@ -45,9 +46,11 @@ import PersetujuanIzin from './pages/staf/PersetujuanIzin'
 import KepsekDashboard from './pages/kepsek/KepsekDashboard'
 
 import DataSiswa from './pages/kelola/DataSiswa'
+import DataOrangTua from './pages/kelola/DataOrangTua'
 import DataGuru from './pages/kelola/DataGuru'
 import RekapKehadiran from './pages/kelola/RekapKehadiran'
 import KelolaSpp from './pages/kelola/KelolaSpp'
+import KeuanganSekolah from './pages/kelola/KeuanganSekolah'
 import KelolaKunjungan from './pages/kelola/KelolaKunjungan'
 import KelolaPpdb from './pages/kelola/KelolaPpdb'
 import KelolaPengumuman from './pages/kelola/KelolaPengumuman'
@@ -64,10 +67,11 @@ import LaporanKerusakan from './pages/kelola/LaporanKerusakan'
 import PresensiStaf from './pages/kelola/PresensiStaf'
 import DaftarSiswa from './pages/kelola/DaftarSiswa'
 import StatusJaringan from './components/StatusJaringan'
+import { lacak } from './utils/muat'
 import { useAkses } from './context/akses'
 
 // Halaman chat dimuat terpisah saat dibuka, agar halaman lain tidak ikut membesar
-const Chat = lazy(() => import('./pages/Chat'))
+const Chat = lazy(() => lacak(import('./pages/Chat')))
 const halamanChat = (
   <Suspense fallback={<p className="py-20 text-center text-sm text-slate-500">Memuat chat...</p>}>
     <Chat />
@@ -111,9 +115,11 @@ const HALAMAN_KELOLA = {
   chat: halamanChat,
   rapor: <RaporKelas />,
   siswa: <DataSiswa />,
+  ortu: <DataOrangTua />,
   guru: <DataGuru />,
   kehadiran: <RekapKehadiran />,
   konseling: <Konseling />,
+  keuangan: <KeuanganSekolah />,
   spp: <KelolaSpp />,
   ppdb: <KelolaPpdb />,
   kunjungan: <KelolaKunjungan />,
@@ -157,6 +163,7 @@ export default function App() {
           <Route index element={<SiswaDashboard />} />
           <Route path="presensi" element={<SiswaPresensi />} />
           <Route path="chat" element={halamanChat} />
+          <Route path="pengumuman" element={<Pengumuman />} />
           <Route path="jadwal" element={<SiswaJadwal />} />
           <Route path="absensi" element={<SiswaAbsensi />} />
           <Route path="tugas" element={<SiswaTugas />} />
@@ -176,10 +183,11 @@ export default function App() {
           <Route path="chat" element={halamanChat} />
           <Route path="pesan" element={<Navigate to="/dashboard/ortu/chat" replace />} />
           <Route path="spp" element={<OrtuSpp />} />
+          <Route path="keluarga" element={<OrtuKeluarga />} />
           <Route path="absensi" element={<OrtuAbsensi />} />
           <Route path="izin" element={<OrtuIzin />} />
           <Route path="kalender" element={<KalenderAkademik />} />
-          <Route path="pengumuman" element={<OrtuPengumuman />} />
+          <Route path="pengumuman" element={<Pengumuman />} />
         </Route>
 
         <Route path="/dashboard/staf" element={dashboard('staf')}>

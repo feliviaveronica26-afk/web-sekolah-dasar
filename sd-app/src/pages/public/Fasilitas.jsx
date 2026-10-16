@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ArrowRight, CalendarCheck, Clock, MousePointerClick, Search, Users } from 'lucide-react'
 import { CekKunjungan, DenahSekolah, FormKunjungan, IKON_FASILITAS } from '../../components/Fasilitas'
-import { Card, Modal, PageHeader, SectionTitle, btn } from '../../components/ui'
+import { Muncul } from '../../components/Hiasan'
+import { Foto, JudulBagian, KepalaHalaman, TautanPanah, tombol, wadah } from '../../components/Situs'
+import { Modal } from '../../components/ui'
 import { FASILITAS, KUNJUNGAN } from '../../data/dummy'
+import { FOTO, FOTO_FASILITAS } from '../../data/foto'
+
 
 export default function Fasilitas() {
   // Tautan /fasilitas#kunjungan (dari beranda/footer) langsung membuka formulir
@@ -12,89 +15,81 @@ export default function Fasilitas() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Tur Virtual"
-        title="Fasilitas Sekolah"
-        subtitle="Jelajahi setiap sudut SD Harapan Gemilang secara virtual, lalu jadwalkan kunjungan untuk melihatnya langsung."
+      <KepalaHalaman
+        jejak="Fasilitas"
+        judul="Jelajahi sekolah sebelum berkunjung."
+        desc="Klik area pada denah untuk melihat detail setiap fasilitas, lalu jadwalkan kunjungan untuk melihatnya langsung."
+        foto={FOTO.perpustakaan}
       />
 
-      {/* Denah interaktif */}
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="grid items-start gap-8 lg:grid-cols-[1.6fr_1fr]">
-          <div>
-            <SectionTitle eyebrow="Tur Virtual" title="Denah Sekolah" center={false} />
-            <p className="-mt-6 mb-5 flex items-center gap-2 text-sm text-slate-500">
-              <MousePointerClick className="h-4 w-4" /> Klik salah satu area untuk melihat detail fasilitas.
-            </p>
-            <DenahSekolah />
-            <Link
-              to="/fasilitas/ruang-kelas#denah-kelas"
-              className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700"
-            >
-              Lihat denah 18 ruang kelas <ArrowRight className="h-4 w-4" />
-            </Link>
+      <section className={`${wadah} grid items-start gap-12 py-14 lg:grid-cols-[1.6fr_1fr] lg:py-20`}>
+        <div className="min-w-0">
+          <h2 className="text-3xl sm:text-4xl">Denah sekolah</h2>
+          <p className="mb-5 mt-2 text-[15px] text-tinta-2">Klik salah satu area untuk membuka detail fasilitas.</p>
+          <DenahSekolah />
+          <TautanPanah to="/fasilitas/ruang-kelas#denah-kelas" className="mt-5">
+            Lihat denah 18 ruang kelas
+          </TautanPanah>
+        </div>
+
+        <div id="kunjungan" className="scroll-mt-28 space-y-4 lg:pt-16">
+          <div className="rounded-[2rem] bg-primary-700 p-6 text-white sm:p-8">
+            <h2 className="text-3xl leading-tight">Ingin melihat langsung?</h2>
+            <p className="mt-3 leading-relaxed text-krem">Jadwalkan kunjungan; guru atau staf kami akan mendampingi Anda berkeliling.</p>
+            <dl className="mt-5 divide-y divide-white/15 text-[15px]">
+              {[
+                ['Hari', 'Senin – Jumat, kecuali hari libur'],
+                [
+                  'Sesi',
+                  KUNJUNGAN.sesi.map((s) => (
+                    <span key={s} className="block">
+                      {s}
+                    </span>
+                  )),
+                ],
+                ['Rombongan', `Maksimal ${KUNJUNGAN.maksOrang} orang`],
+              ].map(([k, v]) => (
+                <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-3 py-3">
+                  <dt className="text-krem">{k}</dt>
+                  <dd className="angka font-semibold">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <button type="button" onClick={() => setForm(true)} className={`${tombol.terang} mt-6 w-full`}>
+              Jadwalkan kunjungan
+            </button>
           </div>
 
-          <div id="kunjungan" className="scroll-mt-28 space-y-5 lg:pt-20">
-            <Card className="overflow-hidden">
-              <div className="bg-primary-600 p-6 text-white">
-                <CalendarCheck className="h-8 w-8" />
-                <h2 className="mt-3 text-2xl font-bold">Ingin melihat langsung?</h2>
-                <p className="mt-1 text-sm text-primary-50">Jadwalkan kunjungan ke sekolah, kami akan mendampingi Anda berkeliling.</p>
-              </div>
-              <div className="space-y-3 p-6 text-sm text-slate-600">
-                <p className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary-600" /> Senin – Jumat · {KUNJUNGAN.sesi.length} sesi per hari
-                </p>
-                <p className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-primary-600" /> Maksimal {KUNJUNGAN.maksOrang} orang per rombongan
-                </p>
-                <button onClick={() => setForm(true)} className={`${btn.primary} mt-2 w-full py-3`}>
-                  Jadwalkan Kunjungan
-                </button>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h2 className="flex items-center gap-2 font-bold text-slate-900">
-                <Search className="h-4 w-4 text-primary-600" /> Cek Status Kunjungan
-              </h2>
-              <p className="mb-3 mt-1 text-sm text-slate-500">Masukkan kode yang Anda terima saat mendaftar.</p>
-              <CekKunjungan />
-            </Card>
+          <div className="rounded-[2rem] bg-kartu p-6 ring-1 ring-garis sm:p-8">
+            <h2 className="text-2xl">Cek status kunjungan</h2>
+            <p className="mb-4 mt-2 text-[15px] text-tinta-2">Masukkan kode yang Anda terima saat mendaftar.</p>
+            <CekKunjungan />
           </div>
         </div>
       </section>
 
-      {/* Daftar fasilitas */}
-      <section className="bg-slate-50 py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="Sarana" title="Semua Fasilitas" desc="Pilih fasilitas untuk melihat foto, kegiatan, dan informasi lengkapnya." />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {FASILITAS.map((f) => {
-              const Icon = IKON_FASILITAS[f.ikon]
-              return (
-                <Link
-                  key={f.id}
-                  to={`/fasilitas/${f.id}`}
-                  className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:border-primary-200 hover:shadow-xl"
-                >
-                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-50 text-primary-600 transition group-hover:rotate-[-6deg] group-hover:bg-primary-600 group-hover:text-white">
-                    <Icon className="h-6 w-6" />
+      <section className="bg-kertas-tua/70 py-20 lg:py-28">
+        <div className={wadah}>
+          <JudulBagian label="Sarana" judul="Semua fasilitas." desc="Pilih fasilitas untuk melihat kegiatan, jam buka, dan letaknya di denah." />
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {FASILITAS.map((f, i) => (
+              <Muncul as="li" key={f.id} jeda={(i % 4) * 60}>
+                <Link to={`/fasilitas/${f.id}`} className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white ring-1 ring-garis transition hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgb(68_6_11/0.5)]">
+                  <span className="block aspect-[4/3] overflow-hidden">
+                    <Foto foto={FOTO_FASILITAS[f.id]} alt="" ikon={IKON_FASILITAS[f.ikon]} nada="merah" className="transition duration-700 group-hover:scale-105" />
                   </span>
-                  <h3 className="mt-4 text-lg font-bold text-slate-900">{f.nama}</h3>
-                  <p className="mt-1 flex-1 text-sm text-slate-600">{f.ringkas}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600">
-                    Kunjungi <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                  <span className="block p-5">
+                    <span className="block text-lg font-bold group-hover:text-primary-700">{f.nama}</span>
+                    <span className="mt-1 block text-[15px] leading-relaxed text-tinta-2">{f.ringkas}</span>
                   </span>
                 </Link>
-              )
-            })}
-          </div>
+              </Muncul>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <Modal open={form} onClose={() => setForm(false)} title="Jadwalkan Kunjungan Sekolah">
+      <Modal open={form} onClose={() => setForm(false)} title="Jadwalkan kunjungan sekolah">
         <FormKunjungan />
       </Modal>
     </>

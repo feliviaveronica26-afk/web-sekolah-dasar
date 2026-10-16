@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, CalendarDays, Check, Link2, MessageCircle, Newspaper } from 'lucide-react'
-import { EmptyState, KategoriBadge } from '../../components/ui'
+import { ArrowLeft, Check, Link2, MessageCircle } from 'lucide-react'
+import { Jejak, PitaMerah, wadah } from '../../components/Situs'
 import { useData } from '../../context/DataContext'
 import { formatHari, formatTanggal } from '../../utils/format'
 import { Sampul } from './Berita'
+
+const tombolBagi =
+  'inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-tinta ring-1 ring-inset ring-garis transition hover:ring-tinta/40'
 
 export default function BeritaDetail() {
   const { id } = useParams()
@@ -28,69 +31,82 @@ export default function BeritaDetail() {
 
   return (
     <>
-      <div className="bg-linear-to-b from-primary-50 to-white">
-        <section className="mx-auto max-w-3xl px-4 pb-6 pt-10 sm:px-6">
-          <Link to="/berita" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700">
-            <ArrowLeft className="h-4 w-4" /> Kembali ke berita
-          </Link>
-          {berita && (
+      <PitaMerah className={`pt-8 sm:pt-12 ${berita ? 'pb-32 sm:pb-44' : 'pb-14'}`}>
+        <div className="mx-auto max-w-3xl">
+          <Jejak
+            daftar={[
+              ['/', 'Beranda'],
+              ['/berita', 'Berita'],
+              [null, berita ? berita.kategori : 'Tidak ditemukan'],
+            ]}
+          />
+          {berita ? (
             <>
-              <div className="mt-6">
-                <KategoriBadge kategori={berita.kategori} />
-              </div>
-              <h1 className="mt-4 text-4xl font-bold leading-tight text-slate-900">{berita.judul}</h1>
-              <p className="mt-3 flex items-center gap-1.5 text-sm text-slate-500">
-                <CalendarDays className="h-4 w-4" /> {formatHari(berita.tanggal)}
+              <p className="mt-10 flex flex-wrap items-center gap-3 text-sm">
+                <span className="rounded-full bg-stabilo px-3 py-1 font-bold text-tinta">{berita.kategori}</span>
+                <span className="angka text-krem">{formatHari(berita.tanggal)}</span>
               </p>
+              <h1 className="mt-4 text-[2.5rem] leading-[1.06] sm:text-6xl">{berita.judul}</h1>
             </>
+          ) : (
+            <h1 className="mt-10 text-4xl sm:text-5xl">Berita tidak ditemukan.</h1>
           )}
-        </section>
-      </div>
+        </div>
+      </PitaMerah>
 
-      <section className="mx-auto max-w-3xl px-4 pb-14 sm:px-6">
+      <article className="relative mx-auto w-full max-w-4xl px-4 pb-16 pt-10 sm:px-6">
         {!berita ? (
-          <EmptyState icon={Newspaper} title="Berita tidak ditemukan" desc="Berita mungkin sudah dihapus atau tautannya salah." />
+          <div className="pb-8">
+            <p className="text-lg text-tinta-2">Berita mungkin sudah dihapus atau tautannya salah.</p>
+            <Link to="/berita" className="mt-6 inline-flex items-center gap-1.5 font-semibold text-primary-700 underline underline-offset-4">
+              <ArrowLeft className="h-4 w-4" /> Kembali ke berita
+            </Link>
+          </div>
         ) : (
-          <article>
-            <div className="group overflow-hidden rounded-3xl">
-              <Sampul kategori={berita.kategori} />
-            </div>
-            <p className="mt-8 whitespace-pre-line text-lg leading-relaxed text-slate-700">{berita.isi}</p>
+          <>
+            <Sampul berita={berita} besar className="-mt-36 aspect-[16/9] rounded-[2rem]! shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)] sm:-mt-48" />
+            <p className="mx-auto mt-12 max-w-3xl whitespace-pre-line text-lg leading-[1.8] text-tinta first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:text-6xl first-letter:font-extrabold first-letter:leading-[0.85] first-letter:text-primary-600 sm:text-xl sm:leading-[1.8]">
+              {berita.isi}
+            </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-3 border-y border-slate-200 py-5">
-              <span className="text-sm font-semibold text-slate-600">Bagikan:</span>
+            <div className="mx-auto mt-12 flex max-w-3xl flex-wrap items-center gap-3 rounded-[1.5rem] bg-kertas-tua/70 p-4 sm:px-6">
+              <span className="mr-2 text-sm font-semibold text-tinta-2">Bagikan</span>
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(`${berita.judul} — ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100"
+                className={tombolBagi}
               >
                 <MessageCircle className="h-4 w-4" /> WhatsApp
               </a>
-              <button onClick={salinTautan} className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200">
-                {tersalin ? <Check className="h-4 w-4 text-emerald-600" /> : <Link2 className="h-4 w-4" />} {tersalin ? 'Tersalin' : 'Salin tautan'}
+              <button type="button" onClick={salinTautan} className={tombolBagi}>
+                {tersalin ? <Check className="h-4 w-4 text-emerald-700" /> : <Link2 className="h-4 w-4" />} {tersalin ? 'Tersalin' : 'Salin tautan'}
               </button>
             </div>
-          </article>
+          </>
         )}
+      </article>
 
-        {lainnya.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold text-slate-900">Berita lainnya</h2>
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+      {lainnya.length > 0 && (
+        <section className="bg-kertas-tua/70 py-16 lg:py-20">
+          <div className={wadah}>
+            <h2 className="text-3xl">Berita lainnya</h2>
+            <ul className="mt-8 grid gap-4 sm:grid-cols-3">
               {lainnya.map((p) => (
-                <Link key={p.id} to={`/berita/${p.id}`} className="group overflow-hidden rounded-2xl ring-1 ring-slate-200 transition hover:shadow-lg">
-                  <Sampul kategori={p.kategori} />
-                  <div className="p-4">
-                    <p className="text-xs text-slate-500">{formatTanggal(p.tanggal)}</p>
-                    <p className="mt-1 line-clamp-2 font-semibold leading-snug text-slate-800 group-hover:text-primary-700">{p.judul}</p>
-                  </div>
-                </Link>
+                <li key={p.id}>
+                  <Link to={`/berita/${p.id}`} className="group block h-full rounded-[1.75rem] bg-white p-3 pb-5 ring-1 ring-garis">
+                    <Sampul berita={p} />
+                    <p className="angka mt-4 px-2 text-sm text-tinta-3">
+                      <span className="font-bold text-primary-700">{p.kategori}</span> · {formatTanggal(p.tanggal)}
+                    </p>
+                    <p className="mt-1 px-2 text-lg font-bold leading-snug group-hover:text-primary-700">{p.judul}</p>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
-        )}
-      </section>
+        </section>
+      )}
     </>
   )
 }

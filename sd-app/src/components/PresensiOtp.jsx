@@ -3,7 +3,7 @@ import { BookOpenCheck, CircleCheck, Hourglass, KeyRound, Lock, Send } from 'luc
 import { Card, JudulKartu, STATUS_ABSEN, btn } from './ui'
 import { useJamBerjalan } from './Presensi'
 import { useAuth } from '../context/AuthContext'
-import { useData } from '../context/DataContext'
+import { useData, useSegarCepat } from '../context/DataContext'
 import { MAPEL } from '../data/dummy'
 import { isHariSekolah, jamSekarang, parseKey, todayKey } from '../utils/format'
 import { jamPelajaran, labelSesi, pelajaranHari, statusPelajaran } from '../utils/jadwal'
@@ -36,6 +36,9 @@ export function IsiPresensiOtp({ className = '' }) {
   const sekarang = useJamBerjalan()
   const [kode, setKode] = useState('')
   const [hasil, setHasil] = useState(null)
+  const [sibuk, setSibuk] = useState(false)
+  // Sesi yang baru dibuka guru cepat terlihat
+  useSegarCepat(isHariSekolah(sekarang))
 
   const hariIni = todayKey()
   const status = data.absensi[hariIni]?.[user.nis]
@@ -47,10 +50,14 @@ export function IsiPresensiOtp({ className = '' }) {
   const terkunci = aktif && !sudah && (sesi.gagal?.[user.nis] ?? 0) >= MAKS_PERCOBAAN
   const namaMapel = aktif && sesi.kunci ? MAPEL[sesi.mapel]?.nama : null
 
-  const kirim = (e) => {
+  // Kode diperiksa server; siswa tidak pernah menerima kode yang benar
+  const kirim = async (e) => {
     e.preventDefault()
+    if (sibuk) return
     if (kode.length !== PANJANG_KODE) return setHasil({ ok: false, alasan: 'pendek' })
-    const r = isiPresensiOtp(user.nis, user.kelas, kode)
+    setSibuk(true)
+    const r = await isiPresensiOtp(kode)
+    setSibuk(false)
     setHasil(r)
     if (!r.ok) setKode('')
   }
@@ -87,7 +94,8 @@ export function IsiPresensiOtp({ className = '' }) {
     )
   }
 
-  const pesanGagal = hasil && !hasil.ok && (hasil.alasan === 'salah' ? `Kode salah. Sisa ${hasil.sisa} kali percobaan.` : PESAN[hasil.alasan])
+  const pesanGagal =
+    hasil && !hasil.ok && (hasil.alasan === 'salah' ? `Kode salah. Sisa ${hasil.sisa} kali percobaan.` : hasil.alasan === 'galat' ? hasil.pesan : PESAN[hasil.alasan])
 
   return (
     <Card className={`@container overflow-hidden ${className}`}>
@@ -136,7 +144,7 @@ export function IsiPresensiOtp({ className = '' }) {
                 placeholder="••••••"
                 className="w-full min-w-0 rounded-xl border-2 border-slate-200 bg-white px-3 py-2.5 text-center font-display text-2xl font-bold tracking-[0.4em] text-slate-900 placeholder:text-slate-300 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-100"
               />
-              <button type="submit" className={`${btn.primary} shrink-0`} aria-label="Kirim kode">
+              <button type="submit" disabled={sibuk} className={`${btn.primary} shrink-0`} aria-label="Kirim kode">
                 <Send className="h-4 w-4" /> <span className="hidden sm:inline">Kirim</span>
               </button>
             </div>

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
 import { MAPEL } from '../../data/dummy'
 import { formatTanggal } from '../../utils/format'
+import { namaPengampu } from '../../utils/jadwal'
 import { infoTenggat } from '../siswa/helpers'
 
 export default function OrtuTugas() {
@@ -65,7 +66,7 @@ export default function OrtuTugas() {
                 </h3>
                 <p className="mt-1 text-sm text-slate-600">{t.deskripsi}</p>
                 <p className="mt-3 text-xs text-slate-500">
-                  Diberikan {formatTanggal(t.diberikan, { year: undefined })} · Dikumpulkan <span className="font-semibold text-slate-700">{formatTanggal(t.tenggat, { year: undefined })}</span> · {MAPEL[t.mapel].guru}
+                  Diberikan {formatTanggal(t.diberikan, { year: undefined })} · Dikumpulkan <span className="font-semibold text-slate-700">{formatTanggal(t.tenggat, { year: undefined })}</span> · {namaPengampu(data.guru, anak.kelas, t.mapel)}
                 </p>
               </Card>
             )

@@ -16,7 +16,7 @@ const SAMPUL = {
 
 export default function SiswaPerpustakaan() {
   const { user } = useAuth()
-  const { data, tambah, hapus } = useData()
+  const { data, pesanBuku: kirimPesanan, batalPesanBuku } = useData()
   const [cari, setCari] = useState('')
   const [kategori, setKategori] = useState('Semua')
   const [pesan, setPesan] = useState('')
@@ -33,11 +33,11 @@ export default function SiswaPerpustakaan() {
   const daftarKategori = ['Semua', ...new Set(data.buku.map((b) => b.kategori))]
   const katalog = data.buku.filter((b) => (kategori === 'Semua' || b.kategori === kategori) && (!q || `${b.judul} ${b.penulis}`.toLowerCase().includes(q)))
 
-  const pesanBuku = (b) => {
+  const pesanBuku = async (b) => {
     if (reservasiku.length >= 1) return setPesan('Kamu hanya bisa memesan 1 buku dalam satu waktu.')
     if (pinjamanku.length >= 2) return setPesan('Kamu sedang meminjam 2 buku. Kembalikan dulu sebelum memesan lagi.')
-    tambah('reservasi', { nis: user.nis, bukuId: b.id, tanggal: hariIni, status: 'Menunggu' })
-    setPesan(`Buku "${b.judul}" sudah dipesan. Ambil di perpustakaan saat istirahat ya! 📚`)
+    const galat = await kirimPesanan(b.id)
+    setPesan(galat ?? `Buku "${b.judul}" sudah dipesan. Ambil di perpustakaan saat istirahat ya! 📚`)
   }
 
   return (
@@ -61,17 +61,20 @@ export default function SiswaPerpustakaan() {
                 const b = buku(p.bukuId)
                 const sisa = selisihHari(hariIni, p.tenggat)
                 return (
-                  <li key={p.id} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3">
+                  <li key={p.id} className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3 sm:gap-4">
                     <span className={`grid h-16 w-12 shrink-0 place-items-center rounded-lg bg-linear-to-br text-white shadow ${SAMPUL[b?.kategori] ?? 'from-slate-400 to-slate-600'}`}>
                       <BookOpen className="h-5 w-5" />
                     </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-bold text-slate-900">{b?.judul}</p>
-                      <p className="text-xs text-slate-500">Kembalikan {formatTanggal(p.tenggat)}</p>
+                    {/* Di HP sempit, label sisa hari turun ke bawah judul */}
+                    <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-900">{b?.judul}</p>
+                        <p className="text-xs text-slate-500">Kembalikan {formatTanggal(p.tenggat)}</p>
+                      </div>
+                      <Badge className={`shrink-0 ${sisa < 0 ? 'bg-rose-100 text-rose-700' : sisa <= 2 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-700'}`}>
+                        {sisa < 0 ? `Terlambat ${-sisa} hari` : sisa === 0 ? 'Hari ini' : `${sisa} hari lagi`}
+                      </Badge>
                     </div>
-                    <Badge className={sisa < 0 ? 'bg-rose-100 text-rose-700' : sisa <= 2 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-700'}>
-                      {sisa < 0 ? `Terlambat ${-sisa} hari` : sisa === 0 ? 'Hari ini' : `${sisa} hari lagi`}
-                    </Badge>
                   </li>
                 )
               })}
@@ -87,7 +90,7 @@ export default function SiswaPerpustakaan() {
                 <p className="text-xs font-semibold text-sky-700">Menunggu diambil</p>
                 <p className="font-bold text-slate-900">{buku(r.bukuId)?.judul}</p>
               </div>
-              <button onClick={() => hapus('reservasi', r.id)} className="text-xs font-semibold text-rose-600 hover:underline">
+              <button onClick={() => batalPesanBuku(r.id)} className="text-xs font-semibold text-rose-600 hover:underline">
                 Batalkan
               </button>
             </div>

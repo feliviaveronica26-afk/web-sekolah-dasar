@@ -28,23 +28,23 @@ import JamSekolah from '../../components/JamSekolah'
 import { KartuPresensiSaya, RingkasanPresensi } from '../../components/Presensi'
 import { JENIS_AGENDA, agendaMendatang, rentangAgenda } from '../../components/KalenderAkademik'
 import { Avatar, Badge, Card, DashHeader, EmptyState, StatCard, btn } from '../../components/ui'
-import { PERAN, useAkses } from '../../context/akses'
+import { PERAN, useAkses, useGayaSitus } from '../../context/akses'
 import { useChatSaya } from '../../context/ChatContext'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
 import { KKTP, MAPEL, MAPEL_RAPOR } from '../../data/dummy'
 import { nilaiAkhir, rekapNilai } from '../../utils/nilai'
 import { formatHari, formatTanggal, isHariSekolah, namaHari, parseKey, tambahHari, todayKey } from '../../utils/format'
-import { jadwalMengajar } from '../../utils/jadwal'
+import { jadwalMengajar, mapelDiampu } from '../../utils/jadwal'
 import { kehadiranSekolah, rekapSiswa, ringkasPerpus, ringkasSpp } from '../../utils/ringkasan'
 import { rupiah } from '../../utils/spp'
 
-function Panel({ judul, ke, children }) {
+function Panel({ judul, ke, children, className = '' }) {
   return (
-    <Card className="p-6">
-      <div className="mb-4 flex items-center justify-between">
+    <Card className={`p-6 ${className}`}>
+      <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="font-bold text-slate-900">{judul}</h2>
         {ke && (
-          <Link to={ke} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+          <Link to={ke} className="ui-tautan flex items-center gap-1 text-sm font-semibold text-primary-600">
             Buka <ArrowRight className="h-4 w-4" />
           </Link>
         )}
@@ -198,9 +198,9 @@ const AKSI_CEPAT = [
 ]
 
 // Rata-rata nilai mapel yang diampu guru mapel, per kelas
-function PanelGuruMapel({ nama, base }) {
+function PanelGuruMapel({ guruId, base }) {
   const { data } = useData()
-  const mapelSaya = Object.keys(MAPEL).filter((k) => MAPEL[k].guru === nama && MAPEL_RAPOR.includes(k))
+  const mapelSaya = mapelDiampu(data.guru.find((g) => g.id === guruId)).filter((k) => MAPEL_RAPOR.includes(k))
   const kelas = [...new Set(data.siswa.map((s) => s.kelas))].sort()
   const baris = mapelSaya.flatMap((m) =>
     kelas.map((k) => {
@@ -270,34 +270,85 @@ export default function StafDashboard() {
   const jam = new Date().getHours()
   const salam = jam < 11 ? 'Selamat pagi' : jam < 15 ? 'Selamat siang' : jam < 18 ? 'Selamat sore' : 'Selamat malam'
   const aksi = AKSI_CEPAT.filter((a) => punya(a.menu))
+  // Portal satpam: tampilan bergaya beranda situs (urutan isi tetap sama)
+  const situs = useGayaSitus()
 
   return (
     <>
-      <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-linear-to-br from-primary-600 to-primary-800 p-6 text-white sm:p-8">
-        <div className="pola-titik absolute inset-0" />
-        <Gumpalan className="absolute -right-20 -top-24 h-80 w-80 text-white/10" />
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-          <Avatar nama={nama} size="xl" className="bg-white text-primary-700 ring-4 ring-white/30" />
-          <div>
-            <p className="text-sm text-primary-100">{formatHari(todayKey())}</p>
-            <h1 className="text-3xl font-bold">
-              {salam}, {nama.split(',')[0]} 👋
-            </h1>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {peran.map((p) => (
-                <span key={p} className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold ring-1 ring-white/20">
-                  {PERAN[p]?.label}
-                  {p === 'wali_kelas' && kelas && ` ${kelas}`}
-                </span>
-              ))}
+      {situs ? (
+        <div className="relative isolate mb-6 overflow-hidden rounded-[2rem] bg-primary-700 p-6 text-white sm:p-9">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-36 -top-44 -z-10 h-[32rem] w-[32rem] rounded-full border-[4.5rem] border-white/[0.06]"
+          />
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-7">
+            <Avatar nama={nama} size="xl" className="bg-white text-primary-700 ring-4 ring-white/20" />
+            <div>
+              <p className="text-sm font-semibold text-krem">{formatHari(todayKey())}</p>
+              <h1 className="mt-1.5 text-[2rem] leading-[1.05] text-white sm:text-5xl">
+                {salam}, <span className="text-stabilo">{nama.split(',')[0]}</span>
+              </h1>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {peran.map((p) => (
+                  <span
+                    key={p}
+                    className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-bold ring-1 ring-inset ring-white/20"
+                  >
+                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-stabilo" />
+                    {PERAN[p]?.label}
+                    {p === 'wali_kelas' && kelas && ` ${kelas}`}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-linear-to-br from-primary-600 to-primary-800 p-6 text-white sm:p-8">
+          <div className="pola-titik absolute inset-0" />
+          <Gumpalan className="absolute -right-20 -top-24 h-80 w-80 text-white/10" />
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
+            <Avatar nama={nama} size="xl" className="bg-white text-primary-700 ring-4 ring-white/30" />
+            <div>
+              <p className="text-sm text-primary-100">{formatHari(todayKey())}</p>
+              <h1 className="text-3xl font-bold">
+                {salam}, {nama.split(',')[0]} 👋
+              </h1>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {peran.map((p) => (
+                  <span key={p} className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold ring-1 ring-white/20">
+                    {PERAN[p]?.label}
+                    {p === 'wali_kelas' && kelas && ` ${kelas}`}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <KartuPresensiSaya tautan className="mb-6" />
 
-      {aksi.length > 0 && (
+      {aksi.length > 0 && situs && (
+        // Akses cepat seperti daftar layanan portal di beranda situs
+        <div className={`mb-8 grid gap-3 ${aksi.length === 3 ? 'sm:grid-cols-3' : aksi.length < 3 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-4'}`}>
+          {aksi.map(({ menu, label, icon: Icon }) => (
+            <Link
+              key={menu}
+              to={`${base}/${menu}`}
+              className="group flex min-h-16 items-center gap-4 rounded-[1.5rem] bg-white p-4 ring-1 ring-garis transition hover:-translate-y-0.5 hover:ring-primary-600/40"
+            >
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary-600 text-white">
+                <Icon className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span className="flex-1 font-bold text-tinta">{label}</span>
+              <ArrowRight className="h-4 w-4 text-primary-700 transition group-hover:translate-x-1" aria-hidden="true" />
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {aksi.length > 0 && !situs && (
         <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {aksi.map(({ menu, label, icon: Icon, warna }) => (
             <Link
@@ -322,7 +373,7 @@ export default function StafDashboard() {
 
           <PanelMengajar guruId={guruId} base={base} bisaPresensi={punya('absensi')} />
 
-          {punyaPeran('guru_mapel') && <PanelGuruMapel nama={nama} base={base} />}
+          {punyaPeran('guru_mapel') && <PanelGuruMapel guruId={guruId} base={base} />}
           {punyaPeran('tata_usaha') && <PanelSpp base={base} />}
           {punyaPeran('pustakawan') && <PanelPerpus base={base} />}
 
@@ -402,7 +453,7 @@ export function PanelSpp({ base }) {
 function Angka({ label, nilai, tone }) {
   const warna = { sky: 'bg-sky-50 text-sky-700', amber: 'bg-amber-50 text-amber-800', rose: 'bg-rose-50 text-rose-700', emerald: 'bg-emerald-50 text-emerald-700' }
   return (
-    <div className={`rounded-xl p-4 ${warna[tone]}`}>
+    <div className={`flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 min-[400px]:block min-[400px]:p-4 ${warna[tone]}`}>
       <p className="text-xs">{label}</p>
       <p className="text-2xl font-extrabold">{nilai}</p>
     </div>
@@ -443,18 +494,40 @@ function PanelBk({ base }) {
   )
 }
 
+// Angka besar berwarna penuh ala kartu bento beranda situs (portal satpam)
+function AngkaBento({ label, nilai, nada }) {
+  const gaya = { merah: 'bg-primary-700 text-white', stabilo: 'bg-stabilo text-tinta', gelap: 'bg-tinta text-white' }
+  return (
+    <div
+      className={`flex items-center justify-between gap-3 rounded-[1.25rem] px-5 py-4 min-[400px]:min-h-36 min-[400px]:flex-col min-[400px]:items-start min-[400px]:p-5 ${gaya[nada]}`}
+    >
+      <p className="text-sm font-semibold opacity-90">{label}</p>
+      <p className="angka text-3xl font-extrabold tracking-tight min-[400px]:text-5xl">{nilai}</p>
+    </div>
+  )
+}
+
 function PanelKeamanan({ base }) {
   const { data } = useData()
+  const situs = useGayaSitus()
   const hariIni = todayKey()
   const tamu = data.bukuTamu.filter((t) => t.tanggal === hariIni)
   const terjadwal = data.kunjungan.filter((k) => k.status === 'Dikonfirmasi' && k.tanggal === hariIni)
   return (
-    <Panel judul="Keamanan & Tamu Hari Ini" ke={`${base}/bukutamu`}>
-      <div className="grid grid-cols-3 gap-3">
-        <Angka label="Tamu" nilai={tamu.length} tone="sky" />
-        <Angka label="Masih di dalam" nilai={tamu.filter((t) => !t.keluar).length} tone="amber" />
-        <Angka label="Terjadwal" nilai={terjadwal.length} tone="emerald" />
-      </div>
+    <Panel judul="Keamanan & Tamu Hari Ini" ke={`${base}/bukutamu`} className={situs ? 'flex flex-col' : ''}>
+      {situs ? (
+        <div className="grid flex-1 gap-2 min-[400px]:grid-cols-3 min-[400px]:gap-3">
+          <AngkaBento label="Tamu" nilai={tamu.length} nada="merah" />
+          <AngkaBento label="Masih di dalam" nilai={tamu.filter((t) => !t.keluar).length} nada="stabilo" />
+          <AngkaBento label="Terjadwal" nilai={terjadwal.length} nada="gelap" />
+        </div>
+      ) : (
+        <div className="grid gap-2 min-[400px]:grid-cols-3 min-[400px]:gap-3">
+          <Angka label="Tamu" nilai={tamu.length} tone="sky" />
+          <Angka label="Masih di dalam" nilai={tamu.filter((t) => !t.keluar).length} tone="amber" />
+          <Angka label="Terjadwal" nilai={terjadwal.length} tone="emerald" />
+        </div>
+      )}
     </Panel>
   )
 }

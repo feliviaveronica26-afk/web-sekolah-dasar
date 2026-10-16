@@ -1,32 +1,33 @@
 import { useState } from 'react'
-import { Check, Clock3, Lock, Plus, UserRound } from 'lucide-react'
+import { CalendarX2, Check, Clock3, Lock, Plus, UserRound } from 'lucide-react'
 import { Ikon } from '../../components/Ikon'
-import { Alert, Badge, Card, DashHeader, EmptyState } from '../../components/ui'
+import { Badge, Card, DashHeader, EmptyState } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
-import { EKSKUL, HARI_SEKOLAH, MAKS_EKSKUL } from '../../data/dummy'
+import { EKSKUL, HARI_SEKOLAH } from '../../data/dummy'
+import { ekskulBentrok } from '../../utils/ekskul'
 import { bolehIkutEkskul } from '../../utils/prestasi'
 
 export default function SiswaEkskul() {
   const { user } = useAuth()
   const { data, toggleEkskul } = useData()
-  const [pesan, setPesan] = useState('')
+  // Pesan ditampilkan di kartu ekskul yang baru diklik, agar langsung terlihat
+  const [pesan, setPesan] = useState(null) // { id, gabung, teks, galat? }
+  const [sibuk, setSibuk] = useState(null) // id ekskul yang sedang disimpan
   const siswa = data.siswa.find((s) => s.nis === user.nis)
   if (!siswa) return <EmptyState title="Data siswa tidak ditemukan" />
 
   const pilihan = data.ekskul[siswa.nis] ?? []
   const diikuti = EKSKUL.filter((e) => (e.wajib && bolehIkutEkskul(e, siswa.kelas)) || pilihan.includes(e.id))
 
-  const ubah = (e) => {
-    if (pilihan.includes(e.id)) {
-      toggleEkskul(siswa.nis, e.id)
-      setPesan(`Kamu keluar dari ${e.nama}.`)
-    } else if (pilihan.length >= MAKS_EKSKUL) {
-      setPesan(`Kamu sudah memilih ${MAKS_EKSKUL} ekskul. Keluar dari salah satu dulu ya.`)
-    } else {
-      toggleEkskul(siswa.nis, e.id)
-      setPesan(`Yeay! Kamu bergabung dengan ${e.nama}. Sampai jumpa hari ${e.hari}! 🎉`)
-    }
+  const ubah = async (e) => {
+    if (sibuk) return
+    const keluar = pilihan.includes(e.id)
+    setSibuk(e.id)
+    const galat = await toggleEkskul(e.id)
+    setSibuk(null)
+    if (galat) return setPesan({ id: e.id, galat: true, teks: galat })
+    setPesan({ id: e.id, gabung: !keluar, teks: keluar ? `Kamu keluar dari ${e.nama}.` : `Yeay! Kamu bergabung dengan ${e.nama}. Sampai jumpa hari ${e.hari}! 🎉` })
   }
 
   // Jadwal mingguan ekskul yang diikuti
@@ -34,18 +35,10 @@ export default function SiswaEkskul() {
 
   return (
     <>
-      <DashHeader title="Ekstrakurikuler" desc={`Pilih maksimal ${MAKS_EKSKUL} ekskul sesuai minatmu. Pramuka wajib untuk kelas 3 – 6.`} />
-
-      {pesan && (
-        <div className="mb-5">
-          <Alert tone={pesan.startsWith('Kamu sudah') ? 'warning' : 'success'}>{pesan}</Alert>
-        </div>
-      )}
+      <DashHeader title="Ekstrakurikuler" desc="Ikuti ekskul sebanyak yang kamu mau, asal jadwalnya tidak bentrok. Pramuka wajib untuk kelas 3 – 6." />
 
       <Card className="mb-6 p-5">
-        <p className="mb-3 text-sm font-bold text-slate-700">
-          Jadwal ekskulku minggu ini · {pilihan.length}/{MAKS_EKSKUL} pilihan
-        </p>
+        <p className="mb-3 text-sm font-bold text-slate-700">Jadwal ekskulku minggu ini · {diikuti.length} ekskul</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
           {perHari.map(({ hari, daftar }) => (
             <div key={hari} className="rounded-xl bg-slate-50 p-3">
@@ -69,6 +62,7 @@ export default function SiswaEkskul() {
         {EKSKUL.map((e) => {
           const boleh = bolehIkutEkskul(e, siswa.kelas)
           const ikut = (e.wajib && boleh) || pilihan.includes(e.id)
+          const bentrok = !ikut && boleh && !e.wajib ? ekskulBentrok(e, diikuti) : null
           return (
             <Card key={e.id} className={`flex flex-col p-5 transition ${ikut ? 'ring-2 ring-emerald-400' : ''} ${boleh ? '' : 'opacity-60'}`}>
               <div className="flex items-start justify-between gap-3">
@@ -94,9 +88,18 @@ export default function SiswaEkskul() {
                 </p>
               ) : e.wajib ? (
                 <p className="mt-4 rounded-xl bg-primary-50 py-2.5 text-center text-sm font-semibold text-primary-700">Diikuti semua siswa kelas {e.minKelas} – 6</p>
+              ) : bentrok ? (
+                <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2.5 text-center text-sm text-amber-800">
+                  <span className="block font-semibold">
+                    <CalendarX2 className="mr-1.5 inline h-4 w-4 align-[-3px]" />
+                    Jadwal bentrok dengan {bentrok.nama}
+                  </span>
+                  <span className="mt-0.5 block text-xs">Keluar dari {bentrok.nama} dulu jika ingin ikut ekskul ini.</span>
+                </p>
               ) : (
                 <button
                   onClick={() => ubah(e)}
+                  disabled={!!sibuk}
                   className={`mt-4 inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition ${
                     ikut ? 'bg-slate-100 text-slate-700 hover:bg-rose-50 hover:text-rose-700' : 'bg-primary-600 text-white hover:bg-primary-700'
                   }`}
@@ -112,6 +115,12 @@ export default function SiswaEkskul() {
                   )}
                 </button>
               )}
+              <p
+                aria-live="polite"
+                className={pesan?.id === e.id ? `mt-2 text-center text-sm font-semibold ${pesan.galat ? 'text-rose-600' : pesan.gabung ? 'text-emerald-700' : 'text-slate-600'}` : 'sr-only'}
+              >
+                {pesan?.id === e.id ? pesan.teks : ''}
+              </p>
             </Card>
           )
         })}

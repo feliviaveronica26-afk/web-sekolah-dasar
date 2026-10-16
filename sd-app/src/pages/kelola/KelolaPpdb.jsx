@@ -25,7 +25,7 @@ const AKSI = {
 }
 
 export default function KelolaPpdb() {
-  const { data, ubah } = useData()
+  const { data, prosesPendaftar } = useData()
   const [cari, setCari] = useState('')
   const [status, setStatus] = useState('')
   const [jalur, setJalur] = useState('')
@@ -44,8 +44,8 @@ export default function KelolaPpdb() {
     setCatatan(x.catatanPanitia ?? '')
   }
 
-  const proses = (statusBaru) => {
-    ubah('pendaftar', p.id, { status: statusBaru, catatanPanitia: catatan.trim() })
+  const proses = async (statusBaru) => {
+    if (await prosesPendaftar(p.id, statusBaru, catatan.trim())) return
     setDipilih(null)
   }
 

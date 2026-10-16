@@ -5,7 +5,7 @@ import { useJamBerjalan } from '../../components/Presensi'
 import { teksJejak } from '../../components/PresensiOtp'
 import { Alert, Avatar, Card, DashHeader, EmptyState, Modal, Progres, STATUS_ABSEN, btn, inputCls, labelCls } from '../../components/ui'
 import { useLingkup } from '../../context/akses'
-import { useData } from '../../context/DataContext'
+import { useData, useSegarCepat } from '../../context/DataContext'
 import { MAPEL, SESI } from '../../data/dummy'
 import { formatHari, isHariSekolah, namaHari, parseKey, todayKey } from '../../utils/format'
 import { guruPelajaran, jadwalMengajar, jamPelajaran, labelSesi, pelajaranHari, statusDiPelajaran, statusPelajaran } from '../../utils/jadwal'
@@ -87,7 +87,7 @@ function LayarKode({ sesi, hadir, total, onTutup }) {
 }
 
 // Panel sesi OTP hari ini untuk presensi harian (`pel` kosong) atau satu pelajaran
-function PanelOtp({ kelas, pel, siswaKelas, hadir, jejakSiswa, nama, guruId }) {
+function PanelOtp({ kelas, pel, siswaKelas, hadir, jejakSiswa }) {
   const { data, bukaSesiPresensi, tutupSesiPresensi } = useData()
   const sekarang = useJamBerjalan()
   const [layar, setLayar] = useState(false)
@@ -98,7 +98,15 @@ function PanelOtp({ kelas, pel, siswaKelas, hadir, jejakSiswa, nama, guruId }) {
   const sisa = sesi ? sisaDetik(sesi, sekarang.getTime()) : 0
   const lewatOtp = sesi ? siswaKelas.filter((s) => jejakSiswa(s.nis)?.sesiId === sesi.id).length : 0
   const terkunci = sesi ? siswaKelas.filter((s) => (sesi.gagal?.[s.nis] ?? 0) >= MAKS_PERCOBAAN).length : 0
-  const buka = () => bukaSesiPresensi(kelas, { nama, id: guruId }, pel)
+  // Selama kode berlaku, siswa yang hadir dari HP masing-masing cepat terlihat di sini
+  useSegarCepat(!!aktif)
+  const [membuka, setMembuka] = useState(false)
+  const buka = async () => {
+    if (membuka) return
+    setMembuka(true)
+    await bukaSesiPresensi(kelas, pel)
+    setMembuka(false)
+  }
   const tujuan = pel ? `pelajaran ${MAPEL[pel.mapel].nama} (${jamPelajaran(pel)})` : 'harian'
 
   if (!aktif) {
@@ -250,7 +258,7 @@ export default function PresensiSiswa() {
   const daftar = siswaKelas.filter(
     (s) => (saring === 'semua' || (saring === 'belum' ? !status[s.nis] : status[s.nis] === saring)) && s.nama.toLowerCase().includes(cari.trim().toLowerCase()),
   )
-  const tandai = (perubahan) => (pel ? ubahAbsensiPelajaran(tanggal, pel.kunci, perubahan, L.nama) : ubahAbsensiSiswa(tanggal, perubahan, L.nama))
+  const tandai = (perubahan) => (pel ? ubahAbsensiPelajaran(tanggal, pel.kunci, perubahan) : ubahAbsensiSiswa(tanggal, perubahan))
   const tingkat = [...new Set(L.daftarKelas.map((k) => k[0]))]
 
   // Ringkasan tiap pilihan untuk tombol di atas daftar
@@ -383,7 +391,7 @@ export default function PresensiSiswa() {
                 aktif={pilih === p.kunci}
                 onClick={() => setPilihan(p.kunci)}
                 judul={MAPEL[p.mapel].nama}
-                sub={`${jamPelajaran(p)} · ${p.guru?.nama.split(',')[0] ?? MAPEL[p.mapel].guru}`}
+                sub={`${jamPelajaran(p)} · ${p.guru?.nama.split(',')[0] ?? MAPEL[p.mapel].pengampu ?? '–'}`}
                 ringkas={ringkasPelajaran(p)}
                 warna={MAPEL[p.mapel].warna}
                 berjalan={berjalan(p.kunci)}
@@ -399,8 +407,6 @@ export default function PresensiSiswa() {
               siswaKelas={siswaKelas}
               hadir={siswaKelas.filter((s) => status[s.nis] === 'H').length}
               jejakSiswa={jejakSiswa}
-              nama={L.nama}
-              guruId={L.guruId}
             />
           )}
 

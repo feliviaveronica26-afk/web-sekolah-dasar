@@ -6,10 +6,11 @@ import { useData } from '../../context/DataContext'
 import { formatTanggal, selisihHari, tambahHari, todayKey } from '../../utils/format'
 import { ringkasPerpus } from '../../utils/ringkasan'
 
+// Sama dengan server (PerpustakaanController): lama pinjam 7 hari, paling banyak 2 buku per siswa
 const LAMA_PINJAM = 7
 
 export default function Perpustakaan() {
-  const { data, tambah, ubah } = useData()
+  const { data, pinjamBuku, kembalikanBuku, prosesPesanan } = useData()
   const [tab, setTab] = useState('aktif')
   const [form, setForm] = useState(null)
   const [error, setError] = useState('')
@@ -25,20 +26,20 @@ export default function Perpustakaan() {
 
   // Pesanan buku dari Portal Siswa yang menunggu diserahkan
   const reservasi = data.reservasi.filter((r) => r.status === 'Menunggu').sort((a, b) => a.tanggal.localeCompare(b.tanggal))
-  const serahkan = (r) => {
+  // Pesanan diserahkan = langsung tercatat sebagai peminjaman (di server, sekaligus)
+  const serahkan = async (r) => {
     const b = buku(r.bukuId)
     if (aktif.filter((p) => p.nis === r.nis).length >= 2) return setError(`${siswa(r.nis)?.nama} sudah meminjam 2 buku.`)
     if (!b || tersedia(b) <= 0) return setError(`Stok "${b?.judul ?? 'buku'}" sedang habis.`)
-    tambah('peminjaman', { nis: r.nis, bukuId: r.bukuId, tanggalPinjam: hariIni, tenggat: tambahHari(hariIni, LAMA_PINJAM), tanggalKembali: null })
-    ubah('reservasi', r.id, { status: 'Selesai' })
-    setError('')
+    setError((await prosesPesanan(r.id, 'Selesai')) ?? '')
   }
 
-  const simpanPinjam = (e) => {
+  const simpanPinjam = async (e) => {
     e.preventDefault()
     if (!form.nis || !form.bukuId) return setError('Pilih siswa dan buku terlebih dahulu.')
     if (aktif.filter((p) => p.nis === form.nis).length >= 2) return setError('Siswa ini sudah meminjam 2 buku. Kembalikan dulu sebelum meminjam lagi.')
-    tambah('peminjaman', { ...form, tanggalPinjam: hariIni, tenggat: tambahHari(hariIni, LAMA_PINJAM), tanggalKembali: null })
+    const galat = await pinjamBuku(form.nis, form.bukuId)
+    if (galat) return setError(galat)
     setForm(null)
     setTab('aktif')
   }
@@ -93,13 +94,14 @@ export default function Perpustakaan() {
           <ul className="mt-3 space-y-2">
             {reservasi.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-sky-100">
-                <div className="min-w-0 flex-1">
+                {/* Lebar dasar 13rem: tombol turun ke baris bawah bila keterangan buku tidak muat */}
+                <div className="min-w-0 grow basis-52">
                   <p className="font-semibold text-slate-800">{buku(r.bukuId)?.judul ?? '(buku dihapus)'}</p>
                   <p className="text-xs text-slate-500">
                     {siswa(r.nis)?.nama ?? r.nis} · Kelas {siswa(r.nis)?.kelas} · dipesan {formatTanggal(r.tanggal, { year: undefined })}
                   </p>
                 </div>
-                <button onClick={() => ubah('reservasi', r.id, { status: 'Ditolak' })} className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-100">
+                <button onClick={() => prosesPesanan(r.id, 'Ditolak')} className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-100">
                   Tolak
                 </button>
                 <button onClick={() => serahkan(r)} className={btn.primary}>
@@ -161,7 +163,7 @@ export default function Perpustakaan() {
                           </td>
                           <td className="px-5 py-3 text-right">
                             <button
-                              onClick={() => ubah('peminjaman', p.id, { tanggalKembali: hariIni })}
+                              onClick={() => kembalikanBuku(p.id)}
                               className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-primary-600 hover:bg-primary-50"
                             >
                               <Undo2 className="h-4 w-4" /> Dikembalikan
@@ -268,7 +270,7 @@ export default function Perpustakaan() {
             <p className="text-sm text-slate-500">
               Batas pengembalian: <b className="text-slate-700">{formatTanggal(tambahHari(hariIni, LAMA_PINJAM))}</b>
             </p>
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex flex-wrap justify-end gap-2 pt-2">
               <button type="button" onClick={() => setForm(null)} className={btn.secondary}>
                 Batal
               </button>

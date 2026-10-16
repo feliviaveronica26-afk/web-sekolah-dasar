@@ -14,20 +14,26 @@ import {
   Contact,
   Fingerprint,
   KeyRound,
+  Landmark,
   ClipboardList,
   FileCheck,
   FileText,
   Globe,
   GraduationCap,
   HeartHandshake,
+  HouseHeart,
   IdCard,
   LayoutDashboard,
   Library,
   ListChecks,
   LogOut,
   Megaphone,
+  Loader2,
   Menu,
   MessagesSquare,
+  RotateCcw,
+  ServerOff,
+  UserX,
   NotebookPen,
   ShieldCheck,
   Sparkles,
@@ -40,13 +46,15 @@ import {
   X,
 } from 'lucide-react'
 import Logo from './Logo'
-import { Avatar } from './ui'
+import { FormGantiPassword, WajibGantiPassword } from './GantiPassword'
+import { Avatar, Card, EmptyState, Modal, btn } from './ui'
 import { useAuth } from '../context/AuthContext'
 import { useChatSaya } from '../context/ChatContext'
 import { useData } from '../context/DataContext'
 import { PERAN, useAkses } from '../context/akses'
 import { LABEL_ROLE } from '../data/dummy'
 import { formatHari, isHariSekolah, todayKey } from '../utils/format'
+import { useAnimasiKeluar } from '../utils/gerak'
 import { sesiAktifKelas, sudahHadirDiSesi } from '../utils/otp'
 import { bulanWajibBayar } from '../utils/spp'
 
@@ -64,7 +72,13 @@ const MENU_TETAP = {
         { to: '/dashboard/siswa/absensi', label: 'Absensi per Mapel', icon: CalendarCheck },
       ],
     },
-    { judul: 'Komunikasi', items: [{ to: '/dashboard/siswa/chat', label: 'Chat Kelas', icon: MessagesSquare, badge: 'chat' }] },
+    {
+      judul: 'Komunikasi',
+      items: [
+        { to: '/dashboard/siswa/chat', label: 'Chat Kelas', icon: MessagesSquare, badge: 'chat' },
+        { to: '/dashboard/siswa/pengumuman', label: 'Pengumuman', icon: Megaphone },
+      ],
+    },
     {
       judul: 'Kegiatan',
       items: [
@@ -99,6 +113,7 @@ const MENU_TETAP = {
       judul: 'Administrasi',
       items: [
         { to: '/dashboard/ortu/spp', label: 'Pembayaran SPP', icon: Wallet, badge: 'spp' },
+        { to: '/dashboard/ortu/keluarga', label: 'Data Keluarga', icon: HouseHeart },
         { to: '/dashboard/ortu/kalender', label: 'Kalender Akademik', icon: CalendarDays },
       ],
     },
@@ -117,12 +132,14 @@ const MENU_KELOLA = {
   sikap: { label: 'Poin Sikap', icon: Award },
   rapor: { label: 'Rapor Kelas', icon: BookOpenCheck },
   siswa: { label: 'Data Siswa', icon: Users },
+  ortu: { label: 'Data Orang Tua', icon: HouseHeart },
   kehadiran: { label: 'Rekap Kehadiran', icon: BarChart3 },
   konseling: { label: 'Bimbingan Konseling', icon: HeartHandshake },
   jadwal: { label: 'Jadwal Pelajaran', icon: BookOpen },
   kalender: { label: 'Kalender Akademik', icon: CalendarDays },
   pengumuman: { label: 'Pengumuman', icon: Megaphone },
   guru: { label: 'Data Guru & Staf', icon: GraduationCap },
+  keuangan: { label: 'Keuangan Sekolah', icon: Landmark },
   spp: { label: 'Keuangan SPP', icon: Wallet },
   ppdb: { label: 'PPDB Online', icon: UserPlus, badge: 'ppdb' },
   kunjungan: { label: 'Kunjungan Sekolah', icon: CalendarClock, badge: 'kunjungan' },
@@ -134,9 +151,9 @@ const MENU_KELOLA = {
 
 const KELOMPOK_KELOLA = [
   { judul: 'Kelas Saya', menu: ['kelas', 'absensi', 'izin', 'nilai', 'tugas', 'sikap', 'rapor'] },
-  { judul: 'Kesiswaan', menu: ['siswa', 'kehadiran', 'konseling'] },
+  { judul: 'Kesiswaan', menu: ['siswa', 'ortu', 'kehadiran', 'konseling'] },
   { judul: 'Akademik', menu: ['jadwal', 'kalender', 'pengumuman'] },
-  { judul: 'Administrasi', menu: ['guru', 'spp', 'ppdb', 'kunjungan'] },
+  { judul: 'Administrasi', menu: ['guru', 'keuangan', 'spp', 'ppdb', 'kunjungan'] },
   { judul: 'Sarana & Layanan', menu: ['perpustakaan', 'inventaris', 'kerusakan', 'bukutamu'] },
 ]
 
@@ -157,16 +174,59 @@ const KET_BADGE = {
   presensiSiswa: () => 'Guru sudah membuka presensi, masukkan kodenya',
 }
 
+// Halaman portal baru tampil setelah data milik akun ini selesai dimuat dari server
+function IsiPortal() {
+  const { user } = useAuth()
+  const { data, siap, status, muatUlang } = useData()
+  // Akun dengan password awal dari sekolah: buat password sendiri dulu (server juga menolak perubahan data)
+  if (user.wajibGanti) return <WajibGantiPassword />
+  if (!siap) {
+    if (status === 'terputus') {
+      return (
+        <Card className="mx-auto max-w-lg">
+          <EmptyState icon={ServerOff} title="Server data tidak bisa dihubungi" desc="Pastikan server Laravel sedang berjalan, lalu coba lagi." />
+          <div className="-mt-6 pb-8 text-center">
+            <button onClick={muatUlang} className={btn.primary}>
+              <RotateCcw className="h-4 w-4" /> Coba lagi
+            </button>
+          </div>
+        </Card>
+      )
+    }
+    return (
+      <p role="status" className="flex items-center justify-center gap-2 py-24 text-sm text-slate-500">
+        <Loader2 className="h-5 w-5 animate-spin" /> Memuat data sekolah...
+      </p>
+    )
+  }
+  const nis = user.role === 'siswa' ? user.nis : user.role === 'ortu' ? user.anakNis : null
+  if (nis && !data.siswa.some((s) => s.nis === nis)) {
+    return (
+      <Card className="mx-auto max-w-lg">
+        <EmptyState icon={UserX} title="Data siswa tidak ditemukan" desc="Akun ini belum terhubung ke data siswa yang aktif. Silakan hubungi Tata Usaha." />
+      </Card>
+    )
+  }
+  return <Outlet />
+}
+
 export default function DashboardLayout() {
   const { user, logout } = useAuth()
-  const { data } = useData()
+  const { data, beritahu } = useData()
   const akses = useAkses()
+  const [gantiPassword, setGantiPassword] = useState(false)
+  // Semua portal memakai shell bergaya beranda (reskin size-preserving; lihat .portal-situs & .situs di index.css).
+  // Catatan: ini hanya kulit shell; layout halaman per peran tidak ikut berubah (useGayaSitus tetap untuk itu).
+  const situs = true
   const { belum: chatBelum } = useChatSaya()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [buka, setBuka] = useState(false)
   const [notif, setNotif] = useState(false)
   const notifRef = useRef(null)
+  // Laci menu HP & panel notifikasi tetap terpasang sebentar agar animasi keluarnya sempat berjalan
+  const [laciTampil, laciKeluar] = useAnimasiKeluar(buka)
+  const [notifTampil, notifKeluar] = useAnimasiKeluar(notif, 120)
 
   useEffect(() => {
     setBuka(false)
@@ -245,30 +305,45 @@ export default function DashboardLayout() {
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 pb-4 pt-5">
         <Logo />
-        <button onClick={() => setBuka(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 lg:hidden" aria-label="Tutup menu">
+        <button onClick={() => setBuka(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 xl:hidden" aria-label="Tutup menu">
           <X className="h-5 w-5" />
         </button>
       </div>
 
       {/* Kartu pengguna */}
-      <div className="relative mx-4 mb-3 overflow-hidden rounded-2xl bg-linear-to-br from-primary-600 to-primary-700 p-4 text-white">
-        <div className="pola-titik absolute inset-0" />
+      <div
+        className={`relative isolate mx-4 mb-3 overflow-hidden p-4 text-white ${situs ? 'rounded-[1.5rem] bg-primary-700' : 'rounded-2xl bg-linear-to-br from-primary-600 to-primary-700'}`}
+      >
+        {situs ? (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-16 -top-20 -z-10 h-48 w-48 rounded-full border-[2.25rem] border-white/[0.07]"
+          />
+        ) : (
+          <div className="pola-titik absolute inset-0" />
+        )}
         <div className="relative flex items-center gap-3">
           <Avatar nama={nama} className="bg-white text-primary-700 ring-2 ring-white/40" />
           <div className="min-w-0">
-            <p className="truncate font-bold">{nama}</p>
-            <p className="truncate text-xs text-primary-100">{keterangan}</p>
+            <p className={`truncate ${situs ? 'font-extrabold tracking-tight' : 'font-bold'}`}>{nama}</p>
+            <p className={`truncate text-xs ${situs ? 'text-krem' : 'text-primary-100'}`}>{keterangan}</p>
           </div>
         </div>
-        <p className="relative mt-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold">
-          <Sparkles className="h-3 w-3 text-amber-300" /> Portal {LABEL_ROLE[user.role]}
-        </p>
+        {situs ? (
+          <p className="relative mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-bold ring-1 ring-inset ring-white/20">
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-stabilo" /> Portal {LABEL_ROLE[user.role]}
+          </p>
+        ) : (
+          <p className="relative mt-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold">
+            <Sparkles className="h-3 w-3 text-amber-300" /> Portal {LABEL_ROLE[user.role]}
+          </p>
+        )}
       </div>
 
       <nav className="flex-1 space-y-4 overflow-y-auto px-3 pb-3">
         {kelompok.map((k, i) => (
           <div key={k.judul ?? i}>
-            {k.judul && <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">{k.judul}</p>}
+            {k.judul && <p className={`px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider ${situs ? 'text-tinta-3' : 'text-slate-400'}`}>{k.judul}</p>}
             <div className="space-y-0.5">
               {k.items.map(({ to, label, icon: Icon, end, badge }) => (
                 <NavLink
@@ -276,19 +351,23 @@ export default function DashboardLayout() {
                   to={to}
                   end={end}
                   className={({ isActive }) =>
-                    `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                    `group flex items-center gap-3 px-3 py-2.5 text-sm transition ${situs ? 'rounded-full font-bold' : 'rounded-xl font-semibold'} ${
                       isActive ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
-                      <span className={`grid h-8 w-8 place-items-center rounded-lg transition ${isActive ? 'bg-primary-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-primary-600 group-hover:shadow-sm'}`}>
+                      <span
+                        className={`grid h-8 w-8 place-items-center transition ${situs ? 'rounded-full' : 'rounded-lg'} ${isActive ? 'bg-primary-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-primary-600 group-hover:shadow-sm'}`}
+                      >
                         <Icon className="h-4 w-4" />
                       </span>
                       <span className="flex-1">{label}</span>
                       {badge && jumlahBadge[badge] > 0 && (
-                        <span className="rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-amber-950">{jumlahBadge[badge]}</span>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${situs ? 'bg-stabilo text-tinta' : 'bg-amber-400 text-amber-950'}`}>
+                          {jumlahBadge[badge]}
+                        </span>
                       )}
                     </>
                   )}
@@ -300,10 +379,27 @@ export default function DashboardLayout() {
       </nav>
 
       <div className="space-y-0.5 border-t border-slate-100 p-3">
-        <NavLink to="/" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">
+        <NavLink
+          to="/"
+          className={`flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-100 ${situs ? 'rounded-full font-bold' : 'rounded-xl font-semibold'}`}
+        >
           <Globe className="h-5 w-5" /> Lihat Website
         </NavLink>
-        <button onClick={keluar} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50">
+        {!user.wajibGanti && (
+          <button
+            onClick={() => {
+              setBuka(false)
+              setGantiPassword(true)
+            }}
+            className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-100 ${situs ? 'rounded-full font-bold' : 'rounded-xl font-semibold'}`}
+          >
+            <KeyRound className="h-5 w-5" /> Ganti Password
+          </button>
+        )}
+        <button
+          onClick={keluar}
+          className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm text-rose-600 hover:bg-rose-50 ${situs ? 'rounded-full font-bold' : 'rounded-xl font-semibold'}`}
+        >
           <LogOut className="h-5 w-5" /> Keluar
         </button>
       </div>
@@ -311,23 +407,23 @@ export default function DashboardLayout() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className={situs ? 'situs portal-situs min-h-screen' : 'min-h-screen bg-slate-50'}>
       {/* Sidebar desktop */}
-      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-slate-200 bg-white lg:block">{sidebar}</aside>
+      <aside className={`fixed inset-y-0 left-0 hidden w-72 border-r bg-white xl:block ${situs ? 'border-garis' : 'border-slate-200'}`}>{sidebar}</aside>
 
       {/* Sidebar mobile */}
-      {buka && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setBuka(false)} />
-          <aside className="absolute inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-xl">{sidebar}</aside>
+      {laciTampil && (
+        <div className="fixed inset-0 z-50 xl:hidden" data-keluar={laciKeluar || undefined}>
+          <div className="latar-modal absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setBuka(false)} />
+          <aside className="laci absolute inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-xl">{sidebar}</aside>
         </div>
       )}
 
-      <div className="lg:pl-72">
-        <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="xl:pl-72">
+        <header className={`sticky top-0 z-30 border-b backdrop-blur ${situs ? 'border-garis bg-kertas/90' : 'border-slate-200 bg-white/90'}`}>
           <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-8">
             <div className="flex items-center gap-3">
-              <button onClick={() => setBuka(true)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden" aria-label="Buka menu">
+              <button onClick={() => setBuka(true)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 xl:hidden" aria-label="Buka menu">
                 <Menu className="h-5 w-5" />
               </button>
               <p className="hidden text-sm text-slate-500 sm:block">{formatHari(todayKey())}</p>
@@ -348,17 +444,22 @@ export default function DashboardLayout() {
                     </span>
                   )}
                 </button>
-                {notif && (
-                  <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200">
-                    <p className="border-b border-slate-100 px-4 py-3 font-bold text-slate-900">Notifikasi</p>
+                {notifTampil && (
+                  <div
+                    data-keluar={notifKeluar || undefined}
+                    className={`menu-turun absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden bg-white shadow-2xl ring-1 ring-slate-200 ${situs ? 'rounded-[1.5rem]' : 'rounded-2xl'}`}
+                  >
+                    <p className={`border-b border-slate-100 px-4 py-3 text-slate-900 ${situs ? 'font-extrabold' : 'font-bold'}`}>Notifikasi</p>
                     {notifikasi.length === 0 ? (
-                      <p className="px-4 py-8 text-center text-sm text-slate-500">Semua beres! Tidak ada yang perlu ditindaklanjuti. 🎉</p>
+                      <p className="px-4 py-8 text-center text-sm text-slate-500">Semua beres! Tidak ada yang perlu ditindaklanjuti.{situs ? '' : ' 🎉'}</p>
                     ) : (
                       <ul className="max-h-80 divide-y divide-slate-100 overflow-y-auto">
                         {notifikasi.map(({ to, label, icon: Icon, badge }) => (
                           <li key={to}>
                             <Link to={to} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
-                              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600">
+                              <span
+                                className={`grid h-9 w-9 shrink-0 place-items-center ${situs ? 'rounded-full bg-stabilo text-tinta' : 'rounded-xl bg-amber-50 text-amber-600'}`}
+                              >
                                 <Icon className="h-4 w-4" />
                               </span>
                               <span className="min-w-0 text-sm">
@@ -384,9 +485,29 @@ export default function DashboardLayout() {
           </div>
         </header>
         <main className="px-4 py-6 sm:px-8 sm:py-8">
-          <Outlet />
+          {/* Kunci pathname: setiap pindah halaman, bagian-bagian isi muncul naik berurutan (lihat .masuk-halaman) */}
+          <div key={pathname} className="masuk-halaman">
+            <IsiPortal />
+          </div>
         </main>
       </div>
+
+      <Modal open={gantiPassword} onClose={() => setGantiPassword(false)} title="Ganti Password" size="max-w-md">
+        <p className="mb-4 text-sm text-slate-600">
+          Setelah diganti, perangkat lain yang sedang login dengan akun <span className="font-semibold text-slate-800">{user.username}</span> akan dikeluarkan.
+        </p>
+        <FormGantiPassword
+          onSelesai={() => {
+            setGantiPassword(false)
+            beritahu('Password berhasil diganti.')
+          }}
+          tombolLain={
+            <button type="button" onClick={() => setGantiPassword(false)} className={btn.secondary}>
+              Batal
+            </button>
+          }
+        />
+      </Modal>
     </div>
   )
 }

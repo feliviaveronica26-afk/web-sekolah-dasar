@@ -4,7 +4,7 @@ import { Badge, Card, DashHeader, EmptyState, STATUS_ABSEN } from '../../compone
 import { useAuth } from '../../context/AuthContext'
 import { absensiPerMapel, useData } from '../../context/DataContext'
 import { MAPEL } from '../../data/dummy'
-import { guruPelajaran } from '../../utils/jadwal'
+import { namaPengampu } from '../../utils/jadwal'
 import { formatHari } from '../../utils/format'
 
 const warnaPersen = (p) => (p >= 90 ? 'bg-emerald-500' : p >= 75 ? 'bg-amber-400' : 'bg-rose-500')
@@ -89,7 +89,7 @@ export default function SiswaAbsensi() {
             <div className="border-b border-slate-100 p-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Riwayat</p>
               <h2 className="mt-1 font-bold text-slate-900">{MAPEL[dipilih].nama}</h2>
-              <p className="text-sm text-slate-500">{guruPelajaran(data.guru, user.kelas, dipilih)?.nama ?? MAPEL[dipilih].guru}</p>
+              <p className="text-sm text-slate-500">{namaPengampu(data.guru, user.kelas, dipilih)}</p>
             </div>
             <ul className="max-h-96 divide-y divide-slate-100 overflow-y-auto">
               {detail.riwayat.map((r) => (

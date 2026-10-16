@@ -35,7 +35,7 @@ export default function SiswaTugas() {
         </div>
       </Card>
 
-      <div className="mb-5 inline-flex rounded-xl bg-slate-100 p-1">
+      <div className="mb-5 inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1">
         {[
           ['belum', 'Belum Selesai', belum.length],
           ['sudah', 'Sudah Selesai', sudah.length],
@@ -43,7 +43,7 @@ export default function SiswaTugas() {
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+            className={`shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
           >
             {label} <span className="ml-1 text-xs text-slate-400">({n})</span>
           </button>
@@ -67,7 +67,7 @@ export default function SiswaTugas() {
               <Card key={t.id} className={`p-5 ${done ? 'opacity-75' : ''}`}>
                 <div className="flex items-start gap-4">
                   <button
-                    onClick={() => toggleTugas(user.nis, t.id)}
+                    onClick={() => toggleTugas(t.id)}
                     className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg border-2 transition ${
                       done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 hover:border-primary-500'
                     }`}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Download, Info, NotebookPen, Target, TrendingUp, Users } from 'lucide-react'
 import { SEMESTER } from '../../components/Nilai'
 import { Avatar, Badge, Card, DashHeader, EmptyState, StatCard, btn, inputCls, labelCls } from '../../components/ui'
@@ -11,8 +11,27 @@ import { unduhFileCsv } from '../../utils/keamanan'
 // Ubah isian kotak menjadi angka 0–100, atau null jika dikosongkan
 const keAngka = (v) => (v === '' ? null : Math.max(0, Math.min(100, Math.round(Number(v)))))
 
+/*
+  Kotak nilai menyimpan isian sendiri selama diketik, lalu dikirim ke server sesaat setelah guru
+  berhenti mengetik atau pindah kotak, jadi tidak ada permintaan untuk setiap ketukan.
+*/
 function KotakNilai({ nilai, onChange, label }) {
-  const kurang = nilai !== null && nilai !== undefined && nilai < KKTP
+  const [draf, setDraf] = useState(nilai ?? '')
+  const fokus = useRef(false)
+  const tunda = useRef(null)
+  // Ikuti nilai dari server (mis. diubah guru lain) selama kotak tidak sedang diketik
+  useEffect(() => {
+    if (!fokus.current) setDraf(nilai ?? '')
+  }, [nilai])
+  useEffect(() => () => clearTimeout(tunda.current), [])
+
+  const simpan = (teks) => {
+    clearTimeout(tunda.current)
+    const v = keAngka(String(teks))
+    if (v !== (nilai ?? null)) onChange(v)
+  }
+  const angka = draf === '' ? null : Number(draf)
+  const kurang = angka !== null && angka < KKTP
   return (
     <input
       type="number"
@@ -20,8 +39,19 @@ function KotakNilai({ nilai, onChange, label }) {
       max={100}
       inputMode="numeric"
       aria-label={label}
-      value={nilai ?? ''}
-      onChange={(e) => onChange(keAngka(e.target.value))}
+      value={draf}
+      onFocus={() => (fokus.current = true)}
+      onBlur={(e) => {
+        fokus.current = false
+        simpan(e.target.value)
+      }}
+      onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+      onChange={(e) => {
+        const teks = e.target.value
+        setDraf(teks)
+        clearTimeout(tunda.current)
+        tunda.current = setTimeout(() => simpan(teks), 800)
+      }}
       className={`w-14 rounded-lg border px-1.5 py-1.5 text-center text-sm tabular-nums [appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none focus:ring-2 focus:ring-primary-200 ${
         kurang ? 'border-amber-300 bg-amber-50 text-amber-900' : 'border-slate-200 bg-white text-slate-800'
       }`}
@@ -48,11 +78,8 @@ export default function InputNilai() {
   const rata = terisi.length ? Math.round((terisi.reduce((a, b) => a + b.akhir, 0) / terisi.length) * 10) / 10 : null
   const belumLengkap = baris.filter((b) => (b.n.tugas ?? []).filter((x) => x !== null && x !== undefined).length < JUMLAH_TUGAS || b.n.pts == null).length
 
-  const ubahTugas = (nis, n, i, v) => {
-    const tugas = Array.from({ length: JUMLAH_TUGAS }, (_, k) => n.tugas?.[k] ?? null)
-    tugas[i] = v
-    simpanNilai(nis, mapel, { tugas })
-  }
+  // Hanya nilai tugas ke-i yang dikirim, agar isian kotak lain yang sedang disimpan tidak tertimpa
+  const ubahTugas = (nis, i, v) => simpanNilai(nis, mapel, { tugasKe: i, nilaiTugas: v })
 
   // Unduh nilai kelas sebagai CSV untuk diolah di Excel
   const unduhCsv = () => {
@@ -155,7 +182,7 @@ export default function InputNilai() {
                         </td>
                         {Array.from({ length: JUMLAH_TUGAS }, (_, i) => (
                           <td key={i} className="px-1.5 py-2.5 text-center">
-                            <KotakNilai nilai={n.tugas?.[i]} label={`Tugas ${i + 1} ${s.nama}`} onChange={(v) => ubahTugas(s.nis, n, i, v)} />
+                            <KotakNilai nilai={n.tugas?.[i]} label={`Tugas ${i + 1} ${s.nama}`} onChange={(v) => ubahTugas(s.nis, i, v)} />
                           </td>
                         ))}
                         <td className="px-1.5 py-2.5 text-center">

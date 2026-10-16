@@ -16,14 +16,16 @@ export function pelajaranHari(kelas, tanggal) {
 
 export const pelajaranDariKunci = (kelas, tanggal, kunci) => pelajaranHari(kelas, tanggal).find((p) => p.kunci === kunci) ?? null
 
-// Guru pengampu: guru mapel khusus jika ada, selain itu wali kelas
+// Mapel yang diajar seorang guru mapel (kolom "mapel yang diampu" di Data Guru & Staf)
+export const mapelDiampu = (g) => (g?.peran?.includes('guru_mapel') ? (g.mapelDiampu ?? []) : [])
+
+// Guru pengampu: guru mapel yang mengampu mapel itu jika ada, selain itu wali kelas
 export function guruPelajaran(guru, kelas, mapel) {
-  return (
-    guru.find((g) => g.nama === MAPEL[mapel]?.guru && g.peran?.includes('guru_mapel')) ??
-    guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === kelas) ??
-    null
-  )
+  return guru.find((g) => mapelDiampu(g).includes(mapel)) ?? guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === kelas) ?? null
 }
+
+// Nama pengampu untuk ditampilkan: guru pengampu, atau label kegiatan bersama (upacara, pramuka)
+export const namaPengampu = (guru, kelas, mapel) => guruPelajaran(guru, kelas, mapel)?.nama ?? MAPEL[mapel]?.pengampu ?? '–'
 
 export const jamPelajaran = (p) => `${p.mulai}–${p.selesai}`
 

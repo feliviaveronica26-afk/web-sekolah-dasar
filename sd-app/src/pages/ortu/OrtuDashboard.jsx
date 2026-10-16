@@ -221,13 +221,13 @@ export default function OrtuDashboard() {
         </JudulKartu>
         <div className="grid gap-4 md:grid-cols-3">
           {pengumuman.map((p) => (
-            <div key={p.id} className="rounded-2xl bg-slate-50 p-4">
+            <Link key={p.id} to={`/dashboard/ortu/pengumuman?buka=${encodeURIComponent(p.id)}`} className="block rounded-2xl bg-slate-50 p-4 transition hover:bg-slate-100">
               <div className="flex items-center gap-2">
                 <KategoriBadge kategori={p.kategori} />
                 <span className="text-xs text-slate-500">{formatTanggal(p.tanggal)}</span>
               </div>
               <p className="mt-2 font-semibold text-slate-800">{p.judul}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </Card>

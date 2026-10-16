@@ -4,11 +4,11 @@ import { Alert, Avatar, Card, DashHeader, EmptyState, JudulKartu, Modal, Tabs, b
 import { useLingkup } from '../../context/akses'
 import { useData } from '../../context/DataContext'
 import { SIKAP } from '../../data/dummy'
-import { formatTanggal, todayKey } from '../../utils/format'
+import { formatTanggal } from '../../utils/format'
 import { infoSikap, ringkasSikap } from '../../utils/prestasi'
 
 export default function PoinSikap() {
-  const { data, tambah, hapus } = useData()
+  const { data, beriSikap, hapusSikap } = useData()
   const L = useLingkup('sikap')
   const [kelas, setKelas] = useState(L.daftarKelas[0] ?? '')
   const [dipilih, setDipilih] = useState(null) // nis, atau 'semua' untuk seluruh kelas
@@ -32,9 +32,11 @@ export default function PoinSikap() {
     setCatatan('')
   }
 
-  const beri = (k) => {
+  // Satu permintaan untuk satu siswa atau seluruh kelas; tanggal & nama guru dicatat server
+  const beri = async (k) => {
     const sasaran = dipilih === 'semua' ? nisKelas : [dipilih]
-    sasaran.forEach((nis) => tambah('sikap', { nis, kode: k.kode, poin: k.poin, tanggal: todayKey(), catatan: catatan.trim(), oleh: L.nama }))
+    const galat = await beriSikap(sasaran, k.kode, catatan.trim())
+    if (galat) return
     setPesan(`${k.emoji} ${k.label} (${k.poin > 0 ? '+' : ''}${k.poin}) diberikan kepada ${dipilih === 'semua' ? `seluruh kelas ${kelas}` : namaSiswa(dipilih)}.`)
     tutup()
   }
@@ -128,7 +130,7 @@ export default function PoinSikap() {
                       </span>
                       <span className={`text-xs font-bold ${r.poin > 0 ? 'text-emerald-600' : 'text-amber-700'}`}>{r.poin > 0 ? `+${r.poin}` : r.poin}</span>
                       {r.oleh === L.nama && (
-                        <button onClick={() => hapus('sikap', r.id)} className="rounded p-1 text-slate-300 opacity-0 transition hover:text-rose-600 group-hover:opacity-100" aria-label="Hapus catatan">
+                        <button onClick={() => hapusSikap(r.id)} className="rounded p-1 text-slate-300 opacity-0 transition hover:text-rose-600 group-hover:opacity-100" aria-label="Hapus catatan">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}

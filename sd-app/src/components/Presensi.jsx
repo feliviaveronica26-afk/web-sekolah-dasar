@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Circle, CircleCheck, Fingerprint, History, LogIn, LogOut, Users } from 'lucide-react'
 import { Avatar, Badge, Card, Cincin, JudulKartu, Modal, btn, inputCls, labelCls } from './ui'
-import { useAkses } from '../context/akses'
+import { useAkses, useGayaSitus } from '../context/akses'
 import { useData } from '../context/DataContext'
 import { isHariSekolah, todayKey } from '../utils/format'
 import {
@@ -38,7 +38,7 @@ const dua = (n) => String(n).padStart(2, '0')
 
 function Langkah({ label, jam, ket, tone = 'text-slate-500' }) {
   return (
-    <div className={`rounded-xl px-4 py-3 ${jam ? 'bg-emerald-50' : 'bg-slate-50'}`}>
+    <div className={`ui-ubin rounded-xl px-4 py-3 ${jam ? 'bg-emerald-50' : 'bg-slate-50'}`}>
       <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
         {jam ? <CircleCheck className="h-3.5 w-3.5 text-emerald-600" /> : <Circle className="h-3.5 w-3.5" />} {label}
       </p>
@@ -55,6 +55,7 @@ function Langkah({ label, jam, ket, tone = 'text-slate-500' }) {
 export function KartuPresensiSaya({ tautan = false, className = '' }) {
   const { data, absenStaf } = useData()
   const akses = useAkses()
+  const situs = useGayaSitus()
   const sekarang = useJamBerjalan()
   const [konfirmasi, setKonfirmasi] = useState(null) // 'masuk' | 'pulang' saat perlu alasan
   const [alasan, setAlasan] = useState('')
@@ -74,7 +75,7 @@ export function KartuPresensiSaya({ tautan = false, className = '' }) {
   const absen = (jenis) => {
     const perluAlasan = jenis === 'masuk' ? telat > 0 : sebelumPulang
     if (perluAlasan && konfirmasi !== jenis) return setKonfirmasi(jenis)
-    absenStaf(guru.id, jenis, alasan.trim())
+    absenStaf(jenis, alasan.trim())
     setKonfirmasi(null)
     setAlasan('')
   }
@@ -82,11 +83,13 @@ export function KartuPresensiSaya({ tautan = false, className = '' }) {
   let isi
   if (libur) {
     isi = (
-      <p className="flex-1 rounded-xl bg-slate-50 px-4 py-4 text-sm text-slate-600">Hari ini libur. Presensi dibuka kembali pada hari sekolah berikutnya. 🌤️</p>
+      <p className="ui-ubin flex-1 rounded-xl bg-slate-50 px-4 py-4 text-sm text-slate-600">
+        Hari ini libur. Presensi dibuka kembali pada hari sekolah berikutnya.{situs ? '' : ' 🌤️'}
+      </p>
     )
   } else if (rec && rec.status !== 'H') {
     isi = (
-      <div className="flex-1 rounded-xl bg-slate-50 px-4 py-3">
+      <div className="ui-ubin flex-1 rounded-xl bg-slate-50 px-4 py-3">
         <p className="text-sm text-slate-600">
           Anda tercatat <StatusPresensi kode={kode} /> hari ini{rec.izinId ? ' (izin disetujui Kepala Sekolah)' : ''}.
         </p>
@@ -123,7 +126,7 @@ export function KartuPresensiSaya({ tautan = false, className = '' }) {
               <LogOut className="h-5 w-5" /> Absen Pulang
             </button>
           ) : (
-            <p className="flex items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+            <p className="ui-ubin flex items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
               <CircleCheck className="h-5 w-5" /> Presensi lengkap
             </p>
           )}
@@ -138,7 +141,7 @@ export function KartuPresensiSaya({ tautan = false, className = '' }) {
       <Card className={`@container overflow-hidden ${className}`}>
         <div className="flex flex-col gap-4 p-5 @2xl:flex-row @2xl:items-center sm:p-6">
           <div className="flex items-center gap-4 @2xl:w-60">
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary-50 text-primary-600">
+            <span className="ui-ikon-utama grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary-50 text-primary-600">
               <Fingerprint className="h-7 w-7" />
             </span>
             <div>
@@ -171,7 +174,7 @@ export function KartuPresensiSaya({ tautan = false, className = '' }) {
             </span>
           )}
           {tautan && (
-            <Link to={`${akses.base}/presensi`} className="flex items-center gap-1 font-semibold text-primary-600">
+            <Link to={`${akses.base}/presensi`} className="ui-tautan flex items-center gap-1 font-semibold text-primary-600">
               Papan presensi & izin <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           )}
@@ -232,12 +235,12 @@ export function RingkasanPresensi({ className = '' }) {
   return (
     <Card className={`p-6 ${className}`}>
       <JudulKartu icon={Users} judul="Kehadiran guru & staf hari ini">
-        <Link to={`${base}/presensi`} className="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-600">
+        <Link to={`${base}/presensi`} className="ui-tautan flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-600">
           Papan <ArrowRight className="h-4 w-4" />
         </Link>
       </JudulKartu>
       {libur ? (
-        <p className="rounded-xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">Hari ini libur, tidak ada presensi.</p>
+        <p className="ui-ubin rounded-xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">Hari ini libur, tidak ada presensi.</p>
       ) : (
         <>
           <div className="flex items-center gap-5">
