@@ -1,0 +1,311 @@
+[
+  {
+    "id": "g1",
+    "nama": "Dra. Siti Rahmawati, M.Pd.",
+    "nip": "197203151998032001",
+    "jabatan": "Kepala Sekolah",
+    "mapel": "-",
+    "peran": [],
+    "kelas": ""
+  },
+  {
+    "id": "g2",
+    "nama": "Andi Pratama, S.Pd.",
+    "nip": "198805122014031002",
+    "jabatan": "Wali Kelas 4A",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "4A"
+  },
+  {
+    "id": "g3",
+    "nama": "Rina Marlina, S.Pd.",
+    "nip": "199001202015032003",
+    "jabatan": "Wakasek Kurikulum",
+    "mapel": "Guru Kelas 1A",
+    "peran": [
+      "wali_kelas",
+      "wakasek_kurikulum"
+    ],
+    "kelas": "1A"
+  },
+  {
+    "id": "g4",
+    "nama": "Dewi Kartika, S.Pd.",
+    "nip": "198707072012032004",
+    "jabatan": "Wali Kelas 6A",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "6A"
+  },
+  {
+    "id": "g5",
+    "nama": "Budi Santoso, S.Pd.",
+    "nip": "198511302010011005",
+    "jabatan": "Wakasek Kesiswaan",
+    "mapel": "PJOK",
+    "peran": [
+      "guru_mapel",
+      "wakasek_kesiswaan"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g6",
+    "nama": "Nur Aisyah, S.Pd.I.",
+    "nip": "199203182017032006",
+    "jabatan": "Guru Mapel",
+    "mapel": "Pendidikan Agama",
+    "peran": [
+      "guru_mapel"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g7",
+    "nama": "Maria Natalia, S.Pd.",
+    "nip": "199406252019032007",
+    "jabatan": "Guru Mapel",
+    "mapel": "Bahasa Inggris",
+    "peran": [
+      "guru_mapel"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g8",
+    "nama": "Hendra Wijaya, S.Kom.",
+    "nip": "199109092016011008",
+    "jabatan": "Guru Mapel",
+    "mapel": "Informatika",
+    "peran": [
+      "guru_mapel"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g9",
+    "nama": "Sri Handayani, S.E.",
+    "nip": "",
+    "jabatan": "Kepala Tata Usaha",
+    "mapel": "-",
+    "peran": [
+      "tata_usaha"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g10",
+    "nama": "Yusuf Hidayat, S.IP.",
+    "nip": "",
+    "jabatan": "Pustakawan",
+    "mapel": "-",
+    "peran": [
+      "pustakawan"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g11",
+    "nama": "Agus Setiawan, S.T.",
+    "nip": "198602142011011011",
+    "jabatan": "Wakasek Sarana & Prasarana",
+    "mapel": "Matematika",
+    "peran": [
+      "guru_mapel",
+      "wakasek_sarpras"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g12",
+    "nama": "Laila Fitriani, S.Psi.",
+    "nip": "199308112019032012",
+    "jabatan": "Guru BK",
+    "mapel": "Bimbingan Konseling",
+    "peran": [
+      "guru_bk"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g13",
+    "nama": "Joko Susilo",
+    "nip": "",
+    "jabatan": "Satpam",
+    "mapel": "-",
+    "peran": [
+      "satpam"
+    ],
+    "kelas": ""
+  },
+  {
+    "id": "g14",
+    "nama": "Siti Nurhaliza, S.Pd.",
+    "nip": "198801032014012014",
+    "jabatan": "Wali Kelas 1B",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "1B"
+  },
+  {
+    "id": "g15",
+    "nama": "Fitri Handayani, S.Pd.",
+    "nip": "",
+    "jabatan": "Wali Kelas 1C",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "1C"
+  },
+  {
+    "id": "g16",
+    "nama": "Ahmad Fauzi, S.Pd.",
+    "nip": "199003052016031016",
+    "jabatan": "Wali Kelas 2A",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "2A"
+  },
+  {
+    "id": "g17",
+    "nama": "Ratna Kumalasari, S.Pd.",
+    "nip": "",
+    "jabatan": "Wali Kelas 2B",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "2B"
+  },
+  {
+    "id": "g18",
+    "nama": "Yulia Rahmawati, S.Pd.",
+    "nip": "199205072018052018",
+    "jabatan": "Wali Kelas 2C",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "2C"
+  },
+  {
+    "id": "g19",
+    "nama": "Dedi Kurniawan, S.Pd.",
+    "nip": "",
+    "jabatan": "Wali Kelas 3A",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "3A"
+  },
+  {
+    "id": "g20",
+    "nama": "Lestari Wulandari, S.Pd.",
+    "nip": "199407092020072020",
+    "jabatan": "Wali Kelas 3B",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "3B"
+  },
+  {
+    "id": "g21",
+    "nama": "Hendro Saputro, S.Pd.",
+    "nip": "",
+    "jabatan": "Wali Kelas 3C",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "3C"
+  },
+  {
+    "id": "g22",
+    "nama": "Indah Permatasari, S.Pd.",
+    "nip": "198809112014092022",
+    "jabatan": "Wali Kelas 4B",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "4B"
+  },
+  {
+    "id": "g23",
+    "nama": "Wahyu Nugroho, S.Pd.",
+    "nip": "",
+    "jabatan": "Wali Kelas 4C",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "4C"
+  },
+  {
+    "id": "g24",
+    "nama": "Novi Anggraeni, S.Pd.",
+    "nip": "199011132016022024",
+    "jabatan": "Wali Kelas 5A",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "5A"
+  },
+  {
+    "id": "g25",
+    "nama": "Taufik Hidayat, S.Pd.",
+    "nip": "",
+    "jabatan": "Wali Kelas 5B",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "5B"
+  },
+  {
+    "id": "g26",
+    "nama": "Eka Susanti, S.Pd.",
+    "nip": "199201152018042026",
+    "jabatan": "Wali Kelas 5C",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "5C"
+  },
+  {
+    "id": "g27",
+    "nama": "Bayu Aji Pamungkas, S.Pd.",
+    "nip": "",
+    "jabatan": "Wali Kelas 6B",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "6B"
+  },
+  {
+    "id": "g28",
+    "nama": "Mega Puspitasari, S.Pd.",
+    "nip": "199403172020062028",
+    "jabatan": "Wali Kelas 6C",
+    "mapel": "Guru Kelas",
+    "peran": [
+      "wali_kelas"
+    ],
+    "kelas": "6C"
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "username": "siswa",
+    "password": "siswa123",
+    "role": "siswa",
+    "nama": "Rafa Aditya",
+    "nis": "230401",
+    "kelas": "4A"
+  },
+  {
+    "username": "ortu",
+    "password": "ortu123",
+    "role": "ortu",
+    "nama": "Ibu Dewi Lestari",
+    "anakNis": "230401"
+  },
+  {
+    "username": "guru",
+    "password": "guru123",
+    "role": "staf",
+    "nama": "Andi Pratama, S.Pd.",
+    "guruId": "g2"
+  },
+  {
+    "username": "mapel",
+    "password": "mapel123",
+    "role": "staf",
+    "nama": "Maria Natalia, S.Pd.",
+    "guruId": "g7"
+  },
+  {
+    "username": "kurikulum",
+    "password": "kurikulum123",
+    "role": "staf",
+    "nama": "Rina Marlina, S.Pd.",
+    "guruId": "g3"
+  },
+  {
+    "username": "kesiswaan",
+    "password": "kesiswaan123",
+    "role": "staf",
+    "nama": "Budi Santoso, S.Pd.",
+    "guruId": "g5"
+  },
+  {
+    "username": "tu",
+    "password": "tu123",
+    "role": "staf",
+    "nama": "Sri Handayani, S.E.",
+    "guruId": "g9"
+  },
+  {
+    "username": "pustaka",
+    "password": "pustaka123",
+    "role": "staf",
+    "nama": "Yusuf Hidayat, S.IP.",
+    "guruId": "g10"
+  },
+  {
+    "username": "sarpras",
+    "password": "sarpras123",
+    "role": "staf",
+    "nama": "Agus Setiawan, S.T.",
+    "guruId": "g11"
+  },
+  {
+    "username": "bk",
+    "password": "bk123",
+    "role": "staf",
+    "nama": "Laila Fitriani, S.Psi.",
+    "guruId": "g12"
+  },
+  {
+    "username": "satpam",
+    "password": "satpam123",
+    "role": "staf",
+    "nama": "Joko Susilo",
+    "guruId": "g13"
+  }
+]

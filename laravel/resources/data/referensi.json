@@ -1,0 +1,1045 @@
+{
+ "kelas": [
+  "1A",
+  "1B",
+  "1C",
+  "2A",
+  "2B",
+  "2C",
+  "3A",
+  "3B",
+  "3C",
+  "4A",
+  "4B",
+  "4C",
+  "5A",
+  "5B",
+  "5C",
+  "6A",
+  "6B",
+  "6C"
+ ],
+ "hariSekolah": [
+  "Senin",
+  "Selasa",
+  "Rabu",
+  "Kamis",
+  "Jumat"
+ ],
+ "sesi": [
+  {
+   "mulai": "07.00",
+   "selesai": "08.10"
+  },
+  {
+   "mulai": "08.10",
+   "selesai": "09.20"
+  },
+  {
+   "mulai": "09.40",
+   "selesai": "10.50"
+  },
+  {
+   "mulai": "10.50",
+   "selesai": "12.00"
+  }
+ ],
+ "jadwal": {
+  "4A": {
+   "Senin": [
+    "upacara",
+    "mtk",
+    "bindo",
+    "ipas"
+   ],
+   "Selasa": [
+    "agama",
+    "mtk",
+    "bing",
+    "senbud"
+   ],
+   "Rabu": [
+    "pjok",
+    "bindo",
+    "ipas",
+    "pancasila"
+   ],
+   "Kamis": [
+    "mtk",
+    "info",
+    "bindo",
+    "mulok"
+   ],
+   "Jumat": [
+    "senam",
+    "agama",
+    "ipas",
+    "pramuka"
+   ]
+  },
+  "1A": {
+   "Senin": [
+    "upacara",
+    "agama",
+    "mtk",
+    "bindo"
+   ],
+   "Selasa": [
+    "pancasila",
+    "bing",
+    "senbud",
+    "mtk"
+   ],
+   "Rabu": [
+    "bindo",
+    "pjok",
+    "mulok",
+    "bindo"
+   ],
+   "Kamis": [
+    "mtk",
+    "agama",
+    "pancasila",
+    "bindo"
+   ],
+   "Jumat": [
+    "senam",
+    "senbud",
+    "mtk",
+    "bindo"
+   ]
+  },
+  "1B": {
+   "Senin": [
+    "upacara",
+    "bindo",
+    "pancasila",
+    "senbud"
+   ],
+   "Selasa": [
+    "mtk",
+    "agama",
+    "bindo",
+    "mulok"
+   ],
+   "Rabu": [
+    "bing",
+    "bindo",
+    "mtk",
+    "pancasila"
+   ],
+   "Kamis": [
+    "pjok",
+    "bindo",
+    "senbud",
+    "mtk"
+   ],
+   "Jumat": [
+    "senam",
+    "bindo",
+    "agama",
+    "mtk"
+   ]
+  },
+  "1C": {
+   "Senin": [
+    "upacara",
+    "pancasila",
+    "agama",
+    "senbud"
+   ],
+   "Selasa": [
+    "mtk",
+    "bindo",
+    "mulok",
+    "agama"
+   ],
+   "Rabu": [
+    "bindo",
+    "mtk",
+    "pancasila",
+    "bing"
+   ],
+   "Kamis": [
+    "bindo",
+    "senbud",
+    "mtk",
+    "pjok"
+   ],
+   "Jumat": [
+    "senam",
+    "bindo",
+    "mtk",
+    "bindo"
+   ]
+  },
+  "2A": {
+   "Senin": [
+    "upacara",
+    "pjok",
+    "senbud",
+    "mtk"
+   ],
+   "Selasa": [
+    "bindo",
+    "mulok",
+    "agama",
+    "bindo"
+   ],
+   "Rabu": [
+    "mtk",
+    "pancasila",
+    "agama",
+    "bindo"
+   ],
+   "Kamis": [
+    "senbud",
+    "mtk",
+    "bing",
+    "bindo"
+   ],
+   "Jumat": [
+    "senam",
+    "mtk",
+    "bindo",
+    "pancasila"
+   ]
+  },
+  "2B": {
+   "Senin": [
+    "upacara",
+    "mtk",
+    "bindo",
+    "mulok"
+   ],
+   "Selasa": [
+    "pjok",
+    "bindo",
+    "mtk",
+    "pancasila"
+   ],
+   "Rabu": [
+    "agama",
+    "bindo",
+    "senbud",
+    "mtk"
+   ],
+   "Kamis": [
+    "bindo",
+    "mtk",
+    "agama",
+    "bindo"
+   ],
+   "Jumat": [
+    "senam",
+    "pancasila",
+    "bing",
+    "senbud"
+   ]
+  },
+  "2C": {
+   "Senin": [
+    "upacara",
+    "bindo",
+    "mulok",
+    "agama"
+   ],
+   "Selasa": [
+    "bing",
+    "bindo",
+    "mtk",
+    "pjok"
+   ],
+   "Rabu": [
+    "pancasila",
+    "bindo",
+    "senbud",
+    "agama"
+   ],
+   "Kamis": [
+    "mtk",
+    "bindo",
+    "mtk",
+    "bindo"
+   ],
+   "Jumat": [
+    "senam",
+    "pancasila",
+    "senbud",
+    "mtk"
+   ]
+  },
+  "3A": {
+   "Senin": [
+    "upacara",
+    "info",
+    "ipas",
+    "senbud"
+   ],
+   "Selasa": [
+    "mtk",
+    "bindo",
+    "ipas",
+    "bing"
+   ],
+   "Rabu": [
+    "mulok",
+    "agama",
+    "pjok",
+    "mtk"
+   ],
+   "Kamis": [
+    "bindo",
+    "ipas",
+    "pancasila",
+    "agama"
+   ],
+   "Jumat": [
+    "senam",
+    "mtk",
+    "bindo",
+    "pramuka"
+   ]
+  },
+  "3B": {
+   "Senin": [
+    "upacara",
+    "senbud",
+    "mtk",
+    "bindo"
+   ],
+   "Selasa": [
+    "info",
+    "ipas",
+    "mulok",
+    "mtk"
+   ],
+   "Rabu": [
+    "bindo",
+    "bing",
+    "ipas",
+    "pancasila"
+   ],
+   "Kamis": [
+    "agama",
+    "pjok",
+    "mtk",
+    "bindo"
+   ],
+   "Jumat": [
+    "senam",
+    "ipas",
+    "agama",
+    "pramuka"
+   ]
+  },
+  "3C": {
+   "Senin": [
+    "upacara",
+    "mtk",
+    "bindo",
+    "agama"
+   ],
+   "Selasa": [
+    "ipas",
+    "mulok",
+    "mtk",
+    "info"
+   ],
+   "Rabu": [
+    "agama",
+    "bindo",
+    "ipas",
+    "pancasila"
+   ],
+   "Kamis": [
+    "bing",
+    "mtk",
+    "bindo",
+    "ipas"
+   ],
+   "Jumat": [
+    "senam",
+    "pjok",
+    "senbud",
+    "pramuka"
+   ]
+  },
+  "4B": {
+   "Senin": [
+    "upacara",
+    "bindo",
+    "pjok",
+    "ipas"
+   ],
+   "Selasa": [
+    "mulok",
+    "mtk",
+    "agama",
+    "bindo"
+   ],
+   "Rabu": [
+    "ipas",
+    "pancasila",
+    "info",
+    "agama"
+   ],
+   "Kamis": [
+    "mtk",
+    "bindo",
+    "ipas",
+    "bing"
+   ],
+   "Jumat": [
+    "senam",
+    "senbud",
+    "mtk",
+    "pramuka"
+   ]
+  },
+  "4C": {
+   "Senin": [
+    "upacara",
+    "bing",
+    "ipas",
+    "mulok"
+   ],
+   "Selasa": [
+    "mtk",
+    "pjok",
+    "bindo",
+    "ipas"
+   ],
+   "Rabu": [
+    "pancasila",
+    "agama",
+    "mtk",
+    "bindo"
+   ],
+   "Kamis": [
+    "ipas",
+    "senbud",
+    "agama",
+    "info"
+   ],
+   "Jumat": [
+    "senam",
+    "mtk",
+    "bindo",
+    "pramuka"
+   ]
+  },
+  "5A": {
+   "Senin": [
+    "upacara",
+    "mulok",
+    "mtk",
+    "bindo"
+   ],
+   "Selasa": [
+    "ipas",
+    "pancasila",
+    "mtk",
+    "bindo"
+   ],
+   "Rabu": [
+    "ipas",
+    "senbud",
+    "bing",
+    "pjok"
+   ],
+   "Kamis": [
+    "agama",
+    "mtk",
+    "bindo",
+    "ipas"
+   ],
+   "Jumat": [
+    "senam",
+    "info",
+    "agama",
+    "pramuka"
+   ]
+  },
+  "5B": {
+   "Senin": [
+    "upacara",
+    "mtk",
+    "info",
+    "agama"
+   ],
+   "Selasa": [
+    "bindo",
+    "ipas",
+    "pancasila",
+    "mtk"
+   ],
+   "Rabu": [
+    "bindo",
+    "ipas",
+    "senbud",
+    "mtk"
+   ],
+   "Kamis": [
+    "bindo",
+    "bing",
+    "pjok",
+    "agama"
+   ],
+   "Jumat": [
+    "senam",
+    "ipas",
+    "mulok",
+    "pramuka"
+   ]
+  },
+  "5C": {
+   "Senin": [
+    "upacara",
+    "agama",
+    "bindo",
+    "ipas"
+   ],
+   "Selasa": [
+    "pancasila",
+    "info",
+    "agama",
+    "mtk"
+   ],
+   "Rabu": [
+    "bindo",
+    "ipas",
+    "senbud",
+    "mtk"
+   ],
+   "Kamis": [
+    "bindo",
+    "ipas",
+    "mulok",
+    "mtk"
+   ],
+   "Jumat": [
+    "senam",
+    "bing",
+    "pjok",
+    "pramuka"
+   ]
+  },
+  "6A": {
+   "Senin": [
+    "upacara",
+    "ipas",
+    "bing",
+    "pjok"
+   ],
+   "Selasa": [
+    "agama",
+    "pancasila",
+    "mtk",
+    "bindo"
+   ],
+   "Rabu": [
+    "info",
+    "agama",
+    "ipas",
+    "senbud"
+   ],
+   "Kamis": [
+    "mtk",
+    "bindo",
+    "ipas",
+    "mulok"
+   ],
+   "Jumat": [
+    "senam",
+    "mtk",
+    "bindo",
+    "pramuka"
+   ]
+  },
+  "6B": {
+   "Senin": [
+    "upacara",
+    "pancasila",
+    "mtk",
+    "bing"
+   ],
+   "Selasa": [
+    "bindo",
+    "ipas",
+    "pjok",
+    "agama"
+   ],
+   "Rabu": [
+    "senbud",
+    "mtk",
+    "bindo",
+    "info"
+   ],
+   "Kamis": [
+    "agama",
+    "ipas",
+    "mulok",
+    "mtk"
+   ],
+   "Jumat": [
+    "senam",
+    "bindo",
+    "ipas",
+    "pramuka"
+   ]
+  },
+  "6C": {
+   "Senin": [
+    "upacara",
+    "mtk",
+    "bing",
+    "bindo"
+   ],
+   "Selasa": [
+    "ipas",
+    "senbud",
+    "pjok",
+    "mtk"
+   ],
+   "Rabu": [
+    "bindo",
+    "ipas",
+    "agama",
+    "mulok"
+   ],
+   "Kamis": [
+    "mtk",
+    "bindo",
+    "info",
+    "agama"
+   ],
+   "Jumat": [
+    "senam",
+    "ipas",
+    "pancasila",
+    "pramuka"
+   ]
+  }
+ },
+ "mapel": {
+  "upacara": {
+   "nama": "Upacara Bendera",
+   "absensi": false,
+   "pengampu": "Semua guru"
+  },
+  "senam": {
+   "nama": "Senam Pagi",
+   "absensi": false
+  },
+  "mtk": {
+   "nama": "Matematika",
+   "absensi": true
+  },
+  "bindo": {
+   "nama": "Bahasa Indonesia",
+   "absensi": true
+  },
+  "ipas": {
+   "nama": "IPAS",
+   "absensi": true
+  },
+  "pancasila": {
+   "nama": "Pendidikan Pancasila",
+   "absensi": true
+  },
+  "senbud": {
+   "nama": "Seni Budaya",
+   "absensi": true
+  },
+  "mulok": {
+   "nama": "Bahasa Daerah",
+   "absensi": true
+  },
+  "agama": {
+   "nama": "Pendidikan Agama",
+   "absensi": true
+  },
+  "bing": {
+   "nama": "Bahasa Inggris",
+   "absensi": true
+  },
+  "pjok": {
+   "nama": "PJOK",
+   "absensi": true
+  },
+  "info": {
+   "nama": "Informatika",
+   "absensi": true
+  },
+  "pramuka": {
+   "nama": "Pramuka",
+   "absensi": true,
+   "pengampu": "Pembina Pramuka"
+  }
+ },
+ "mapelRapor": [
+  "pancasila",
+  "agama",
+  "bindo",
+  "mtk",
+  "ipas",
+  "pjok",
+  "senbud",
+  "bing",
+  "mulok",
+  "info"
+ ],
+ "jamKerja": {
+  "umum": {
+   "masuk": "06.45",
+   "pulang": "14.00"
+  },
+  "satpam": {
+   "masuk": "06.00",
+   "pulang": "15.00"
+  }
+ },
+ "ekskul": [
+  {
+   "id": "pramuka",
+   "nama": "Pramuka",
+   "minKelas": 3,
+   "wajib": true,
+   "hari": "Jumat",
+   "jam": "10.50 – 12.00"
+  },
+  {
+   "id": "robotik",
+   "nama": "Robotik",
+   "minKelas": 3,
+   "wajib": false,
+   "hari": "Selasa",
+   "jam": "13.00 – 14.30"
+  },
+  {
+   "id": "futsal",
+   "nama": "Futsal",
+   "minKelas": 3,
+   "wajib": false,
+   "hari": "Kamis",
+   "jam": "13.00 – 14.30"
+  },
+  {
+   "id": "tari",
+   "nama": "Tari Tradisional",
+   "minKelas": 1,
+   "wajib": false,
+   "hari": "Selasa",
+   "jam": "13.00 – 14.30"
+  },
+  {
+   "id": "paduan-suara",
+   "nama": "Paduan Suara",
+   "minKelas": 2,
+   "wajib": false,
+   "hari": "Rabu",
+   "jam": "13.00 – 14.00"
+  },
+  {
+   "id": "melukis",
+   "nama": "Melukis",
+   "minKelas": 1,
+   "wajib": false,
+   "hari": "Rabu",
+   "jam": "13.00 – 14.30"
+  },
+  {
+   "id": "tahfidz",
+   "nama": "Tahfidz",
+   "minKelas": 1,
+   "wajib": false,
+   "hari": "Senin & Kamis",
+   "jam": "12.15 – 13.00"
+  },
+  {
+   "id": "bulutangkis",
+   "nama": "Bulu Tangkis",
+   "minKelas": 3,
+   "wajib": false,
+   "hari": "Senin",
+   "jam": "13.00 – 14.30"
+  },
+  {
+   "id": "english",
+   "nama": "English Club",
+   "minKelas": 3,
+   "wajib": false,
+   "hari": "Kamis",
+   "jam": "13.00 – 14.00"
+  }
+ ],
+ "sikap": [
+  {
+   "kode": "disiplin",
+   "label": "Disiplin",
+   "poin": 1
+  },
+  {
+   "kode": "membantu",
+   "label": "Membantu teman",
+   "poin": 2
+  },
+  {
+   "kode": "aktif",
+   "label": "Aktif bertanya",
+   "poin": 1
+  },
+  {
+   "kode": "kerjasama",
+   "label": "Kerja sama",
+   "poin": 1
+  },
+  {
+   "kode": "jujur",
+   "label": "Jujur",
+   "poin": 2
+  },
+  {
+   "kode": "kreatif",
+   "label": "Kreatif",
+   "poin": 1
+  },
+  {
+   "kode": "bersih",
+   "label": "Menjaga kebersihan",
+   "poin": 1
+  },
+  {
+   "kode": "terlambat",
+   "label": "Terlambat datang",
+   "poin": -1
+  },
+  {
+   "kode": "pr",
+   "label": "Tidak mengerjakan PR",
+   "poin": -1
+  },
+  {
+   "kode": "ganggu",
+   "label": "Mengganggu teman",
+   "poin": -1
+  },
+  {
+   "kode": "lupa",
+   "label": "Lupa membawa perlengkapan",
+   "poin": -1
+  }
+ ],
+ "spp": {
+  "tahunAjaran": "2026/2027",
+  "nominal": 350000,
+  "tanggalJatuhTempo": 10,
+  "bulan": [
+   "2026-07",
+   "2026-08",
+   "2026-09",
+   "2026-10",
+   "2026-11",
+   "2026-12",
+   "2027-01",
+   "2027-02",
+   "2027-03",
+   "2027-04",
+   "2027-05",
+   "2027-06"
+  ]
+ },
+ "bankVa": [
+  {
+   "kode": "bca",
+   "nama": "BCA",
+   "prefix": "39012"
+  },
+  {
+   "kode": "bri",
+   "nama": "BRI",
+   "prefix": "88810"
+  },
+  {
+   "kode": "mandiri",
+   "nama": "Mandiri",
+   "prefix": "89508"
+  },
+  {
+   "kode": "bni",
+   "nama": "BNI",
+   "prefix": "98820"
+  }
+ ],
+ "kunjungan": {
+  "sesi": [
+   "09.00 – 10.00",
+   "10.30 – 11.30",
+   "13.00 – 14.00"
+  ],
+  "kuotaPerSesi": 2,
+  "maksOrang": 10,
+  "keperluan": [
+   "Calon orang tua murid (PPDB)",
+   "Orang tua siswa",
+   "Instansi / mitra sekolah",
+   "Lainnya"
+  ],
+  "status": [
+   "Menunggu",
+   "Dikonfirmasi",
+   "Ditolak",
+   "Selesai"
+  ]
+ },
+ "fasilitas": [
+  "ruang-kelas",
+  "perpustakaan",
+  "lab-komputer",
+  "lapangan",
+  "tempat-ibadah",
+  "uks",
+  "kantin",
+  "taman"
+ ],
+ "ppdb": {
+  "tahunAjaran": "2027/2028",
+  "tanggalAcuanUsia": "2027-07-01",
+  "usiaMinimal": 6,
+  "jalur": [
+   "Reguler",
+   "Prestasi",
+   "Saudara Kandung"
+  ],
+  "agama": [
+   "Islam",
+   "Kristen",
+   "Katolik",
+   "Hindu",
+   "Buddha",
+   "Konghucu"
+  ],
+  "berkas": [
+   {
+    "id": "akta",
+    "label": "Akta kelahiran",
+    "wajib": true
+   },
+   {
+    "id": "kk",
+    "label": "Kartu Keluarga (KK)",
+    "wajib": true
+   },
+   {
+    "id": "foto",
+    "label": "Pas foto berwarna 3x4",
+    "wajib": true
+   },
+   {
+    "id": "ktp",
+    "label": "KTP orang tua/wali",
+    "wajib": true
+   },
+   {
+    "id": "tk",
+    "label": "Surat keterangan lulus TK/PAUD",
+    "wajib": false
+   },
+   {
+    "id": "prestasi",
+    "label": "Sertifikat prestasi",
+    "wajib": false,
+    "jalur": "Prestasi"
+   }
+  ],
+  "status": [
+   "Menunggu Verifikasi",
+   "Perlu Perbaikan",
+   "Terverifikasi",
+   "Diterima",
+   "Tidak Diterima"
+  ]
+ },
+ "otp": {
+  "masaBerlakuMenit": 15,
+  "maksPercobaan": 5
+ },
+ "pilihan": {
+  "kategoriPengumuman": [
+   "Akademik",
+   "Kegiatan",
+   "PPDB",
+   "Prestasi",
+   "Umum"
+  ],
+  "kategoriBarang": [
+   "Mebel",
+   "Elektronik",
+   "Alat Peraga",
+   "Olahraga",
+   "Kebersihan",
+   "Lainnya"
+  ],
+  "kondisiBarang": [
+   "Baik",
+   "Rusak Ringan",
+   "Rusak Berat"
+  ],
+  "lokasi": [
+   "Ruang Kelas",
+   "Ruang Guru & Staf",
+   "Ruang Kepala Sekolah",
+   "Lab Komputer",
+   "Lab Server",
+   "Perpustakaan",
+   "Lapangan Upacara",
+   "Lapangan Olahraga",
+   "Tempat Ibadah",
+   "UKS",
+   "Kantin Sehat",
+   "Taman & Kebun Sekolah",
+   "Pos Satpam",
+   "Gerbang Utama",
+   "Lift",
+   "Toilet",
+   "Gudang"
+  ],
+  "statusKerusakan": [
+   "Dilaporkan",
+   "Diperbaiki",
+   "Selesai"
+  ],
+  "kategoriKonseling": [
+   "Belajar",
+   "Pribadi",
+   "Sosial",
+   "Karier"
+  ],
+  "layananKonseling": [
+   "Konseling Individu",
+   "Konseling Kelompok",
+   "Konsultasi Orang Tua",
+   "Kunjungan Rumah"
+  ],
+  "statusKonseling": [
+   "Dalam Proses",
+   "Perlu Pemantauan",
+   "Selesai"
+  ],
+  "jenisIzinStaf": [
+   "Sakit",
+   "Izin",
+   "Cuti",
+   "Dinas Luar"
+  ],
+  "keperluanTamu": [
+   "Bertemu guru/staf",
+   "Urusan administrasi (TU)",
+   "Mengantar/menjemput siswa",
+   "Kunjungan sekolah terjadwal",
+   "Pengiriman barang",
+   "Lainnya"
+  ]
+ }
+}
