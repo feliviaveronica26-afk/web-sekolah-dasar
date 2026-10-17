@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Siswa;
 use App\Models\SppPembayaran;
 use App\Models\TransaksiSpp;
 use App\Support\DataSekolah;
+use App\Support\KuitansiSpp;
+use App\Support\PembayaranSpp;
 use App\Support\Referensi;
 use App\Support\Waktu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -19,8 +22,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /*
   SPP. Tata Usaha mencatat pembayaran tunai; orang tua membayar online lewat QRIS / virtual account.
-  Pembayaran online di sini masih SIMULASI: tombol "cek status" langsung menganggap pembayaran diterima.
-  Saat payment gateway dipasang, tandai lunas dari webhook gateway, bukan dari permintaan orang tua.
+  Pembayaran online baru lunas setelah notifikasi payment gateway yang bertanda tangan diterima
+  (GatewaySppController → PembayaranSpp::terimaNotifikasi). Orang tua hanya bisa membuat dan
+  membatalkan transaksinya, tidak bisa menandainya lunas sendiri.
 */
 class SppController extends Controller
 {
@@ -46,8 +50,8 @@ class SppController extends Controller
         ]);
 
         $bukti = $request->hasFile('bukti') ? $this->simpanBukti($request->file('bukti')) : null;
-        $noTransaksi = self::nomorTransaksi();
-        $baris = $this->catatLunas($isian['nis'], $isian['bulan'], 'Tunai', $noTransaksi, $bukti);
+        $noTransaksi = PembayaranSpp::nomorTransaksi();
+        $baris = PembayaranSpp::catatLunas($isian['nis'], $isian['bulan'], 'Tunai', $noTransaksi, $bukti);
 
         return $this->tambalan(DataSekolah::petaSpp($baris), lain: ['noTransaksi' => $noTransaksi, 'tanggal' => Waktu::hariIni(), 'bukti' => $bukti]);
     }
@@ -86,7 +90,7 @@ class SppController extends Controller
             'bank' => $va['kode'] ?? null,
             'metode_label' => $va ? "VA {$va['nama']}" : 'QRIS',
             'kode' => $va ? $va['prefix'].$nis.substr((string) $sekarang->getTimestampMs(), -5) : 'QRIS-'.Str::upper(Str::random(12)),
-            'no_transaksi' => self::nomorTransaksi(),
+            'no_transaksi' => PembayaranSpp::nomorTransaksi(),
             'status' => 'menunggu',
             'dibuat' => $sekarang,
             'kadaluarsa' => $sekarang->copy()->addMinutes(self::BATAS_MENIT),
@@ -105,46 +109,30 @@ class SppController extends Controller
         return $this->tambalan(['transaksi' => [$transaksi->fresh()->toArray()]]);
     }
 
-    // SIMULASI: anggap pembayaran sudah diterima gateway, lalu tandai bulan-bulannya lunas
-    public function selesaikan(Request $request, TransaksiSpp $transaksi): JsonResponse
+    /*
+      Kuitansi resmi (PDF) dibuat dari data pembayaran di database, bukan dari isi layar, untuk orang tua
+      /siswa pemiliknya serta Tata Usaha & Kepala Sekolah.
+    */
+    public function kuitansi(Request $request, string $nis, string $noTransaksi): Response
     {
-        $this->pemilik($request, $transaksi);
-        if ($transaksi->status !== 'menunggu' || $transaksi->kadaluarsa->isPast()) {
-            throw ValidationException::withMessages(['status' => 'Transaksi ini sudah tidak berlaku. Buat pembayaran baru.']);
-        }
-        $baris = DB::transaction(function () use ($transaksi) {
-            $transaksi->update(['status' => 'berhasil', 'dibayar' => now()]);
+        $a = $this->akses($request);
+        $a->wajib($a->punya('spp') || ($a->keluarga() && $a->nis === $nis), 'Kuitansi ini bukan milik Anda.');
+        $baris = SppPembayaran::where('nis', $nis)->where('no_transaksi', $noTransaksi)->orderBy('bulan')->get();
+        $siswa = Siswa::where('nis', $nis)->first();
+        abort_if($baris->isEmpty() || ! $siswa, 404, 'Kuitansi tidak ditemukan.');
 
-            return $this->catatLunas($transaksi->nis, $transaksi->bulan, $transaksi->metode_label, $transaksi->no_transaksi);
-        });
-
-        return $this->tambalan(['transaksi' => [$transaksi->fresh()->toArray()], ...DataSekolah::petaSpp($baris)]);
+        return response(KuitansiSpp::pdf($siswa, $baris), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="Kuitansi-'.$noTransaksi.'.pdf"',
+            'Cache-Control' => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
     }
 
     private function pemilik(Request $request, TransaksiSpp $transaksi): void
     {
         $a = $this->akses($request);
         $a->wajib($a->role === 'ortu' && $transaksi->nis === $a->nis, 'Transaksi ini bukan milik Anda.');
-    }
-
-    // Tandai bulan-bulan SPP lunas. Bulan yang sudah lunas tidak boleh dibayar dua kali.
-    private function catatLunas(string $nis, array $bulan, string $metode, string $noTransaksi, ?array $bukti = null): array
-    {
-        return DB::transaction(function () use ($nis, $bulan, $metode, $noTransaksi, $bukti) {
-            if ($lunas = SppPembayaran::where('nis', $nis)->whereIn('bulan', $bulan)->lockForUpdate()->value('bulan')) {
-                throw ValidationException::withMessages(['bulan' => "SPP bulan {$lunas} sudah lunas."]);
-            }
-
-            return array_map(fn ($b) => (object) SppPembayaran::create([
-                'nis' => $nis,
-                'bulan' => $b,
-                'tanggal' => Waktu::hariIni(),
-                'metode' => $metode,
-                'no_transaksi' => $noTransaksi,
-                'jumlah' => Referensi::get('spp.nominal'),
-                'bukti' => $bukti,
-            ])->getAttributes(), $bulan);
-        });
     }
 
     // Simpan foto bukti ke storage privat (storage/app/private/spp) dengan nama acak
@@ -175,10 +163,5 @@ class SppController extends Controller
             'Cache-Control' => 'private, max-age=86400',
             'Content-Security-Policy' => "default-src 'none'; sandbox",
         ], 'inline');
-    }
-
-    private static function nomorTransaksi(): string
-    {
-        return 'SPP-'.Waktu::sekarang()->format('Ymd').'-'.random_int(1000, 9999);
     }
 }

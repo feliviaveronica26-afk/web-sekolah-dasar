@@ -89,3 +89,33 @@ async function minta(path, method, body) {
   if (!res.ok) throw new GalatApi(pesanGalat(res.status, isi), res.status, isi)
   return isi
 }
+
+/*
+  Unduh berkas dari server (mis. kuitansi PDF) dengan sesi login yang sama, lalu simpan ke perangkat.
+  Galat dari server (JSON) diubah menjadi GalatApi dengan pesan yang bisa ditampilkan.
+*/
+export function unduhBerkas(path, namaBerkas) {
+  return lacak(
+    (async () => {
+      let res
+      try {
+        res = await fetch(`/api${path}`, { credentials: 'same-origin', signal: AbortSignal.timeout(60000) })
+      } catch {
+        throw new GalatApi(TIDAK_TERHUBUNG, 0)
+      }
+      if (!res.ok) {
+        const isi = await res.json().catch(() => undefined)
+        if (isi === undefined) throw new GalatApi(TIDAK_TERHUBUNG, res.status)
+        throw new GalatApi(pesanGalat(res.status, isi), res.status, isi)
+      }
+      const url = URL.createObjectURL(await res.blob())
+      const a = document.createElement('a')
+      a.href = url
+      a.download = namaBerkas
+      document.body.append(a)
+      a.click()
+      a.remove()
+      setTimeout(() => URL.revokeObjectURL(url), 10000)
+    })(),
+  )
+}

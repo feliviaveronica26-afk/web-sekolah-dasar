@@ -1,4 +1,11 @@
 {
+ "sekolah": {
+  "nama": "SD Harapan Gemilang",
+  "alamat": "Jl. Merdeka No. 45, Kel. Sukamaju, Kota Harapan 12345",
+  "telepon": "(021) 555-0145",
+  "whatsapp": "0812-3456-7890",
+  "email": "info@sdharapangemilang.sch.id"
+ },
  "kelas": [
   "1A",
   "1B",

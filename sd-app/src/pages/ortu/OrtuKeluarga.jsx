@@ -3,6 +3,7 @@ import { Briefcase, HouseHeart, Mail, MapPin, Pencil, Phone, UserRound } from 'l
 import { Alert, Avatar, Badge, Card, DashHeader, EmptyState, JudulKartu, Modal, btn, inputCls, labelCls } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
+import { adaBiodata, teksLahir } from '../../utils/siswa'
 
 // Kolom yang boleh diubah orang tua sendiri (sama dengan OrangTua::KONTAK di Laravel)
 const ISIAN_KONTAK = [
@@ -115,16 +116,41 @@ export default function OrtuKeluarga() {
           <JudulKartu icon={HouseHeart} judul={anak.length > 1 ? 'Anak yang bersekolah di sini' : 'Ananda'} />
           <ul className="grid gap-3 sm:grid-cols-2">
             {anak.map((s) => (
-              <li key={s.nis} className="flex items-center gap-3 rounded-2xl border border-slate-100 p-3">
-                <Avatar nama={s.nama} />
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-slate-800">{s.nama}</p>
-                  <p className="text-xs text-slate-500">NIS {s.nis}</p>
+              <li key={s.nis} className="rounded-2xl border border-slate-100 p-3">
+                <div className="flex items-center gap-3">
+                  <Avatar nama={s.nama} />
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-slate-800">{s.nama}</p>
+                    <p className="text-xs text-slate-500">NIS {s.nis}</p>
+                  </div>
+                  <Badge className="ml-auto bg-primary-50 text-primary-700">Kelas {s.kelas}</Badge>
                 </div>
-                <Badge className="ml-auto bg-primary-50 text-primary-700">Kelas {s.kelas}</Badge>
+                {adaBiodata(s) && (
+                  <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-slate-100 pt-3 text-sm">
+                    {[
+                      ['NISN', s.nisn],
+                      ['Tempat, tanggal lahir', teksLahir(s)],
+                      ['Agama', s.agama],
+                      ['Golongan darah', s.golonganDarah],
+                    ].map(([k, v]) => (
+                      <div key={k}>
+                        <dt className="text-xs text-slate-500">{k}</dt>
+                        <dd className={`font-semibold ${v ? 'text-slate-800' : 'text-slate-400'}`}>{v || 'Belum diisi'}</dd>
+                      </div>
+                    ))}
+                    <div className="col-span-2">
+                      <dt className="text-xs text-slate-500">Catatan kesehatan untuk guru</dt>
+                      <dd className={`font-semibold ${s.catatanKesehatan ? 'text-amber-800' : 'text-slate-400'}`}>{s.catatanKesehatan || 'Tidak ada'}</dd>
+                    </div>
+                  </dl>
+                )}
               </li>
             ))}
           </ul>
+          <p className="mt-3 text-xs text-slate-500">
+            Biodata dan catatan kesehatan Ananda dicatat Tata Usaha dan hanya terlihat oleh wali kelas, pengelola data siswa, dan keluarga. Hubungi Tata Usaha
+            bila ada yang perlu diperbarui, mis. alergi baru.
+          </p>
         </Card>
       </div>
 

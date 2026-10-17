@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:jaringan": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "ekspor-laravel": "node scripts/ekspor-laravel.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.51.0",
+    "qrcode-generator": "^1.5.2",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4"

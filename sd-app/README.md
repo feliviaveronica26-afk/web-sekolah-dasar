@@ -84,20 +84,21 @@ sungguhan**. Portal Kepala Sekolah tidak punya akun demo: akunnya dibuat dari `H
 Laravel (hash dari website versi lama), dan saat login pertama password-nya otomatis disimpan ulang
 dengan bcrypt. Password tidak pernah ditulis di kode; ganti dengan `php artisan akun:password "<username>"`.
 
-### Akun guru, staf, dan orang tua
+### Akun guru, staf, orang tua, dan siswa
 
 - **Satu per satu:** Kepala Sekolah membuat akun (atau mengatur ulang password) guru & staf dari menu
-  **Data Guru & Staf**, Tata Usaha/Kepala Sekolah membuat akun orang tua dari menu **Data Orang Tua**.
-  Password awal acak hanya tampil sekali di layar itu.
-- **Massal:** `php artisan akun:buat staf` atau `php artisan akun:buat ortu` membuat akun untuk yang belum
-  punya. Username staf diambil dari nama (mis. `siti.nurhaliza`), username orang tua `ortu` + NIS anak
-  pertama (mis. `ortu230402`). Password awal **tidak** ditampilkan di terminal; daftarnya ditulis ke CSV di
-  `storage/app/private/akun-awal/` Laravel (tidak ikut git). Bagikan, lalu hapus berkasnya.
+  **Data Guru & Staf**; Tata Usaha/Kepala Sekolah membuat akun orang tua dari menu **Data Orang Tua** dan
+  akun siswa dari menu **Data Siswa**. Password awal acak hanya tampil sekali di layar itu.
+- **Massal:** `php artisan akun:buat staf`, `php artisan akun:buat ortu`, atau `php artisan akun:buat siswa`
+  membuat akun untuk yang belum punya. Username staf diambil dari nama (mis. `siti.nurhaliza`), username
+  orang tua `ortu` + NIS anak pertama (mis. `ortu230402`), username siswa = NIS (mis. `234113`). Password
+  awal **tidak** ditampilkan di terminal; daftarnya ditulis ke CSV di `storage/app/private/akun-awal/`
+  Laravel (tidak ikut git). Bagikan, lalu hapus berkasnya. Akun demo di atas tetap berlaku.
 - **Wajib ganti password:** akun dengan password awal langsung diminta membuat password sendiri setelah
   login, dan server menolak perubahan data apa pun sebelum itu. Semua akun bisa mengganti password lewat
   **Ganti Password** di menu samping; perangkat lain yang login dengan akun itu ikut dikeluarkan.
 
-### Data guru & orang tua
+### Data guru, siswa & orang tua
 
 - **Biodata guru & staf** (TTL, agama, alamat, WhatsApp, email, pendidikan, status kepegawaian, mulai
   bertugas) tersimpan di tabel `guru`. Biodata pribadi hanya terlihat oleh Kepala Sekolah dan pemiliknya.
@@ -108,6 +109,12 @@ dengan bcrypt. Password tidak pernah ditulis di kode; ganti dengan `php artisan 
   `orang_tua`; siswa merujuknya lewat `orang_tua_id`, jadi kakak-adik cukup satu data. Yang bisa melihat:
   Kepala Sekolah, Tata Usaha, Guru BK, dan Wakasek Kesiswaan (semua), wali kelas (kelasnya), siswa & orang
   tua (keluarganya sendiri). Orang tua memperbarui kontaknya sendiri di **Data Keluarga** Portal Orang Tua.
+- **Biodata siswa** (NISN, tempat & tanggal lahir, agama, golongan darah, tanggal masuk, asal TK/sekolah,
+  catatan kesehatan) ada di tabel `siswa` dan diubah lewat **Data Siswa** (Tata Usaha, Wakasek Kesiswaan,
+  Guru BK, Kepala Sekolah). Yang menerima biodata: pengelola Data Siswa (semua), wali kelas (kelasnya), dan
+  siswa & orang tuanya sendiri. Guru mapel dan staf lain hanya menerima nama, NIS, kelas, dan jenis
+  kelamin; teman sekelas hanya tanggal & bulan ulang tahun (tampil di kartu teman). Catatan kesehatan
+  (mis. alergi) tampil di daftar kelas wali kelas.
 
 ## Tampilan
 
@@ -233,10 +240,23 @@ Presensi Kepala Sekolah dicatat pada data guru & staf berjabatan *Kepala Sekolah
 ## Pembayaran SPP
 
 Orang tua membayar lewat menu **Pembayaran SPP** (QRIS atau Virtual Account), Tata Usaha
-mencatat pembayaran tunai di menu **Keuangan SPP**. Nomor VA, nomor transaksi, dan kuitansi dibuat
-server, dan bulan yang sudah lunas tidak bisa dibayar dua kali. Pembayaran online masih **simulasi**
-(tombol "Saya Sudah Bayar"); untuk produksi perlu payment gateway (mis. Midtrans/Xendit) yang
-mengirim konfirmasi otomatis (webhook) ke Laravel — lihat `SppController::selesaikan`.
+mencatat pembayaran tunai di menu **Keuangan SPP**. Nomor VA, kode QRIS, nomor transaksi, dan kuitansi
+dibuat server, dan bulan yang sudah lunas tidak bisa dibayar dua kali.
+
+- **Orang tua tidak bisa menandai lunas sendiri.** Tidak ada tombol "Saya Sudah Bayar"; transaksi online
+  hanya lunas dari notifikasi payment gateway ke `POST /api/gateway/spp` yang bertanda tangan HMAC dengan
+  kunci rahasia server (`GATEWAY_KUNCI`), dengan nominal yang sama persis dan transaksi yang masih
+  berlaku. Notifikasi yang terkirim ulang tidak mencatat pembayaran dua kali. Halaman orang tua memeriksa
+  status ke server tiap beberapa detik dan berubah sendiri menjadi "Pembayaran Berhasil".
+- **Simulator Bank (mode demo).** Tanpa payment gateway sungguhan, halaman `/simulasi-bayar` berperan
+  sebagai aplikasi bank/e-wallet: scan QR dari HP (atau buka tautan di halaman pembayaran), masukkan PIN 6
+  angka bebas, lalu "bank" mengirim notifikasi bertanda tangan ke server. Simulator hanya menyala bila
+  `SIMULASI_GATEWAY` aktif (bawaan: hanya `APP_ENV=local`) dan selalu mati di produksi. Agar QR bisa
+  di-scan HP, jalankan `npm run dev:jaringan` lalu buka website lewat alamat jaringan laptop
+  (mis. `http://192.168.1.5:5173`) dengan HP di Wi-Fi yang sama.
+- **Kuitansi:** **Cetak Struk** mencetak tampilan kuitansi, **Unduh PDF** mengunduh kuitansi resmi yang
+  dibuat server (dompdf) dari data pembayaran di database — `GET /api/spp/kuitansi/{nis}/{noTransaksi}`,
+  hanya untuk orang tua/siswa pemiliknya serta Tata Usaha & Kepala Sekolah.
 
 ## PPDB online
 
@@ -345,9 +365,8 @@ dengan `public/_headers` di konfigurasi Apache/Nginx, serta menghapus akun demo.
 - Data contoh (432 siswa, absensi 20 hari, nilai, SPP, dll.) diisi seeder Laravel dari
   `scripts/data-contoh.js`. Tombol "Reset Data Demo" dihapus karena data kini dipakai bersama;
   untuk mengulang data contoh, kosongkan tabelnya lalu jalankan `php artisan db:seed`.
-- Biodata lengkap siswa demo (`BIODATA`: NISN, TTL, agama, golongan darah) dan data acuan (jadwal,
-  kalender, fasilitas) masih di `src/data/dummy.js`. Biodata guru & staf serta data orang tua sudah di
-  database (lihat "Data guru & orang tua").
+- Data acuan (jadwal, kalender, fasilitas, ekskul, profil sekolah) masih di `src/data/dummy.js`. Biodata
+  guru & staf, data orang tua, dan biodata siswa sudah di database (lihat "Data guru, siswa & orang tua").
 
 ## Struktur
 

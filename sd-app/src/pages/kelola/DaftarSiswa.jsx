@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarCheck, ChevronRight, ClipboardCheck, Contact, Download, Search, Star, TrendingUp, UserCheck, Users } from 'lucide-react'
+import { CalendarCheck, ChevronRight, ClipboardCheck, Contact, Download, HeartPulse, Search, Star, TrendingUp, UserCheck, Users } from 'lucide-react'
 import { teksJejak } from '../../components/PresensiOtp'
 import { Avatar, Badge, Card, DashHeader, EmptyState, Modal, Progres, STATUS_ABSEN, StatCard, btn, inputCls } from '../../components/ui'
 import { useLingkup } from '../../context/akses'
@@ -10,6 +10,7 @@ import { formatTanggal, parseKey, todayKey } from '../../utils/format'
 import { rekapNilai } from '../../utils/nilai'
 import { ekskulSiswa, infoSikap, ringkasSikap } from '../../utils/prestasi'
 import { unduhFileCsv } from '../../utils/keamanan'
+import { adaBiodata, namaJk, teksLahir, usia } from '../../utils/siswa'
 
 const URUT = { nama: 'Urut nama', nis: 'Urut NIS', hadir: 'Kehadiran terendah', nilai: 'Nilai terendah' }
 const warnaHadir = (p) => (p >= 90 ? 'bg-emerald-500' : p >= 75 ? 'bg-amber-400' : 'bg-rose-500')
@@ -28,9 +29,20 @@ function DetailSiswa({ item, tanggal20, onClose }) {
   const hariIni = todayKey()
   const keluarga = (data.orangTua ?? []).find((k) => k.anak?.includes(s.nis))
   const ekskul = ekskulSiswa(data, s)
+  // Biodata pribadi hanya dikirim server ke wali kelasnya & pengelola Data Siswa
+  const bio = adaBiodata(s)
   const info = [
     ['NIS', s.nis],
-    ['Jenis kelamin', s.jk === 'L' ? 'Laki-laki' : 'Perempuan'],
+    ...(bio ? [['NISN', s.nisn || '–']] : []),
+    ['Jenis kelamin', namaJk(s.jk)],
+    ...(bio
+      ? [
+          ['Tempat, tanggal lahir', teksLahir(s) ? `${teksLahir(s)}${s.tanggalLahir ? ` (${usia(s.tanggalLahir)} th)` : ''}` : '–'],
+          ['Agama', s.agama || '–'],
+          ['Golongan darah', s.golonganDarah || '–'],
+          ['Asal TK / sekolah', s.asalSekolah || '–'],
+        ]
+      : []),
     ['Orang tua/wali', s.ortu || '–'],
     // Kontak keluarga hanya dikirim server ke wali kelasnya, Tata Usaha, BK, Kesiswaan, dan Kepala Sekolah
     ['Kontak orang tua', keluarga?.whatsapp || (keluarga ? '–' : 'Hanya untuk wali kelas')],
@@ -47,6 +59,15 @@ function DetailSiswa({ item, tanggal20, onClose }) {
           <p className="text-sm text-slate-500">Kelas {s.kelas}</p>
         </div>
       </div>
+
+      {s.catatanKesehatan && (
+        <p className="mt-5 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <HeartPulse className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>
+            Catatan kesehatan: <span className="font-semibold">{s.catatanKesehatan}</span>
+          </span>
+        </p>
+      )}
 
       <dl className="mt-5 grid gap-x-6 gap-y-2 rounded-xl bg-slate-50 p-4 text-sm sm:grid-cols-2">
         {info.map(([k, v]) => (
@@ -278,6 +299,11 @@ export default function DaftarSiswa() {
                           <span>
                             <span className="block font-semibold text-slate-800">{b.s.nama}</span>
                             <span className="block text-xs text-slate-500">NIS {b.s.nis}</span>
+                            {b.s.catatanKesehatan && (
+                              <span className="flex items-center gap-1 text-xs font-medium text-amber-700">
+                                <HeartPulse className="h-3 w-3 shrink-0" aria-hidden="true" /> {b.s.catatanKesehatan}
+                              </span>
+                            )}
                           </span>
                         </button>
                       </td>

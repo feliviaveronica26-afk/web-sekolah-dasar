@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
-import { Check, Copy, Download, Printer } from 'lucide-react'
-import { btn } from './ui'
+import { Check, Copy, Download, FileDown, Loader2, Printer } from 'lucide-react'
+import qrcode from 'qrcode-generator'
+import { Alert, btn } from './ui'
+import { useData } from '../context/DataContext'
 import { SEKOLAH, SPP } from '../data/dummy'
 import { formatTanggal } from '../utils/format'
 import { STATUS_SPP, bulanBisaDibayar, jatuhTempo, namaBulan, rupiah, statusSpp } from '../utils/spp'
@@ -128,40 +130,20 @@ export function TombolSalin({ teks, label = 'Salin' }) {
   )
 }
 
-// Kode QR tiruan untuk demo. Di produksi, gambar QRIS didapat dari payment gateway.
-export function QrDemo({ teks }) {
+/*
+  Kode QR pembayaran yang bisa di-scan. `isi` = string QRIS dari payment gateway, atau (mode simulasi)
+  alamat halaman simulator bank agar bisa dibuka dengan kamera HP.
+*/
+export function QrPembayaran({ isi }) {
   const ref = useRef(null)
-  const n = 29
-  let seed = [...teks].reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) % 2147483647, 17)
-  const acak = () => {
-    seed = (seed * 48271) % 2147483647
-    return seed / 2147483647
-  }
-  const sudut = [
-    [0, 0],
-    [0, n - 7],
-    [n - 7, 0],
-  ]
-  const isiFinder = (r, c) => {
-    for (const [or, oc] of sudut) {
-      const y = r - or
-      const x = c - oc
-      if (y >= -1 && y <= 7 && x >= -1 && x <= 7) {
-        if (y < 0 || y > 6 || x < 0 || x > 6) return false
-        return y === 0 || y === 6 || x === 0 || x === 6 || (y >= 2 && y <= 4 && x >= 2 && x <= 4)
-      }
-    }
-    return null
-  }
-  const tengah = (r, c) => Math.abs(r - (n - 1) / 2) <= 3 && Math.abs(c - (n - 1) / 2) <= 3
-
-  const kotak = []
+  const qr = qrcode(0, 'M')
+  qr.addData(isi)
+  qr.make()
+  const n = qr.getModuleCount()
+  const tepi = 3
+  let jalur = ''
   for (let r = 0; r < n; r++) {
-    for (let c = 0; c < n; c++) {
-      const f = isiFinder(r, c)
-      const hitam = f === null ? !tengah(r, c) && acak() > 0.5 : f
-      if (hitam) kotak.push(<rect key={`${r}-${c}`} x={c + 2} y={r + 2} width="1.02" height="1.02" fill="#0f172a" />)
-    }
+    for (let c = 0; c < n; c++) if (qr.isDark(r, c)) jalur += `M${c + tepi} ${r + tepi}h1v1h-1z`
   }
 
   // Simpan sebagai PNG agar bisa diunggah dari galeri di aplikasi e-wallet
@@ -182,11 +164,17 @@ export function QrDemo({ teks }) {
 
   return (
     <div className="flex flex-col items-center">
-      <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${n + 4} ${n + 4}`} className="h-52 w-52 rounded-xl bg-white">
-        <rect width={n + 4} height={n + 4} fill="#ffffff" />
-        {kotak}
-        <circle cx={(n + 4) / 2} cy={(n + 4) / 2} r="3" fill="#d91a28" />
-        <circle cx={(n + 4) / 2} cy={(n + 4) / 2} r="1.2" fill="#ffffff" />
+      <svg
+        ref={ref}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={`0 0 ${n + tepi * 2} ${n + tepi * 2}`}
+        shapeRendering="crispEdges"
+        role="img"
+        aria-label="Kode QR pembayaran"
+        className="h-56 w-56 rounded-xl bg-white"
+      >
+        <rect width={n + tepi * 2} height={n + tepi * 2} fill="#ffffff" />
+        <path d={jalur} fill="#0f172a" />
       </svg>
       <button type="button" onClick={unduh} className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700">
         <Download className="h-4 w-4" /> Simpan gambar QR
@@ -195,9 +183,23 @@ export function QrDemo({ teks }) {
   )
 }
 
-// Kuitansi pembayaran. `pembayaran` = { noTransaksi, tanggal, metode, bulan: [] }
+/*
+  Kuitansi pembayaran. `pembayaran` = { noTransaksi, tanggal, metode, bulan: [] }
+  Cetak Struk: mencetak tampilan ini lewat printer. Unduh PDF: berkas PDF resmi yang dibuat server dari
+  data pembayaran di database (bukan dari isi layar).
+*/
 export function Kuitansi({ siswa, pembayaran }) {
+  const { unduhKuitansi } = useData()
+  const [mengunduh, setMengunduh] = useState(false)
+  const [galat, setGalat] = useState('')
   const total = pembayaran.bulan.length * SPP.nominal
+  const unduh = async () => {
+    if (mengunduh) return
+    setMengunduh(true)
+    setGalat('')
+    setGalat((await unduhKuitansi(siswa.nis, pembayaran.noTransaksi)) ?? '')
+    setMengunduh(false)
+  }
   return (
     <>
       <div className="area-cetak relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6">
@@ -256,9 +258,19 @@ export function Kuitansi({ siswa, pembayaran }) {
         </div>
         <p className="mt-6 text-center text-[11px] text-slate-400">Kuitansi ini diterbitkan otomatis oleh sistem dan sah tanpa tanda tangan.</p>
       </div>
-      <button type="button" onClick={() => window.print()} className={`${btn.secondary} mt-4 w-full`}>
-        <Printer className="h-4 w-4" /> Cetak / Simpan PDF
-      </button>
+      {galat && (
+        <div className="mt-4">
+          <Alert tone="error">{galat}</Alert>
+        </div>
+      )}
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <button type="button" onClick={() => window.print()} className={btn.secondary}>
+          <Printer className="h-4 w-4" /> Cetak Struk
+        </button>
+        <button type="button" onClick={unduh} disabled={mengunduh} className={`${btn.primary} disabled:opacity-60`}>
+          {mengunduh ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />} {mengunduh ? 'Menyiapkan PDF…' : 'Unduh PDF'}
+        </button>
+      </div>
     </>
   )
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\AkademikController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\GatewaySppController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\KeuanganController;
@@ -27,6 +28,9 @@ use Illuminate\Support\Facades\Route;
   jabatan diperiksa di controller lewat App\Support\Akses.
 */
 
+// Notifikasi payment gateway SPP (server ke server): tanpa sesi & CSRF (bootstrap/app.php), dijamin tanda tangan HMAC
+Route::post('/gateway/spp', [GatewaySppController::class, 'notifikasi'])->middleware('throttle:publik');
+
 Route::middleware('batas.sesi')->group(function () {
     // Login
     Route::get('/saya', [SesiController::class, 'saya'])->middleware('throttle:baca');
@@ -46,6 +50,9 @@ Route::middleware('batas.sesi')->group(function () {
         Route::post('/pendaftar/cek', [PpdbController::class, 'cek']);
         Route::post('/kunjungan', [KunjunganController::class, 'pesan']);
         Route::post('/kunjungan/cek', [KunjunganController::class, 'cek']);
+        // Simulator bank/e-wallet untuk demo pembayaran SPP (404 bila mode simulasi mati / produksi)
+        Route::get('/simulasi-gateway/{kode}', [GatewaySppController::class, 'lihat']);
+        Route::post('/simulasi-gateway/bayar', [GatewaySppController::class, 'bayar']);
     });
 
     Route::middleware('auth')->group(function () {
@@ -53,8 +60,9 @@ Route::middleware('batas.sesi')->group(function () {
         Route::middleware('throttle:baca')->group(function () {
             Route::get('/chat', [ChatController::class, 'index']);
             Route::get('/chat/berkas/{id}', [ChatController::class, 'berkas']);
-            // Foto bukti pembayaran SPP (hanya pengelola SPP; dicek di controller)
+            // Foto bukti pembayaran SPP (hanya pengelola SPP) & kuitansi PDF (pemilik + pengelola SPP); dicek di controller
             Route::get('/spp/bukti/{id}', [SppController::class, 'bukti']);
+            Route::get('/spp/kuitansi/{nis}/{noTransaksi}', [SppController::class, 'kuitansi'])->where(['nis' => '[0-9]{4,20}', 'noTransaksi' => '[A-Za-z0-9-]{3,40}']);
         });
         // Ganti password sendiri; satu-satunya perubahan yang boleh selama password awal belum diganti
         Route::put('/akun/password', [AkunController::class, 'gantiPassword'])->middleware('throttle:ubah');
@@ -81,10 +89,11 @@ Route::middleware('batas.sesi')->group(function () {
                 Route::delete('/keuangan/{transaksi}', [KeuanganController::class, 'destroy']);
             });
 
-            // Data siswa
+            // Data siswa + akun login siswa (akun: Tata Usaha & Kepala Sekolah)
             Route::post('/siswa', [SiswaController::class, 'store']);
             Route::put('/siswa/{siswa}', [SiswaController::class, 'update']);
             Route::delete('/siswa/{siswa}', [SiswaController::class, 'destroy']);
+            Route::post('/siswa/{siswa}/akun', [SiswaController::class, 'akun']);
 
             // Data orang tua per keluarga + akun login orang tua (Tata Usaha & Kepala Sekolah; orang tua: kontaknya sendiri)
             Route::post('/orang-tua', [OrangTuaController::class, 'store']);
@@ -124,11 +133,10 @@ Route::middleware('batas.sesi')->group(function () {
             Route::delete('/sikap/{sikap}', [AkademikController::class, 'hapusSikap']);
             Route::post('/ekskul/{id}', [AkademikController::class, 'ekskul']);
 
-            // SPP
+            // SPP. Tidak ada rute "sudah bayar" untuk orang tua: lunas hanya dari notifikasi gateway.
             Route::post('/spp/tunai', [SppController::class, 'tunai']);
             Route::post('/transaksi-spp', [SppController::class, 'buatTransaksi']);
             Route::post('/transaksi-spp/{transaksi}/batal', [SppController::class, 'batalkan']);
-            Route::post('/transaksi-spp/{transaksi}/bayar', [SppController::class, 'selesaikan']);
 
             // Perpustakaan
             Route::post('/peminjaman', [PerpustakaanController::class, 'pinjam']);

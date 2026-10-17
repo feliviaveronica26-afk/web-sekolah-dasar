@@ -18,4 +18,18 @@ return [
     // Ukuran berkas chat terbesar (MB). Batas upload_max_filesize di php.ini juga berlaku.
     'chat_maks_mb' => (int) env('CHAT_MAKS_MB', 25),
 
+    /*
+    | Payment gateway SPP online (QRIS / virtual account). Pembayaran hanya lunas dari notifikasi
+    | gateway yang tanda tangannya cocok dengan kunci ini (POST /api/gateway/spp), tidak pernah dari
+    | tombol orang tua. GATEWAY_KUNCI = server key dari penyedia gateway; bila kosong dipakai
+    | turunan APP_KEY (cukup untuk demo).
+    */
+    'gateway_kunci' => env('GATEWAY_KUNCI'),
+
+    /*
+    | Simulator bank/e-wallet (halaman /simulasi-bayar) untuk demo tanpa gateway sungguhan. Bawaannya
+    | menyala hanya di APP_ENV=local, dan selalu mati di produksi apa pun isinya.
+    */
+    'simulasi_gateway' => (bool) env('SIMULASI_GATEWAY', env('APP_ENV', 'production') === 'local'),
+
 ];

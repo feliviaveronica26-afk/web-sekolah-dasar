@@ -844,18 +844,6 @@ export const TUGAS_AWAL = [
   { id: 't10', kelas: '6A', mapel: 'mtk', judul: 'Latihan Soal Numerasi', deskripsi: 'Kerjakan 20 soal latihan numerasi di lembar kerja.', diberikan: relatif(-3), tenggat: relatif(2) },
 ]
 
-// Biodata lengkap (contoh hanya untuk siswa demo). Alamat & kontak keluarga kini tersimpan di database (Data Orang Tua).
-export const BIODATA = {
-  230401: {
-    nisn: '0151234567',
-    tempatLahir: 'Kota Harapan',
-    tanggalLahir: '2016-05-14',
-    agama: 'Islam',
-    golonganDarah: 'O',
-    ekskul: ['robotik', 'futsal'],
-  },
-}
-
 // Akun demo untuk tombol isi-cepat di halaman login. Akun sungguhan (termasuk kepala sekolah)
 // tersimpan di database Laravel (tabel users), dan password diperiksa di sana. Daftar ini sama
 // dengan seeder Laravel (database/seeders/data/akun-demo.json); hapus akun demo sebelum dipakai

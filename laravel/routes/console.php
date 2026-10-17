@@ -2,6 +2,7 @@
 
 use App\Models\Guru;
 use App\Models\OrangTua;
+use App\Models\Siswa;
 use App\Models\User;
 use App\Support\AkunSekolah;
 use App\Support\Versi;
@@ -44,11 +45,12 @@ Artisan::command('akun:password {username}', function (string $username) {
   Buat akun login massal untuk yang belum punya akun:
     php artisan akun:buat staf    semua guru & staf (kecuali Kepala Sekolah, yang memakai akunnya sendiri)
     php artisan akun:buat ortu    satu akun per keluarga di Data Orang Tua (username "ortu" + NIS anak pertama)
+    php artisan akun:buat siswa   satu akun per siswa (username = NIS)
   Password awal acak tidak ditampilkan di layar; daftarnya ditulis ke berkas CSV privat
   (storage/app/private/akun-awal/) untuk dibagikan, lalu sebaiknya dihapus. Pemilik akun wajib
   mengganti password saat pertama login.
 */
-Artisan::command('akun:buat {kelompok : staf | ortu}', function (string $kelompok) {
+Artisan::command('akun:buat {kelompok : staf | ortu | siswa}', function (string $kelompok) {
     $baris = [];
     if ($kelompok === 'staf') {
         $judul = ['Nama', 'Jabatan', 'Username', 'Password awal'];
@@ -83,13 +85,34 @@ Artisan::command('akun:buat {kelompok : staf | ortu}', function (string $kelompo
             $baris[] = [$user->name, $anak->pluck('nama')->implode(', '), $anak->pluck('kelas')->unique()->implode(', '), $user->username, $password];
         }
         $koleksi = 'orangTua';
+    } elseif ($kelompok === 'siswa') {
+        $judul = ['Nama', 'Kelas', 'NIS', 'Username', 'Password awal'];
+        $sudah = User::where('role', 'siswa')->whereNotNull('nis')->pluck('nis')->all();
+        foreach (Siswa::orderBy('kelas')->orderBy('nama')->get() as $siswa) {
+            if (in_array($siswa->nis, $sudah, true)) {
+                continue;
+            }
+            [$user, $password] = AkunSekolah::buatAtauAturUlang(null, [
+                'username' => AkunSekolah::unik($siswa->nis),
+                'name' => $siswa->nama,
+                'role' => 'siswa',
+                'nis' => $siswa->nis,
+                'kelas' => $siswa->kelas,
+            ]);
+            $baris[] = [$siswa->nama, $siswa->kelas, $siswa->nis, $user->username, $password];
+        }
+        $koleksi = 'siswa';
     } else {
-        $this->error('Kelompok yang dikenal: staf, ortu');
+        $this->error('Kelompok yang dikenal: staf, ortu, siswa');
 
         return 1;
     }
     if (! $baris) {
-        $this->info($kelompok === 'staf' ? 'Semua guru & staf sudah punya akun.' : 'Semua keluarga sudah punya akun.');
+        $this->info(match ($kelompok) {
+            'staf' => 'Semua guru & staf sudah punya akun.',
+            'ortu' => 'Semua keluarga sudah punya akun.',
+            default => 'Semua siswa sudah punya akun.',
+        });
 
         return 0;
     }

@@ -147,6 +147,7 @@ export default function Login() {
                 autoComplete="username"
                 required
               />
+              <p className="mt-1.5 text-xs text-tinta-3">Siswa: username adalah NIS. Password awal diberikan Tata Usaha.</p>
             </div>
             <div>
               <label htmlFor="password" className={labelIsian}>

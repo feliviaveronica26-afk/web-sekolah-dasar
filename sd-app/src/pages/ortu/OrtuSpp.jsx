@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, CheckCircle2, Clock, Landmark, MessageCircle, PartyPopper, QrCode, Receipt, UserX, Wallet } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Clock, ExternalLink, Landmark, Loader2, MessageCircle, PartyPopper, QrCode, Receipt, RefreshCw, Smartphone, UserX, Wallet } from 'lucide-react'
 import { Alert, Badge, Card, DashHeader, EmptyState, Modal, btn } from '../../components/ui'
-import { Kuitansi, LegendaSpp, PilihBulan, QrDemo, StripBulan, TombolSalin, riwayatPembayaran } from '../../components/Spp'
+import { Kuitansi, LegendaSpp, PilihBulan, QrPembayaran, StripBulan, TombolSalin, riwayatPembayaran } from '../../components/Spp'
 import { useAuth } from '../../context/AuthContext'
-import { useData } from '../../context/DataContext'
+import { useData, useSegarCepat } from '../../context/DataContext'
 import { BANK_VA, SEKOLAH, SPP } from '../../data/dummy'
 import { formatTanggal } from '../../utils/format'
 import { bulanBisaDibayar, bulanWajibBayar, daftarBulan, kadaluarsa, rupiah, statusSpp, transaksiAktif } from '../../utils/spp'
@@ -37,6 +37,40 @@ function Langkah({ aktif }) {
   )
 }
 
+/*
+  Mode demo (server menandai transaksi dengan simulasi: true): tidak ada bank sungguhan, jadi pembayaran
+  dilakukan di halaman Simulator Bank yang berperan sebagai aplikasi e-wallet/m-banking. Simulator itulah
+  yang mengirim notifikasi bertanda tangan ke server; halaman orang tua tetap tidak bisa menandai lunas.
+*/
+function PanelSimulasi({ url, qris }) {
+  const lokal = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)
+  return (
+    <div className="mt-4 rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+      <p className="flex items-center gap-2 font-bold">
+        <Smartphone className="h-4 w-4 shrink-0" aria-hidden="true" /> Mode demo: Simulator Bank
+      </p>
+      <p className="mt-1">
+        Website ini belum tersambung ke bank sungguhan. {qris ? 'Scan kode QR di atas dengan kamera HP' : 'Buka simulator'} untuk membayar lewat aplikasi bank
+        tiruan; bank tiruan itulah yang mengonfirmasi pembayaran ke server sekolah.
+      </p>
+      {qris && lokal && (
+        <p className="mt-1 text-xs">
+          HP tidak bisa membuka alamat <b>{window.location.host}</b>. Untuk scan dari HP, buka website ini lewat alamat jaringan laptop (mis.
+          http://192.168.x.x:5173) dengan HP di Wi-Fi yang sama.
+        </p>
+      )}
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 inline-flex items-center gap-1.5 font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700"
+      >
+        Buka Simulator Bank di tab baru <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+      </a>
+    </div>
+  )
+}
+
 function SisaWaktu({ sampai }) {
   const [sekarang, setSekarang] = useState(() => Date.now())
   useEffect(() => {
@@ -55,7 +89,7 @@ function SisaWaktu({ sampai }) {
 
 export default function OrtuSpp() {
   const { user } = useAuth()
-  const { data, buatTransaksi: kirimTransaksi, batalkanTransaksi, selesaikanTransaksi } = useData()
+  const { data, buatTransaksi: kirimTransaksi, batalkanTransaksi, cekStatusTransaksi } = useData()
   const [langkah, setLangkah] = useState(null) // null | 'bulan' | 'metode' | 'bayar' | 'sukses'
   const [terpilih, setTerpilih] = useState([])
   const [metode, setMetode] = useState('qris')
@@ -63,6 +97,16 @@ export default function OrtuSpp() {
   const [trxId, setTrxId] = useState(null)
   const [tabPanduan, setTabPanduan] = useState('mbanking')
   const [kuitansi, setKuitansi] = useState(null)
+  const [memeriksa, setMemeriksa] = useState(false)
+  const [pesanCek, setPesanCek] = useState('')
+  const trx = data.transaksi.find((t) => t.id === trxId)
+
+  // Selama menunggu pembayaran, status diperiksa ke server tiap beberapa detik
+  useSegarCepat(langkah === 'bayar')
+  // Lunas hanya setelah server menerima konfirmasi bank/gateway; layar mengikuti status dari server
+  useEffect(() => {
+    if (langkah === 'bayar' && trx?.status === 'berhasil') setLangkah('sukses')
+  }, [langkah, trx?.status])
 
   const anak = data.siswa.find((s) => s.nis === user.anakNis)
   if (!anak) return <EmptyState icon={UserX} title="Data anak tidak ditemukan" desc="Silakan hubungi Tata Usaha." />
@@ -72,7 +116,6 @@ export default function OrtuSpp() {
   const bisaDibayar = bulanBisaDibayar(data, nis)
   const terlambat = wajib.filter((b) => statusSpp(data, nis, b) === 'terlambat')
   const trxBerjalan = transaksiAktif(data, nis)
-  const trx = data.transaksi.find((t) => t.id === trxId)
   const riwayat = riwayatPembayaran(data, nis)
   const total = terpilih.length * SPP.nominal
 
@@ -103,11 +146,15 @@ export default function OrtuSpp() {
     setLangkah('metode')
   }
 
-  // Mode demo: anggap pembayaran sudah diterima. Di produksi, status datang dari payment gateway.
+  // Hanya membaca ulang status dari server; tidak ada cara menandai lunas dari halaman ini
   const cekStatus = async () => {
-    if (await selesaikanTransaksi(trx.id)) return
-    setLangkah('sukses')
+    setMemeriksa(true)
+    setPesanCek('')
+    await cekStatusTransaksi()
+    setMemeriksa(false)
+    setPesanCek('Belum ada pembayaran yang masuk. Status juga diperiksa otomatis setiap beberapa detik.')
   }
+  const urlSimulasi = trx && `${window.location.origin}/simulasi-bayar?kode=${encodeURIComponent(trx.kode)}`
 
   const tutup = () => setLangkah(null)
 
@@ -351,7 +398,7 @@ export default function OrtuSpp() {
                     <div className="rounded-2xl border border-slate-200 p-5 text-center">
                       <p className="text-xs font-bold tracking-widest text-slate-500">QRIS · {SEKOLAH.nama.toUpperCase()}</p>
                       <div className="mt-3">
-                        <QrDemo teks={trx.kode} />
+                        <QrPembayaran isi={trx.simulasi ? urlSimulasi : trx.kode} />
                       </div>
                     </div>
                     <ol className="mt-5 space-y-2.5 text-sm text-slate-700">
@@ -421,20 +468,30 @@ export default function OrtuSpp() {
                   </div>
                 )}
 
-                <div className="mt-5">
-                  <Alert tone="info">
-                    Status akan berubah menjadi <b>Lunas</b> otomatis setelah pembayaran diterima — tidak perlu mengirim bukti transfer.
-                    <span className="mt-1 block text-xs opacity-80">Mode demo: tekan “Saya Sudah Bayar” untuk mensimulasikan pembayaran berhasil.</span>
-                  </Alert>
+                <div className="mt-5 flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900" role="status">
+                  <Loader2 className="mt-0.5 h-5 w-5 shrink-0 animate-spin" aria-hidden="true" />
+                  <div>
+                    <p className="font-bold">Menunggu konfirmasi dari {trx.metode === 'qris' ? 'penyedia QRIS' : 'bank'}…</p>
+                    <p className="mt-0.5">
+                      Halaman ini berubah sendiri menjadi <b>Lunas</b> begitu pembayaran diterima. Status hanya diubah oleh bank, bukan dari halaman ini, jadi
+                      tidak perlu mengirim bukti transfer.
+                    </p>
+                  </div>
                 </div>
+                {trx.simulasi && <PanelSimulasi url={urlSimulasi} qris={trx.metode === 'qris'} />}
                 <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row">
                   <button onClick={gantiCaraBayar} className={btn.secondary}>
                     Ganti Cara Bayar
                   </button>
-                  <button onClick={cekStatus} className={`${btn.primary} flex-1 py-3`}>
-                    Saya Sudah Bayar
+                  <button onClick={cekStatus} disabled={memeriksa} className={`${btn.primary} flex-1 py-3 disabled:opacity-60`}>
+                    <RefreshCw className={`h-4 w-4 ${memeriksa ? 'animate-spin' : ''}`} aria-hidden="true" /> {memeriksa ? 'Memeriksa…' : 'Cek Status Pembayaran'}
                   </button>
                 </div>
+                {pesanCek && (
+                  <p className="mt-2 text-center text-xs text-slate-500" role="status">
+                    {pesanCek}
+                  </p>
+                )}
               </>
             )}
           </>

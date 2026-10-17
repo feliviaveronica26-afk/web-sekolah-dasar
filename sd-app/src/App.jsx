@@ -17,6 +17,7 @@ import Galeri from './pages/public/Galeri'
 import PPDBPage from './pages/public/PPDB'
 import Kontak from './pages/public/Kontak'
 import Login from './pages/Login'
+import SimulasiBayar from './pages/SimulasiBayar'
 import NotFound from './pages/NotFound'
 
 import SiswaDashboard from './pages/siswa/SiswaDashboard'
@@ -158,6 +159,8 @@ export default function App() {
         </Route>
 
         <Route path="/login" element={<Login />} />
+        {/* Simulator bank untuk demo pembayaran SPP (server menolaknya bila mode simulasi mati) */}
+        <Route path="/simulasi-bayar" element={<SimulasiBayar />} />
 
         <Route path="/dashboard/siswa" element={dashboard('siswa')}>
           <Route index element={<SiswaDashboard />} />

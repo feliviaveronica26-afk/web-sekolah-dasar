@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 import { useAuth } from './AuthContext'
 import { jamSekarang, todayKey } from '../utils/format'
 import { pelajaranHari } from '../utils/jadwal'
-import { api } from '../utils/api'
+import { api, unduhBerkas } from '../utils/api'
 
 const DataContext = createContext(null)
 
@@ -276,6 +276,12 @@ export function DataProvider({ children, awal }) {
     return hasil ? { username: hasil.username, password: hasil.password } : { galat }
   }
 
+  // Tata Usaha / Kepala Sekolah membuat akun login siswa (username = NIS) atau mengatur ulang password-nya
+  const buatAkunSiswa = async (id) => {
+    const { hasil, galat } = await kirim(`/siswa/${encodeURIComponent(id)}/akun`, { diam: true })
+    return hasil ? { username: hasil.username, password: hasil.password } : { galat }
+  }
+
   // ===== Tambah/ubah/hapus umum: siswa, guru, orang tua, pengumuman, inventaris, kerusakan, konseling, buku, tugas, buku tamu =====
   const tambah = (koleksi, item, { diam = false } = {}) => {
     if (koleksi === 'guru') return simpanGuru('POST', null, item)
@@ -374,8 +380,21 @@ export function DataProvider({ children, awal }) {
 
   const batalkanTransaksi = (id) => ubahData(`/transaksi-spp/${id}/batal`)
 
-  // Mode demo: anggap pembayaran sudah diterima. Di produksi, status datang dari webhook payment gateway.
-  const selesaikanTransaksi = (id) => ubahData(`/transaksi-spp/${id}/bayar`)
+  /*
+    Tidak ada "tandai sudah bayar": transaksi online menjadi lunas hanya dari notifikasi payment gateway
+    di server. Website cukup membaca ulang statusnya (otomatis lewat useSegarCepat, atau tombol cek status).
+  */
+  const cekStatusTransaksi = () => muat(['transaksi', 'spp'], akun)
+
+  // Kuitansi PDF resmi dari server. Hasil: null atau pesan galat
+  const unduhKuitansi = async (nis, noTransaksi) => {
+    try {
+      await unduhBerkas(`/spp/kuitansi/${encodeURIComponent(nis)}/${encodeURIComponent(noTransaksi)}`, `Kuitansi-${noTransaksi}.pdf`)
+      return null
+    } catch (e) {
+      return e.message
+    }
+  }
 
   // ===== Perpustakaan =====
 
@@ -432,6 +451,7 @@ export function DataProvider({ children, awal }) {
         muatGuru,
         buatAkunGuru,
         buatAkunOrangTua,
+        buatAkunSiswa,
         tambah,
         ubah,
         hapus,
@@ -456,7 +476,8 @@ export function DataProvider({ children, awal }) {
         catatTunai,
         buatTransaksi,
         batalkanTransaksi,
-        selesaikanTransaksi,
+        cekStatusTransaksi,
+        unduhKuitansi,
         pinjamBuku,
         kembalikanBuku,
         pesanBuku,

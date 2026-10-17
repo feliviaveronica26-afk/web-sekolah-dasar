@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Vite, jadi alamat asli pengunjung (untuk batas percobaan login) dibaca dari X-Forwarded-For.
         $middleware->trustProxies(at: ['127.0.0.1', '::1']);
         $middleware->alias(['peran' => PastikanPeran::class, 'batas.sesi' => BatasSesi::class, 'password.diganti' => PasswordSudahDiganti::class]);
+        // Webhook payment gateway dipanggil server gateway (tanpa cookie/CSRF); keasliannya diperiksa lewat tanda tangan HMAC
+        $middleware->validateCsrfTokens(except: ['api/gateway/*']);
         $middleware->redirectGuestsTo('/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -1,13 +1,14 @@
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Phone, Trophy, UserX } from 'lucide-react'
+import { HeartPulse, Phone, Trophy, UserX } from 'lucide-react'
 import KartuTeman from '../../components/KartuTeman'
 import { Avatar, Card, DashHeader, EmptyState } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { useData } from '../../context/DataContext'
-import { BIODATA, SEKOLAH } from '../../data/dummy'
+import { SEKOLAH } from '../../data/dummy'
 import { ekskulSiswa } from '../../utils/prestasi'
 import { formatTanggal } from '../../utils/format'
+import { namaJk, teksLahir, usia } from '../../utils/siswa'
 
 export default function SiswaProfil() {
   const { user } = useAuth()
@@ -19,7 +20,6 @@ export default function SiswaProfil() {
 
   if (!siswa) return <EmptyState icon={UserX} title="Data siswa tidak ditemukan" desc="Silakan hubungi admin sekolah." />
 
-  const bio = BIODATA[siswa.nis] ?? {}
   // Alamat & kontak keluarga sendiri (server hanya mengirim data keluarga siswa yang login)
   const keluarga = (data.orangTua ?? []).find((k) => k.anak?.includes(siswa.nis))
   const ekskul = ekskulSiswa(data, siswa)
@@ -34,19 +34,21 @@ export default function SiswaProfil() {
   const biodata = [
     ['Nama Lengkap', siswa.nama],
     ['NIS', siswa.nis],
-    ['NISN', bio.nisn],
+    ['NISN', siswa.nisn],
     ['Kelas', siswa.kelas],
-    ['Jenis Kelamin', siswa.jk === 'L' ? 'Laki-laki' : 'Perempuan'],
-    ['Tempat, Tanggal Lahir', bio.tanggalLahir && `${bio.tempatLahir}, ${formatTanggal(bio.tanggalLahir)}`],
-    ['Agama', bio.agama],
-    ['Golongan Darah', bio.golonganDarah],
+    ['Jenis Kelamin', namaJk(siswa.jk)],
+    ['Tempat, Tanggal Lahir', teksLahir(siswa) && `${teksLahir(siswa)}${siswa.tanggalLahir ? ` (${usia(siswa.tanggalLahir)} tahun)` : ''}`],
+    ['Agama', siswa.agama],
+    ['Golongan Darah', siswa.golonganDarah],
     ['Alamat', keluarga?.alamat],
     ['Nama Orang Tua/Wali', siswa.ortu],
+    ['Masuk Sekolah Ini', siswa.tanggalMasuk && formatTanggal(siswa.tanggalMasuk)],
+    ['Asal TK / Sekolah', siswa.asalSekolah],
   ]
 
   return (
     <>
-      <DashHeader title="Profil Saya" desc="Data diri dan kartu pelajar digital. Hubungi wali kelas jika ada data yang salah." />
+      <DashHeader title="Profil Saya" desc="Data diri dan kartu pelajar digital. Hubungi wali kelas atau Tata Usaha jika ada data yang salah." />
 
       <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
         <div className="space-y-6">
@@ -68,9 +70,9 @@ export default function SiswaProfil() {
                 <p>
                   <span className="text-primary-200">NIS</span> {siswa.nis}
                 </p>
-                {bio.nisn && (
+                {siswa.nisn && (
                   <p>
-                    <span className="text-primary-200">NISN</span> {bio.nisn}
+                    <span className="text-primary-200">NISN</span> {siswa.nisn}
                   </p>
                 )}
                 <p>
@@ -121,6 +123,14 @@ export default function SiswaProfil() {
                 </div>
               ))}
             </dl>
+            {siswa.catatanKesehatan && (
+              <div className="flex items-start gap-2 border-t border-amber-100 bg-amber-50 px-6 py-3 text-sm text-amber-900">
+                <HeartPulse className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>
+                  Catatan kesehatan: <span className="font-semibold">{siswa.catatanKesehatan}</span>
+                </span>
+              </div>
+            )}
             {keluarga?.whatsapp && (
               <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 text-sm text-slate-600">
                 <Phone className="h-4 w-4" /> Kontak orang tua: <span className="font-semibold text-slate-800">{keluarga.whatsapp}</span>

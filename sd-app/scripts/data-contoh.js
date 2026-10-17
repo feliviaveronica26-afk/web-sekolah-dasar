@@ -4,7 +4,6 @@
   relatif terhadap hari ini) dan data acuan ke folder Laravel, lalu `php artisan db:seed`.
 */
 import {
-  BIODATA,
   BUKU_AWAL,
   EKSKUL,
   GURU_AWAL,
@@ -141,12 +140,15 @@ function buatSikapContoh(siswa) {
   return hasil
 }
 
+// Ekskul pilihan siswa akun demo (biodatanya sendiri ada di BiodataSiswaSeeder Laravel)
+const EKSKUL_DEMO = { 230401: ['robotik', 'futsal'] }
+
 // Ekskul pilihan contoh (ekskul wajib tidak perlu disimpan)
 function buatEkskulContoh(siswa) {
   const hasil = {}
   for (const s of siswa) {
-    if (BIODATA[s.nis]?.ekskul) {
-      hasil[s.nis] = BIODATA[s.nis].ekskul
+    if (EKSKUL_DEMO[s.nis]) {
+      hasil[s.nis] = EKSKUL_DEMO[s.nis]
       continue
     }
     const pilihan = EKSKUL.filter((e) => !e.wajib && angkaKelas(s.kelas) >= e.minKelas)

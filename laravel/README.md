@@ -15,9 +15,11 @@ API, login, dan hak akses untuk website di folder [`../sd-app`](../sd-app). Cara
 | `app/Support/Versi.php`    | Penanda versi per kelompok data, agar website hanya memuat ulang yang berubah           |
 | `app/Http/Middleware/`     | Cek jabatan (`peran:`), batas sesi, dan wajib ganti password sebelum mengubah data     |
 | `database/migrations/`     | Struktur tabel MySQL                                                                   |
-| `database/seeders/`        | Data contoh: guru & biodata staf, akun demo, siswa, orang tua, nilai, absensi, SPP, ... |
+| `database/seeders/`        | Data contoh: guru & biodata staf, akun demo, siswa & biodatanya, orang tua, nilai, absensi, SPP, ... |
 | `resources/data/referensi.json` | Data acuan (mapel, jadwal, ekskul, SPP), diekspor dari `sd-app` dengan `npm run ekspor-laravel` |
-| `tests/Feature/`           | Tes login, data per pengguna, data staf, dan data orang tua                            |
+| `app/Support/PembayaranSpp.php` | SPP online: lunas hanya dari notifikasi gateway bertanda tangan (`POST /api/gateway/spp`) |
+| `app/Support/KuitansiSpp.php` | Kuitansi SPP dalam PDF (dompdf, template `resources/views/kuitansi-spp.blade.php`)   |
+| `tests/Feature/`           | Tes login, data per pengguna, data staf, data siswa, data orang tua, dan pembayaran SPP |
 
 ## Perintah khusus
 
@@ -25,6 +27,7 @@ API, login, dan hak akses untuk website di folder [`../sd-app`](../sd-app). Cara
 php artisan akun:password "<username>"   # ganti password satu akun (diketik tersembunyi)
 php artisan akun:buat staf               # buat akun untuk guru & staf yang belum punya
 php artisan akun:buat ortu               # buat satu akun per keluarga di Data Orang Tua
+php artisan akun:buat siswa              # buat satu akun per siswa (username = NIS)
 ```
 
 `akun:buat` tidak menampilkan password di layar. Password awal ditulis ke berkas CSV di
@@ -37,6 +40,8 @@ pertama login.
 |-----------------|---------------------------------------------------------------------------|
 | `DB_*`          | Koneksi MySQL (database `sd_harapan_gemilang`)                             |
 | `HASH_KEPSEK`   | Opsional. Tanpa ini, atur password Kepala Sekolah dengan `akun:password`.  |
+| `GATEWAY_KUNCI` | Kunci rahasia (server key) payment gateway untuk memeriksa tanda tangan notifikasi SPP. Kosong = turunan `APP_KEY` (cukup untuk demo). |
+| `SIMULASI_GATEWAY` | Simulator bank untuk demo SPP online. Bawaan menyala hanya di `APP_ENV=local`; selalu mati di produksi. |
 | `ZONA_SEKOLAH`  | Zona waktu sekolah, bawaan `Asia/Jakarta`                                  |
 | `CHAT_MAKS_MB`  | Batas ukuran berkas chat, bawaan 25 MB                                     |
 

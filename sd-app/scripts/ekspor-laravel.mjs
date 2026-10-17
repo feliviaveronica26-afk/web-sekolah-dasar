@@ -3,16 +3,21 @@
     resources/data/referensi.json         jadwal, mapel, ekskul, SPP, dll. (dipakai server untuk memeriksa isian)
     database/seeders/data/contoh.json     data contoh sekolah (siswa, absensi, nilai, SPP, chat, ...)
 
-  Pemakaian:  npm run ekspor-laravel [-- <folder Laravel>]      (bawaan: ../laravel di samping sd-app, atau LARAVEL_DIR)
+  Pemakaian:  npm run ekspor-laravel [-- [--hanya-referensi] <folder Laravel>]
+              (bawaan: ../laravel di samping sd-app, atau LARAVEL_DIR)
   Jalankan ulang setelah mengubah data acuan di src/data/dummy.js. Data contoh memakai tanggal relatif
-  terhadap hari ini; seeder hanya mengisi tabel yang masih kosong.
+  terhadap hari ini; seeder hanya mengisi tabel yang masih kosong. --hanya-referensi tidak menulis
+  ulang data contoh.
 */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'vite'
 
-const laravel = resolve(process.argv[2] ?? process.env.LARAVEL_DIR ?? fileURLToPath(new URL('../../laravel', import.meta.url)))
+const argumen = process.argv.slice(2)
+const hanyaReferensi = argumen.includes('--hanya-referensi')
+const folder = argumen.find((a) => !a.startsWith('--'))
+const laravel = resolve(folder ?? process.env.LARAVEL_DIR ?? fileURLToPath(new URL('../../laravel', import.meta.url)))
 const vite = await createServer({
   server: { middlewareMode: true },
   appType: 'custom',
@@ -36,6 +41,8 @@ try {
   const { dataAwal, buatChatContoh } = await vite.ssrLoadModule('/scripts/data-contoh.js')
 
   tulis('resources/data/referensi.json', {
+    // Identitas sekolah untuk dokumen dari server (mis. kuitansi PDF)
+    sekolah: { nama: d.SEKOLAH.nama, alamat: d.SEKOLAH.alamat, telepon: d.SEKOLAH.telepon, whatsapp: d.SEKOLAH.whatsapp, email: d.SEKOLAH.email },
     kelas: d.KELAS,
     hariSekolah: d.HARI_SEKOLAH,
     sesi: d.SESI,
@@ -74,11 +81,13 @@ try {
     },
   })
 
-  const data = dataAwal()
-  const { pesan, dibaca, pengaturan } = buatChatContoh(data)
-  // Guru & akun sudah punya seeder sendiri (guru.json, akun-demo.json)
-  delete data.guru
-  tulis('database/seeders/data/contoh.json', { dibuat: new Date().toISOString(), ...data, chat: { pesan, dibaca, pengaturan } })
+  if (!hanyaReferensi) {
+    const data = dataAwal()
+    const { pesan, dibaca, pengaturan } = buatChatContoh(data)
+    // Guru & akun sudah punya seeder sendiri (guru.json, akun-demo.json)
+    delete data.guru
+    tulis('database/seeders/data/contoh.json', { dibuat: new Date().toISOString(), ...data, chat: { pesan, dibaca, pengaturan } })
+  }
 } finally {
   await vite.close()
 }

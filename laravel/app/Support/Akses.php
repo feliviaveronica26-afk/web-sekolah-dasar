@@ -145,6 +145,32 @@ final class Akses
         return $this->kelas ? ['kelas' => [$this->kelas]] : [];
     }
 
+    /*
+      Biodata pribadi siswa (NISN, kelahiran, agama, golongan darah, riwayat masuk, catatan kesehatan)
+      yang boleh dilihat. Hasil seperti lingkupOrangTua:
+        - Kepala Sekolah & pengelola Data Siswa (Tata Usaha, Wakasek Kesiswaan, Guru BK): semua siswa
+        - Wali kelas: siswa di kelasnya
+        - Siswa & orang tua: siswa itu sendiri
+        - Staf lain & tamu: tidak ada
+    */
+    public function lingkupBiodataSiswa(): array|bool
+    {
+        if ($this->punya('siswa')) {
+            return true;
+        }
+        if ($this->keluarga()) {
+            return $this->nis ? ['nis' => [$this->nis]] : [];
+        }
+
+        return $this->kelas ? ['kelas' => [$this->kelas]] : [];
+    }
+
+    // Akun login siswa dibuat & diatur ulang oleh Tata Usaha atau Kepala Sekolah
+    public function kelolaAkunSiswa(): bool
+    {
+        return $this->kepsek || $this->punyaPeran('tata_usaha');
+    }
+
     // Menu yang membuka semua kelas & mapel (penuh di useLingkup)
     public function penuh(string $menu): bool
     {

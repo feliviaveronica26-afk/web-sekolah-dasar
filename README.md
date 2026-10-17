@@ -71,5 +71,6 @@ php artisan test       # memakai SQLite di memori, data MySQL tidak tersentuh
 
 ## Dokumentasi lanjutan
 
+- [PROGRES.md](PROGRES.md) — yang bertambah di setiap langkah dan cara menunjukkannya
 - [sd-app/README.md](sd-app/README.md) — fitur per portal, cara data dimuat, akun demo
 - [laravel/README.md](laravel/README.md) — isi backend, perintah artisan khusus, tes

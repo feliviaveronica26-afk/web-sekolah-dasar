@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef } from 'react'
-import { BadgeCheck, BookOpenCheck, Building2, CalendarDays, Droplet, Hash, IdCard, Layers, ShieldCheck, Tent, User, X } from 'lucide-react'
+import { Building2, Cake, Hash, IdCard, Layers, ShieldCheck, Tent, User, X } from 'lucide-react'
 import { Avatar, btn } from './ui'
-import { BIODATA, EKSKUL, GEDUNG_KELAS, lantaiKelas } from '../data/dummy'
+import { EKSKUL, GEDUNG_KELAS, lantaiKelas } from '../data/dummy'
 import { bolehIkutEkskul } from '../utils/prestasi'
-import { formatTanggal } from '../utils/format'
 import { kurangiGerak } from '../utils/gerak'
+import { namaJk, teksUlangTahun, ulangTahunHariIni } from '../utils/siswa'
 
 /*
   Kartu data diri teman sekelas yang "terbang" dari kotak nama yang diklik ke tengah layar (FLIP:
@@ -12,8 +12,9 @@ import { kurangiGerak } from '../utils/gerak'
   kembali ke kotak asalnya. Hanya transform & opacity; mati bila "kurangi gerakan" aktif.
 
   Data yang ditampilkan hanya yang akurat & wajar dikenal antar teman. Absensi, nilai, poin sikap,
-  dan ekskul pilihan teman memang tidak dikirim server ke akun siswa (privasi), jadi tidak ditebak di
-  sini; alamat rumah & kontak orang tua sengaja tidak ditampilkan.
+  ekskul pilihan, dan biodata pribadi teman (NISN, kelahiran, agama, kesehatan) memang tidak dikirim
+  server ke akun siswa (privasi); dari tanggal lahir hanya tanggal & bulan ulang tahunnya. Alamat
+  rumah & kontak orang tua juga tidak ditampilkan.
 */
 
 const MASUK = 520 // ms: kartu terbang ke tengah (lintasannya cukup lama untuk terlihat)
@@ -60,7 +61,6 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
   const menutupRef = useRef(false)
   const idJudul = useId()
 
-  const bio = BIODATA[teman.nis] ?? {}
   const wali = data.guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === teman.kelas)
   const lantai = lantaiKelas(teman.kelas)
   const sisi = GEDUNG_KELAS.find((l) => l.lantai === lantai)?.utara.includes(teman.kelas) ? 'sisi utara' : 'sisi selatan'
@@ -180,7 +180,8 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
               </p>
               <div className="mt-2.5 flex flex-wrap gap-1.5">
                 <Chip>No. absen {nomorAbsen}</Chip>
-                <Chip>{teman.jk === 'L' ? 'Laki-laki' : 'Perempuan'}</Chip>
+                <Chip>{namaJk(teman.jk)}</Chip>
+                {ulangTahunHariIni(teman) && <Chip>Berulang tahun hari ini</Chip>}
               </div>
             </div>
           </div>
@@ -194,30 +195,15 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
               <Info icon={Hash} label="NIS">
                 {teman.nis}
               </Info>
-              {bio.nisn && (
-                <Info icon={BadgeCheck} label="NISN">
-                  {bio.nisn}
-                </Info>
-              )}
               <Info icon={User} label="Jenis kelamin">
-                {teman.jk === 'L' ? 'Laki-laki' : 'Perempuan'}
+                {namaJk(teman.jk)}
               </Info>
               <Info icon={Layers} label="Kelas">
                 {teman.kelas} · {faseKelas(teman.kelas)}
               </Info>
-              {bio.tanggalLahir && (
-                <Info icon={CalendarDays} label="Tempat, tanggal lahir" lebar>
-                  {bio.tempatLahir}, {formatTanggal(bio.tanggalLahir)}
-                </Info>
-              )}
-              {bio.agama && (
-                <Info icon={BookOpenCheck} label="Agama">
-                  {bio.agama}
-                </Info>
-              )}
-              {bio.golonganDarah && (
-                <Info icon={Droplet} label="Golongan darah">
-                  {bio.golonganDarah}
+              {teman.ulangTahun && (
+                <Info icon={Cake} label="Ulang tahun">
+                  {teksUlangTahun(teman.ulangTahun)}
                 </Info>
               )}
             </dl>

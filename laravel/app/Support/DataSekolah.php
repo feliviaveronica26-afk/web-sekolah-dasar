@@ -274,14 +274,10 @@ final class DataSekolah
         if ($this->a->staf()) {
             $siswa = $kueri->get();
         } elseif ($this->a->keluarga() && ($kelas = $this->a->kelasSiswa())) {
-            // Teman sekelas untuk daftar kelas & chat; nama orang tua hanya untuk sesama orang tua
-            $siswa = $kueri->where('kelas', $kelas)->get()->each(function (Siswa $s) {
-                if ($this->a->role === 'siswa' && $s->nis !== $this->a->nis) {
-                    $s->makeHidden('ortu');
-                }
-            });
+            // Teman sekelas untuk daftar kelas & chat
+            $siswa = $kueri->where('kelas', $kelas)->get();
         } else {
-            $siswa = collect();
+            $siswa = new Collection;
         }
 
         $jumlah = [];
@@ -289,7 +285,43 @@ final class DataSekolah
             $jumlah[$r->kelas][$r->jk] = (int) $r->n;
         }
 
-        return ['siswa' => $siswa->values()->toArray(), 'jumlahSiswa' => self::peta($jumlah)];
+        return ['siswa' => self::petaSiswa($siswa, $this->a), 'jumlahSiswa' => self::peta($jumlah)];
+    }
+
+    /*
+      Bentuk data siswa untuk website sesuai hak penglihat:
+        - biodata pribadi (Siswa::PRIBADI) hanya untuk yang masuk Akses::lingkupBiodataSiswa; akun
+          siswa/orang tua cukup menerima tanggal & bulan ulang tahun teman sekelasnya
+        - nama orang tua teman tidak dikirim ke akun siswa (sesama orang tua tetap menerimanya)
+        - `akun` login siswa hanya untuk Tata Usaha & Kepala Sekolah (tanpa password)
+    */
+    public static function petaSiswa(Collection $siswa, Akses $a): array
+    {
+        $lingkup = $a->lingkupBiodataSiswa();
+        $boleh = fn (Siswa $s) => $lingkup === true
+            || in_array($s->nis, $lingkup['nis'] ?? [], true)
+            || in_array($s->kelas, $lingkup['kelas'] ?? [], true);
+        $akun = $a->kelolaAkunSiswa() ? User::where('role', 'siswa')->whereIn('nis', $siswa->pluck('nis'))->get()->keyBy('nis') : null;
+
+        return $siswa->map(function (Siswa $s) use ($a, $boleh, $akun) {
+            $bio = $boleh($s);
+            if (! $bio) {
+                $s->makeHidden(Siswa::PRIBADI);
+            }
+            if ($a->role === 'siswa' && $s->nis !== $a->nis) {
+                $s->makeHidden('ortu');
+            }
+            $data = $s->toArray();
+            if (! $bio && $a->keluarga() && $s->tanggal_lahir) {
+                $data['ulangTahun'] = $s->tanggal_lahir->format('m-d');
+            }
+            if ($akun) {
+                $u = $akun->get($s->nis);
+                $data['akun'] = $u ? ['username' => $u->username, 'aktif' => (bool) $u->aktif, 'wajibGanti' => (bool) $u->wajib_ganti_password] : null;
+            }
+
+            return $data;
+        })->values()->all();
     }
 
     private function pengumuman(): array
