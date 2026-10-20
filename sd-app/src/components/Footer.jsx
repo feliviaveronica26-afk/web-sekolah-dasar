@@ -22,82 +22,86 @@ const LAYANAN = [
 const GERBANG = JAM_SEKOLAH.find((j) => j.label === 'Gerbang dibuka')?.jam ?? '06.30'
 const nomorWa = (no) => no.replace(/\D/g, '').replace(/^0/, '62')
 
-function Kolom({ judul, children }) {
+function Kolom({ judul, children, className = '' }) {
   return (
-    <div>
-      <h2 className="text-[13px] font-bold uppercase tracking-[0.16em] text-stabilo">
-        {judul}
-      </h2>
-      <ul className="mt-4 space-y-1 text-[15px]">{children}</ul>
+    <div className={className}>
+      <h2 className="fs-13 fw-bold text-uppercase ls-lebar text-stabilo">{judul}</h2>
+      <ul className="mt-4 d-flex flex-column gap-1 fs-15">{children}</ul>
     </div>
   )
 }
 
 // py-1: area sentuh setinggi ±30px di HP tanpa mengubah jarak antarbaris
-const tautan = 'inline-block py-1 text-white/90 underline decoration-white/0 underline-offset-4 transition hover:text-white hover:decoration-white/60'
+const tautan = 'tautan-kaki d-inline-block py-1'
 
 export default function Footer() {
   return (
-    <footer className="bg-primary-950 text-white">
+    <footer className="bg-marun text-white">
       <div className="stripe-merah-putih h-2" aria-hidden="true" />
       <div className={wadah}>
-        <div className="grid gap-6 border-b border-white/10 py-14 lg:grid-cols-[1fr_auto] lg:items-end">
-          <p className="max-w-3xl text-3xl font-extrabold leading-tight tracking-tight sm:text-[2.6rem]">
+        <div className="row g-6 align-items-lg-end border-bottom border-white border-opacity-10 py-14">
+          <p className="col-lg judul-kaki mw-3xl fw-extrabold lh-tight ls-tight">
             Gerbang dibuka pukul <span className="angka">{GERBANG}</span>, Senin sampai Jumat.
           </p>
-          <Catatan className="text-xl text-stabilo! lg:pb-1">Sampai jumpa di sekolah!</Catatan>
+          <div className="col-lg-auto pb-lg-1">
+            <Catatan warna="text-stabilo" className="fs-xl">
+              Sampai jumpa di sekolah!
+            </Catatan>
+          </div>
         </div>
       </div>
 
-      <div className={`${wadah} grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]`}>
-        <div>
-          <Merek terang />
-          <p className="mt-6 max-w-xs text-[15px] leading-relaxed text-krem">{SEKOLAH.alamat}</p>
-          <p className="mt-3 text-[15px] text-krem">NPSN {SEKOLAH.npsn}</p>
+      <div className={`${wadah} py-14`}>
+        <div className="row gx-6 gy-12">
+          <div className="col-sm-6 col-lg-4">
+            <Merek terang />
+            <p className="mt-6 mw-xs fs-15 lh-relaxed text-krem">{SEKOLAH.alamat}</p>
+            <p className="mt-3 fs-15 text-krem">NPSN {SEKOLAH.npsn}</p>
+          </div>
+
+          <Kolom judul="Jelajahi" className="col-sm-6 col-lg-2">
+            {JELAJAHI.map(([to, label]) => (
+              <li key={label}>
+                <Link to={to} className={tautan}>
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </Kolom>
+
+          <Kolom judul="Layanan" className="col-sm-6 col-lg-3">
+            {LAYANAN.map(([to, label]) => (
+              <li key={label}>
+                <Link to={to} className={tautan}>
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </Kolom>
+
+          <Kolom judul="Hubungi" className="col-sm-6 col-lg-3">
+            <li>
+              <a href={`https://wa.me/${nomorWa(SEKOLAH.whatsapp)}`} target="_blank" rel="noreferrer" className={tautan}>
+                WhatsApp {SEKOLAH.whatsapp}
+              </a>
+            </li>
+            <li>
+              <a href={`tel:${SEKOLAH.telepon.replace(/\D/g, '')}`} className={tautan}>
+                Telepon {SEKOLAH.telepon}
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${SEKOLAH.email}`} className={`${tautan} text-break`}>
+                {SEKOLAH.email}
+              </a>
+            </li>
+            <li className="py-1 text-krem">{SEKOLAH.jamOperasional}</li>
+          </Kolom>
         </div>
-
-        <Kolom judul="Jelajahi">
-          {JELAJAHI.map(([to, label]) => (
-            <li key={label}>
-              <Link to={to} className={tautan}>
-                {label}
-              </Link>
-            </li>
-          ))}
-        </Kolom>
-
-        <Kolom judul="Layanan">
-          {LAYANAN.map(([to, label]) => (
-            <li key={label}>
-              <Link to={to} className={tautan}>
-                {label}
-              </Link>
-            </li>
-          ))}
-        </Kolom>
-
-        <Kolom judul="Hubungi">
-          <li>
-            <a href={`https://wa.me/${nomorWa(SEKOLAH.whatsapp)}`} target="_blank" rel="noreferrer" className={tautan}>
-              WhatsApp {SEKOLAH.whatsapp}
-            </a>
-          </li>
-          <li>
-            <a href={`tel:${SEKOLAH.telepon.replace(/\D/g, '')}`} className={tautan}>
-              Telepon {SEKOLAH.telepon}
-            </a>
-          </li>
-          <li>
-            <a href={`mailto:${SEKOLAH.email}`} className={`${tautan} [overflow-wrap:anywhere]`}>
-              {SEKOLAH.email}
-            </a>
-          </li>
-          <li className="py-1 text-krem">{SEKOLAH.jamOperasional}</li>
-        </Kolom>
       </div>
 
       <div className={wadah}>
-        <div className="flex flex-col gap-2 border-t border-white/10 py-6 pr-0 text-sm text-krem md:flex-row md:items-center md:justify-between md:pr-40">
+        <div className="d-flex flex-column gap-2 border-top border-white border-opacity-10 py-6 pe-0 fs-sm text-krem flex-md-row align-items-md-center justify-content-md-between pe-md-40">
           <p>
             © {new Date().getFullYear()} {SEKOLAH.nama}. {SEKOLAH.slogan}.
           </p>

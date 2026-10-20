@@ -33,10 +33,10 @@ export default function TugasKelas() {
       title="Tugas Kelas"
       desc="Buat tugas dan PR. Tugas langsung muncul di Portal Siswa dan Portal Orang Tua."
       ringkasan={
-        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <div className="mb-6 d-grid kolom-2 gap-4 kolom-lg-3">
           <StatCard icon={ClipboardList} label="Tugas aktif" value={aktif.length} hint={`dari ${milik.length} tugas`} tone="sky" />
           <StatCard icon={CalendarClock} label="Tenggat 7 hari ke depan" value={pekanIni.length} tone="amber" />
-          <div className="col-span-2 lg:col-span-1">
+          <div className="rentang-2 rentang-lg-1">
             <StatCard icon={PartyPopper} label="Rata-rata penyelesaian" value={`${rataSelesai}%`} hint="ditandai selesai oleh siswa" tone="emerald" />
           </div>
         </div>
@@ -66,9 +66,9 @@ export default function TugasKelas() {
           key: 'judul',
           label: 'Tugas',
           render: (t) => (
-            <span className="block max-w-xs">
-              <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${MAPEL[t.mapel]?.warna}`}>{MAPEL[t.mapel]?.nama}</span>
-              <span className="mt-1 block font-semibold text-slate-800">{t.judul}</span>
+            <span className="d-block mw-xs">
+              <span className={`rounded-1 px-2 py-0-5 fs-xs fw-bold ${MAPEL[t.mapel]?.warna}`}>{MAPEL[t.mapel]?.nama}</span>
+              <span className="mt-1 d-block fw-semibold text-tinta">{t.judul}</span>
             </span>
           ),
         },
@@ -80,8 +80,8 @@ export default function TugasKelas() {
             const info = infoTenggat(t.tenggat)
             return (
               <span>
-                <span className="block text-slate-700">{formatTanggal(t.tenggat, { year: undefined })}</span>
-                <Badge className={t.tenggat < hariIni ? 'bg-slate-100 text-slate-500' : info.cls}>{t.tenggat < hariIni ? 'Ditutup' : info.teks}</Badge>
+                <span className="d-block text-tinta-2">{formatTanggal(t.tenggat, { year: undefined })}</span>
+                <Badge className={t.tenggat < hariIni ? 'bg-abu-100 text-tinta-3' : info.cls}>{t.tenggat < hariIni ? 'Ditutup' : info.teks}</Badge>
               </span>
             )
           },
@@ -92,8 +92,8 @@ export default function TugasKelas() {
           render: (t) => {
             const p = progres(t)
             return (
-              <span className="block w-32">
-                <span className="text-xs font-semibold text-slate-600">
+              <span className="d-block w-32">
+                <span className="fs-xs fw-semibold text-tinta-2">
                   {p.selesai}/{p.total} siswa
                 </span>
                 <Progres nilai={p.persen} warna="bg-emerald-500" tinggi="h-1.5" className="mt-1" />

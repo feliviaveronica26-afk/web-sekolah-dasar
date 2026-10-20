@@ -1,4 +1,5 @@
-import { HARI_SEKOLAH, JADWAL, MAPEL, SESI } from '../data/dummy'
+import { HARI_SEKOLAH, MAPEL, SESI } from '../data/dummy'
+import { jadwalKelas, semuaJadwal } from './acuan'
 import { namaHari } from './format'
 
 /*
@@ -9,7 +10,7 @@ import { namaHari } from './format'
 
 // Pelajaran yang diabsen pada hari itu (upacara & senam pagi tidak termasuk)
 export function pelajaranHari(kelas, tanggal) {
-  return (JADWAL[kelas]?.[namaHari(tanggal)] ?? [])
+  return (jadwalKelas(kelas)[namaHari(tanggal)] ?? [])
     .map((mapel, jam) => ({ jam, mapel, kunci: `${jam}-${mapel}`, mulai: SESI[jam].mulai, selesai: SESI[jam].selesai }))
     .filter((p) => MAPEL[p.mapel] && MAPEL[p.mapel].absensi !== false)
 }
@@ -51,10 +52,10 @@ export function statusDiPelajaran(data, tanggal, nis, kunci) {
 // Jadwal mengajar seorang guru dalam seminggu: [{ hari, kelas, mapel, jam, mulai, selesai }]
 export function jadwalMengajar(guru, guruId) {
   const hasil = []
-  for (const [kelas, perHari] of Object.entries(JADWAL)) {
+  for (const [kelas, perHari] of Object.entries(semuaJadwal())) {
     for (const hari of HARI_SEKOLAH) {
       perHari[hari]?.forEach((mapel, jam) => {
-        if (MAPEL[mapel]?.absensi === false) return
+        if (!mapel || MAPEL[mapel]?.absensi === false) return
         if (guruPelajaran(guru, kelas, mapel)?.id === guruId) hasil.push({ hari, kelas, mapel, jam, kunci: `${jam}-${mapel}`, ...SESI[jam] })
       })
     }

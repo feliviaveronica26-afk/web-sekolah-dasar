@@ -53,7 +53,7 @@ export default function KelolaPpdb() {
     <>
       <DashHeader title="PPDB Online" desc={`Pendaftar peserta didik baru tahun ajaran ${PPDB.tahunAjaran}.`} />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="d-grid kolom-2 gap-4 kolom-lg-4">
         <StatCard icon={UserPlus} label="Total pendaftar" value={data.pendaftar.length} tone="sky" />
         <StatCard icon={ClipboardList} label="Perlu diverifikasi" value={hitung('Menunggu Verifikasi')} tone="amber" />
         <StatCard icon={FileText} label="Berkas lengkap" value={hitung('Terverifikasi')} hint="siap observasi" tone="primary" />
@@ -61,20 +61,20 @@ export default function KelolaPpdb() {
       </div>
 
       <Card className="mt-6 p-5">
-        <p className="mb-3 text-sm font-bold text-slate-700">Keterisian kuota per jalur</p>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <p className="mb-3 fs-sm fw-bold text-tinta-2">Keterisian kuota per jalur</p>
+        <div className="d-grid gap-4 kolom-sm-3">
           {PPDB.jalur.map((j) => {
             const n = data.pendaftar.filter((x) => x.jalur === j.nama && x.status !== 'Tidak Diterima').length
             return (
               <div key={j.nama}>
-                <div className="mb-1 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-700">{j.nama}</span>
-                  <span className="text-slate-500">
+                <div className="mb-1 d-flex justify-content-between fs-sm">
+                  <span className="fw-semibold text-tinta-2">{j.nama}</span>
+                  <span className="text-tinta-3">
                     {n}/{j.kuota}
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-primary-500" style={{ width: `${Math.min(100, (n / j.kuota) * 100)}%` }} />
+                <div className="h-2 overflow-hidden rounded-pill bg-abu-100">
+                  <div className="h-100 rounded-pill bg-merah-500" style={{ width: `${Math.min(100, (n / j.kuota) * 100)}%` }} />
                 </div>
               </div>
             )
@@ -83,18 +83,18 @@ export default function KelolaPpdb() {
       </Card>
 
       <Card className="mt-6 overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row">
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama atau nomor pendaftaran..." className={`${inputCls} pl-10`} />
+        <div className="d-flex flex-column gap-3 border-bottom border-abu-100 p-4 flex-lg-row">
+          <div className="position-relative flex-1">
+            <Search className="pe-none position-absolute start-3-5 top-50 h-4 w-4 translate-middle-y text-abu-400" />
+            <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama atau nomor pendaftaran..." className={`${inputCls} ps-10`} />
           </div>
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className={`${inputCls} lg:w-52`}>
+          <select value={status} onChange={(e) => setStatus(e.target.value)} className={`${inputCls} w-lg-52`}>
             <option value="">Semua status</option>
             {Object.keys(STATUS_PPDB).map((s) => (
               <option key={s}>{s}</option>
             ))}
           </select>
-          <select value={jalur} onChange={(e) => setJalur(e.target.value)} className={`${inputCls} lg:w-48`}>
+          <select value={jalur} onChange={(e) => setJalur(e.target.value)} className={`${inputCls} w-lg-48`}>
             <option value="">Semua jalur</option>
             {PPDB.jalur.map((j) => (
               <option key={j.nama}>{j.nama}</option>
@@ -106,41 +106,41 @@ export default function KelolaPpdb() {
           <EmptyState icon={Users} title="Belum ada pendaftar" desc="Pendaftar dari formulir di halaman PPDB akan muncul di sini." />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <table className="w-100 min-w-720 text-start fs-sm">
+              <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                 <tr>
                   <th className="px-5 py-3">Calon Siswa</th>
                   <th className="px-5 py-3">Usia</th>
                   <th className="px-5 py-3">Jalur</th>
                   <th className="px-5 py-3">Tanggal Daftar</th>
                   <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3 text-right">Aksi</th>
+                  <th className="px-5 py-3 text-end">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="pembatas-y pembatas-abu">
                 {daftar.map((x) => {
                   const usia = hitungUsia(x.tanggalLahir)
                   return (
-                    <tr key={x.id} className="hover:bg-slate-50/60">
+                    <tr key={x.id} className="hover-latar">
                       <td className="px-5 py-3">
-                        <span className="flex items-center gap-3">
+                        <span className="d-flex align-items-center gap-3">
                           <Avatar nama={x.nama} size="sm" />
                           <span>
-                            <span className="block font-semibold text-slate-800">{x.nama}</span>
-                            <span className="block font-mono text-xs text-slate-500">{x.nomor}</span>
+                            <span className="d-block fw-semibold text-tinta">{x.nama}</span>
+                            <span className="d-block font-monospace fs-xs text-tinta-3">{x.nomor}</span>
                           </span>
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-slate-600">
+                      <td className="px-5 py-3 text-tinta-2">
                         {usia.tahun} th {usia.bulan} bln
                       </td>
                       <td className="px-5 py-3">{x.jalur}</td>
-                      <td className="px-5 py-3 text-slate-600">{new Date(x.dibuat).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                      <td className="px-5 py-3 text-tinta-2">{new Date(x.dibuat).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                       <td className="px-5 py-3">
                         <Badge className={STATUS_PPDB[x.status].cls}>{x.status}</Badge>
                       </td>
-                      <td className="px-5 py-3 text-right">
-                        <button onClick={() => buka(x)} className="rounded-lg px-3 py-1.5 text-sm font-semibold text-primary-600 hover:bg-primary-50">
+                      <td className="px-5 py-3 text-end">
+                        <button onClick={() => buka(x)} className="rounded-1 px-3 py-1-5 fs-sm fw-semibold text-primary hover-latar-merah">
                           {AKSI[x.status].length ? 'Periksa' : 'Detail'}
                         </button>
                       </td>
@@ -156,20 +156,20 @@ export default function KelolaPpdb() {
       <Modal open={!!p} onClose={() => setDipilih(null)} title="Data Pendaftar" size="max-w-2xl">
         {p && (
           <>
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50 p-4">
-              <div className="flex items-center gap-3">
+            <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 rounded-3 bg-abu-50 p-4">
+              <div className="d-flex align-items-center gap-3">
                 <Avatar nama={p.nama} />
                 <div>
-                  <p className="font-bold text-slate-900">{p.nama}</p>
-                  <p className="font-mono text-xs text-slate-500">{p.nomor}</p>
+                  <p className="fw-bold text-tinta">{p.nama}</p>
+                  <p className="font-monospace fs-xs text-tinta-3">{p.nomor}</p>
                 </div>
               </div>
               <Badge className={STATUS_PPDB[p.status].cls}>{p.status}</Badge>
             </div>
 
-            <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              <dl className="space-y-2 text-sm">
-                <p className="font-bold text-slate-700">Calon siswa</p>
+            <div className="mt-5 d-grid gap-5 kolom-sm-2">
+              <dl className="antara-y-2 fs-sm">
+                <p className="fw-bold text-tinta-2">Calon siswa</p>
                 {[
                   ['Panggilan', p.panggilan || '-'],
                   ['Jenis kelamin', p.jk === 'L' ? 'Laki-laki' : 'Perempuan'],
@@ -180,55 +180,55 @@ export default function KelolaPpdb() {
                   ['Asal TK', p.asalTk || '-'],
                   ['Alamat', p.alamat],
                 ].map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[110px_1fr] gap-2">
-                    <dt className="text-slate-500">{k}</dt>
-                    <dd className="font-medium text-slate-800">{v}</dd>
+                  <div key={k} className="d-grid kolom-110-isi gap-2">
+                    <dt className="text-tinta-3">{k}</dt>
+                    <dd className="fw-medium text-tinta">{v}</dd>
                   </div>
                 ))}
               </dl>
-              <div className="space-y-5">
-                <dl className="space-y-2 text-sm">
-                  <p className="font-bold text-slate-700">Orang tua</p>
+              <div className="antara-y-5">
+                <dl className="antara-y-2 fs-sm">
+                  <p className="fw-bold text-tinta-2">Orang tua</p>
                   {[
                     ['Ayah', p.namaAyah ? `${p.namaAyah}${p.pekerjaanAyah ? ` · ${p.pekerjaanAyah}` : ''}` : '-'],
                     ['Ibu', p.namaIbu ? `${p.namaIbu}${p.pekerjaanIbu ? ` · ${p.pekerjaanIbu}` : ''}` : '-'],
                     ['Email', p.email || '-'],
                   ].map(([k, v]) => (
-                    <div key={k} className="grid grid-cols-[110px_1fr] gap-2">
-                      <dt className="text-slate-500">{k}</dt>
-                      <dd className="font-medium text-slate-800">{v}</dd>
+                    <div key={k} className="d-grid kolom-110-isi gap-2">
+                      <dt className="text-tinta-3">{k}</dt>
+                      <dd className="fw-medium text-tinta">{v}</dd>
                     </div>
                   ))}
                   <a
                     href={`https://wa.me/${nomorWa(p.whatsapp)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 font-semibold text-emerald-600 hover:text-emerald-700"
+                    className="d-inline-flex align-items-center gap-1-5 fw-semibold text-success"
                   >
                     <MessageCircle className="h-4 w-4" /> {p.whatsapp}
                   </a>
                 </dl>
-                <div className="text-sm">
-                  <p className="font-bold text-slate-700">Jalur {p.jalur}</p>
-                  {p.infoJalur && <p className="mt-1 text-slate-600">{p.infoJalur}</p>}
+                <div className="fs-sm">
+                  <p className="fw-bold text-tinta-2">Jalur {p.jalur}</p>
+                  {p.infoJalur && <p className="mt-1 text-tinta-2">{p.infoJalur}</p>}
                 </div>
               </div>
             </div>
 
             <div className="mt-5">
-              <p className="mb-2 text-sm font-bold text-slate-700">Berkas</p>
-              <ul className="grid gap-2 sm:grid-cols-2">
+              <p className="mb-2 fs-sm fw-bold text-tinta-2">Berkas</p>
+              <ul className="d-grid gap-2 kolom-sm-2">
                 {PPDB.berkas
                   .filter((b) => !b.jalur || b.jalur === p.jalur)
                   .map((b) => (
                     <li
                       key={b.id}
-                      className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm ${p.berkas[b.id] ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-700'}`}
+                      className={`d-flex align-items-center gap-2 rounded-2 px-3 py-2 fs-sm ${p.berkas[b.id] ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger'}`}
                     >
-                      <FileText className="h-4 w-4 shrink-0" />
-                      <span className="min-w-0 flex-1 truncate">
+                      <FileText className="h-4 w-4 flex-shrink-0" />
+                      <span className="min-w-0 flex-1 text-truncate">
                         {b.label}
-                        <span className="block truncate text-xs opacity-75">{p.berkas[b.id] ?? 'Belum diunggah'}</span>
+                        <span className="d-block text-truncate fs-xs opacity-75">{p.berkas[b.id] ?? 'Belum diunggah'}</span>
                       </span>
                     </li>
                   ))}
@@ -236,7 +236,7 @@ export default function KelolaPpdb() {
             </div>
 
             <div className="mt-5">
-              <label htmlFor="catatan-ppdb" className="mb-1.5 block text-sm font-bold text-slate-700">Catatan untuk orang tua</label>
+              <label htmlFor="catatan-ppdb" className="mb-1-5 d-block fs-sm fw-bold text-tinta-2">Catatan untuk orang tua</label>
               <textarea
                 id="catatan-ppdb"
                 rows={2}
@@ -246,11 +246,11 @@ export default function KelolaPpdb() {
                 placeholder="Contoh: Mohon unggah ulang pas foto dengan latar merah."
                 className={inputCls}
               />
-              <p className="mt-1 text-xs text-slate-500">Catatan tampil saat orang tua mengecek status pendaftaran.</p>
+              <p className="mt-1 fs-xs text-tinta-3">Catatan tampil saat orang tua mengecek status pendaftaran.</p>
             </div>
 
             {AKSI[p.status].length > 0 && (
-              <div className="mt-5 flex flex-col-reverse gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end">
+              <div className="mt-5 d-flex flex-column-reverse gap-2 border-top border-abu-100 pt-4 flex-sm-row justify-content-sm-end">
                 {AKSI[p.status].map(([statusBaru, label, gaya]) => (
                   <button key={statusBaru} onClick={() => proses(statusBaru)} className={btn[gaya]}>
                     {label}

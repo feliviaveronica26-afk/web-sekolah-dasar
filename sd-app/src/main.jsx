@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ChatProvider } from './context/ChatContext'
 import { DataProvider } from './context/DataContext'
 import App from './App'
-import './index.css'
+import './styles/main.scss'
 
 // Peringatan untuk pengguna yang disuruh orang lain menempelkan kode di konsol (self-XSS)
 if (import.meta.env.PROD) {

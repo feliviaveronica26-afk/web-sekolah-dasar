@@ -70,7 +70,7 @@ export default function BukuTamu() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="d-grid kolom-2 gap-4 kolom-lg-3">
         <StatCard
           icon={Users}
           label="Tamu hari ini"
@@ -85,21 +85,21 @@ export default function BukuTamu() {
 
       {terjadwal.length > 0 && (
         <Card className="mt-6 p-5">
-          <h2 className="font-bold text-slate-900">Kunjungan Terjadwal Hari Ini</h2>
-          <p className="text-sm text-slate-500">Sudah dikonfirmasi Tata Usaha. Cocokkan kode booking saat tamu tiba.</p>
-          <ul className="mt-4 space-y-2">
+          <h2 className="fw-bold text-tinta">Kunjungan Terjadwal Hari Ini</h2>
+          <p className="fs-sm text-tinta-3">Sudah dikonfirmasi Tata Usaha. Cocokkan kode booking saat tamu tiba.</p>
+          <ul className="mt-4 antara-y-2">
             {terjadwal.map((k) => (
-              <li key={k.id} className="ui-ubin flex flex-wrap items-center gap-3 rounded-xl bg-slate-50 px-4 py-3">
+              <li key={k.id} className="ui-ubin d-flex flex-wrap align-items-center gap-3 rounded-2 bg-abu-50 px-4 py-3">
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-slate-800">
-                    {k.nama} <span className="font-mono text-xs text-slate-400">{k.kode}</span>
+                  <p className="fw-semibold text-tinta">
+                    {k.nama} <span className="font-monospace fs-xs text-abu-400">{k.kode}</span>
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="fs-xs text-tinta-3">
                     Pukul {k.sesi} · {k.jumlah} orang · {k.keperluan}
                   </p>
                 </div>
                 {sudahDatang(k) ? (
-                  <Badge className="bg-emerald-100 text-emerald-700">Sudah datang</Badge>
+                  <Badge className="bg-success-subtle text-success">Sudah datang</Badge>
                 ) : (
                   <button onClick={() => datangTerjadwal(k)} className={btn.secondary}>
                     <UserCheck className="h-4 w-4" /> Tandai Datang
@@ -112,61 +112,61 @@ export default function BukuTamu() {
       )}
 
       <Card className="mt-6 overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4">
-          <h2 className="font-bold text-slate-900">{formatHari(tanggal)}</h2>
-          <input type="date" value={tanggal} max={hariIni} onChange={(e) => setTanggal(e.target.value || hariIni)} className={`${inputCls} w-auto!`} />
+        <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom border-abu-100 p-4">
+          <h2 className="fw-bold text-tinta">{formatHari(tanggal)}</h2>
+          <input type="date" value={tanggal} max={hariIni} onChange={(e) => setTanggal(e.target.value || hariIni)} className={`${inputCls} w-auto`} />
         </div>
 
         {daftar.length === 0 ? (
           <EmptyState icon={Users} title="Belum ada tamu" desc="Tamu yang dicatat pada tanggal ini akan muncul di sini." />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <table className="w-100 min-w-720 text-start fs-sm">
+              <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                 <tr>
-                  <th className="px-5 py-3 font-semibold">Tamu</th>
-                  <th className="px-5 py-3 font-semibold">Keperluan</th>
-                  <th className="px-5 py-3 font-semibold">Masuk</th>
-                  <th className="px-5 py-3 font-semibold">Keluar</th>
+                  <th className="px-5 py-3 fw-semibold">Tamu</th>
+                  <th className="px-5 py-3 fw-semibold">Keperluan</th>
+                  <th className="px-5 py-3 fw-semibold">Masuk</th>
+                  <th className="px-5 py-3 fw-semibold">Keluar</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="pembatas-y pembatas-abu">
                 {daftar.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50/60">
+                  <tr key={t.id} className="hover-latar">
                     <td className="px-5 py-3">
-                      <span className="block font-semibold text-slate-800">
+                      <span className="d-block fw-semibold text-tinta">
                         {t.nama}
-                        {t.jumlah > 1 && <span className="font-normal text-slate-500"> (+{t.jumlah - 1} orang)</span>}
+                        {t.jumlah > 1 && <span className="fw-normal text-tinta-3"> (+{t.jumlah - 1} orang)</span>}
                       </span>
-                      <span className="block text-xs text-slate-500">{[t.instansi, t.whatsapp].filter(Boolean).join(' · ') || '–'}</span>
+                      <span className="d-block fs-xs text-tinta-3">{[t.instansi, t.whatsapp].filter(Boolean).join(' · ') || '–'}</span>
                     </td>
                     <td className="px-5 py-3">
-                      <span className="block text-slate-700">{t.keperluan}</span>
-                      {t.bertemu && <span className="block text-xs text-slate-500">Bertemu: {t.bertemu}</span>}
+                      <span className="d-block text-tinta-2">{t.keperluan}</span>
+                      {t.bertemu && <span className="d-block fs-xs text-tinta-3">Bertemu: {t.bertemu}</span>}
                     </td>
                     <td className="px-5 py-3">
-                      <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
-                        <LogIn className="h-4 w-4 text-emerald-500" /> {t.masuk}
+                      <span className="d-inline-flex align-items-center gap-1-5 fw-semibold text-tinta-2">
+                        <LogIn className="h-4 w-4 teks-terang-emerald" /> {t.masuk}
                       </span>
                     </td>
                     <td className="px-5 py-3">
                       {t.keluar ? (
-                        <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
-                          <LogOut className="h-4 w-4 text-slate-400" /> {t.keluar}
+                        <span className="d-inline-flex align-items-center gap-1-5 fw-semibold text-tinta-2">
+                          <LogOut className="h-4 w-4 text-abu-400" /> {t.keluar}
                         </span>
                       ) : t.tanggal === hariIni ? (
                         <button
                           onClick={() => ubah('bukuTamu', t.id, { keluar: jamSekarang() })}
-                          className={`inline-flex items-center gap-1.5 text-xs ${
+                          className={`d-inline-flex align-items-center gap-1-5 fs-xs ${
                             situs
-                              ? 'min-h-9 rounded-full bg-stabilo px-3.5 font-bold text-tinta hover:bg-amber-300'
-                              : 'rounded-lg bg-amber-50 px-3 py-1.5 font-semibold text-amber-800 hover:bg-amber-100'
+                              ? 'min-h-9 rounded-pill bg-stabilo px-3-5 fw-bold text-tinta hover-redup'
+                              : 'rounded-1 bg-warning-subtle px-3 py-1-5 fw-semibold text-warning-emphasis hover-redup'
                           }`}
                         >
-                          <LogOut className="h-3.5 w-3.5" /> Catat Keluar
+                          <LogOut className="h-3-5 w-3-5" /> Catat Keluar
                         </button>
                       ) : (
-                        <span className="text-slate-400">Tidak tercatat</span>
+                        <span className="text-abu-400">Tidak tercatat</span>
                       )}
                     </td>
                   </tr>
@@ -193,8 +193,8 @@ export default function BukuTamu() {
         }
       >
         {form && (
-          <form id="form-tamu" onSubmit={simpan} className="grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
+          <form id="form-tamu" onSubmit={simpan} className="d-grid gap-4 kolom-sm-2">
+            <div className="rentang-sm-2">
               <label htmlFor="nama" className={labelCls}>Nama tamu</label>
               <input id="nama" required className={inputCls} placeholder="Nama lengkap" {...isi('nama')} />
             </div>
@@ -219,7 +219,7 @@ export default function BukuTamu() {
               <label htmlFor="jumlah" className={labelCls}>Jumlah orang</label>
               <input id="jumlah" type="number" min={1} required className={inputCls} {...isi('jumlah')} />
             </div>
-            <div className="sm:col-span-2">
+            <div className="rentang-sm-2">
               <label htmlFor="bertemu" className={labelCls}>Bertemu dengan</label>
               <input id="bertemu" list="daftar-staf" className={inputCls} placeholder="Nama guru/staf yang dituju" {...isi('bertemu')} />
               <datalist id="daftar-staf">

@@ -1,6 +1,8 @@
 /*
   Menulis data acuan & data contoh website ke proyek Laravel:
-    resources/data/referensi.json         jadwal, mapel, ekskul, SPP, dll. (dipakai server untuk memeriksa isian)
+    resources/data/referensi.json         kelas, sesi, mapel, ekskul, SPP, dll. (dipakai server untuk memeriksa isian)
+    database/seeders/data/jadwal.json     jadwal pelajaran awal (JadwalSeeder; selanjutnya diatur dari portal)
+    database/seeders/data/kalender.json   kalender akademik awal (KalenderSeeder; selanjutnya diatur dari portal)
     database/seeders/data/contoh.json     data contoh sekolah (siswa, absensi, nilai, SPP, chat, ...)
 
   Pemakaian:  npm run ekspor-laravel [-- [--hanya-referensi] <folder Laravel>]
@@ -38,7 +40,7 @@ try {
   const { STATUS_PPDB } = await vite.ssrLoadModule('/src/components/Ppdb.jsx')
   const { STATUS_KUNJUNGAN } = await vite.ssrLoadModule('/src/components/Fasilitas.jsx')
   const { MASA_BERLAKU_MENIT, MAKS_PERCOBAAN } = await vite.ssrLoadModule('/src/utils/otp.js')
-  const { dataAwal, buatChatContoh } = await vite.ssrLoadModule('/scripts/data-contoh.js')
+  const { dataAwal, buatChatContoh, JADWAL_AWAL, KALENDER_AWAL } = await vite.ssrLoadModule('/scripts/data-contoh.js')
 
   tulis('resources/data/referensi.json', {
     // Identitas sekolah untuk dokumen dari server (mis. kuitansi PDF)
@@ -46,7 +48,6 @@ try {
     kelas: d.KELAS,
     hariSekolah: d.HARI_SEKOLAH,
     sesi: d.SESI,
-    jadwal: d.JADWAL,
     // Pengampu tiap mapel tersimpan di data guru (mapel diampu); `pengampu` hanya label mapel bersama (upacara, pramuka)
     mapel: Object.fromEntries(Object.entries(d.MAPEL).map(([k, m]) => [k, { nama: m.nama, absensi: m.absensi !== false, ...(m.pengampu && { pengampu: m.pengampu }) }])),
     mapelRapor: d.MAPEL_RAPOR,
@@ -80,6 +81,9 @@ try {
       keperluanTamu: d.KEPERLUAN_TAMU,
     },
   })
+
+  tulis('database/seeders/data/jadwal.json', JADWAL_AWAL)
+  tulis('database/seeders/data/kalender.json', KALENDER_AWAL.map((e) => ({ selesai: null, perkiraan: false, keterangan: '', ...e })))
 
   if (!hanyaReferensi) {
     const data = dataAwal()

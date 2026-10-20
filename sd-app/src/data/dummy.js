@@ -363,15 +363,15 @@ export const KUNJUNGAN = {
 // (lihat ekskulBentrok di src/utils/prestasi.js); `wajib` diikuti otomatis oleh siswa dengan
 // kelas >= minKelas. Format `hari`: 'Selasa' atau 'Senin & Kamis', `jam`: '13.00 – 14.30'.
 export const EKSKUL = [
-  { id: 'pramuka', minKelas: 3, wajib: true, nama: 'Pramuka', ikon: 'tenda', hari: 'Jumat', jam: '10.50 – 12.00', pembina: 'Kak Rudi Hartono', untuk: 'Wajib kelas 3 – 6', warna: 'bg-yellow-100 text-yellow-800', desc: 'Belajar tali-temali, baris-berbaris, dan kemandirian lewat kegiatan Siaga & Penggalang.' },
-  { id: 'robotik', minKelas: 3, nama: 'Robotik', ikon: 'robot', hari: 'Selasa', jam: '13.00 – 14.30', pembina: 'Hendra Wijaya, S.Kom.', untuk: 'Kelas 3 – 6', warna: 'bg-cyan-100 text-cyan-800', desc: 'Merakit dan memprogram robot sederhana. Juara 1 tingkat kota 2026.' },
-  { id: 'futsal', minKelas: 3, nama: 'Futsal', ikon: 'bola', hari: 'Kamis', jam: '13.00 – 14.30', pembina: 'Budi Santoso, S.Pd.', untuk: 'Kelas 3 – 6', warna: 'bg-lime-100 text-lime-800', desc: 'Melatih kerja sama tim, sportivitas, dan kebugaran.' },
-  { id: 'tari', minKelas: 1, nama: 'Tari Tradisional', ikon: 'musik', hari: 'Selasa', jam: '13.00 – 14.30', pembina: 'Ayu Pratiwi, S.Sn.', untuk: 'Kelas 1 – 6', warna: 'bg-fuchsia-100 text-fuchsia-800', desc: 'Mengenal tari daerah Nusantara dan tampil di pentas seni sekolah.' },
-  { id: 'paduan-suara', minKelas: 2, nama: 'Paduan Suara', ikon: 'mik', hari: 'Rabu', jam: '13.00 – 14.00', pembina: 'Maria Natalia, S.Pd.', untuk: 'Kelas 2 – 6', warna: 'bg-violet-100 text-violet-800', desc: 'Bernyanyi lagu nasional dan daerah dengan teknik vokal yang benar.' },
-  { id: 'melukis', minKelas: 1, nama: 'Melukis', ikon: 'kuas', hari: 'Rabu', jam: '13.00 – 14.30', pembina: 'Sinta Dewi, S.Pd.', untuk: 'Kelas 1 – 6', warna: 'bg-orange-100 text-orange-800', desc: 'Menggambar dan mewarnai dengan berbagai media: krayon, cat air, dan kolase.' },
-  { id: 'tahfidz', minKelas: 1, nama: 'Tahfidz', ikon: 'buku', hari: 'Senin & Kamis', jam: '12.15 – 13.00', pembina: 'Nur Aisyah, S.Pd.I.', untuk: 'Kelas 1 – 6', warna: 'bg-teal-100 text-teal-800', desc: 'Menghafal juz 30 dengan metode yang menyenangkan dan bertahap.' },
-  { id: 'bulutangkis', minKelas: 3, nama: 'Bulu Tangkis', ikon: 'raket', hari: 'Senin', jam: '13.00 – 14.30', pembina: 'Pelatih PB Harapan', untuk: 'Kelas 3 – 6', warna: 'bg-sky-100 text-sky-800', desc: 'Teknik dasar servis, smash, dan footwork bersama pelatih klub.' },
-  { id: 'english', minKelas: 3, nama: 'English Club', ikon: 'bahasa', hari: 'Kamis', jam: '13.00 – 14.00', pembina: 'Maria Natalia, S.Pd.', untuk: 'Kelas 3 – 6', warna: 'bg-indigo-100 text-indigo-800', desc: 'Storytelling, spelling bee, dan permainan bahasa Inggris.' },
+  { id: 'pramuka', minKelas: 3, wajib: true, nama: 'Pramuka', ikon: 'tenda', hari: 'Jumat', jam: '10.50 – 12.00', pembina: 'Kak Rudi Hartono', untuk: 'Wajib kelas 3 – 6', warna: 'warna-yellow', desc: 'Belajar tali-temali, baris-berbaris, dan kemandirian lewat kegiatan Siaga & Penggalang.' },
+  { id: 'robotik', minKelas: 3, nama: 'Robotik', ikon: 'robot', hari: 'Selasa', jam: '13.00 – 14.30', pembina: 'Hendra Wijaya, S.Kom.', untuk: 'Kelas 3 – 6', warna: 'warna-cyan', desc: 'Merakit dan memprogram robot sederhana. Juara 1 tingkat kota 2026.' },
+  { id: 'futsal', minKelas: 3, nama: 'Futsal', ikon: 'bola', hari: 'Kamis', jam: '13.00 – 14.30', pembina: 'Budi Santoso, S.Pd.', untuk: 'Kelas 3 – 6', warna: 'warna-lime', desc: 'Melatih kerja sama tim, sportivitas, dan kebugaran.' },
+  { id: 'tari', minKelas: 1, nama: 'Tari Tradisional', ikon: 'musik', hari: 'Selasa', jam: '13.00 – 14.30', pembina: 'Ayu Pratiwi, S.Sn.', untuk: 'Kelas 1 – 6', warna: 'warna-fuchsia', desc: 'Mengenal tari daerah Nusantara dan tampil di pentas seni sekolah.' },
+  { id: 'paduan-suara', minKelas: 2, nama: 'Paduan Suara', ikon: 'mik', hari: 'Rabu', jam: '13.00 – 14.00', pembina: 'Maria Natalia, S.Pd.', untuk: 'Kelas 2 – 6', warna: 'warna-violet', desc: 'Bernyanyi lagu nasional dan daerah dengan teknik vokal yang benar.' },
+  { id: 'melukis', minKelas: 1, nama: 'Melukis', ikon: 'kuas', hari: 'Rabu', jam: '13.00 – 14.30', pembina: 'Sinta Dewi, S.Pd.', untuk: 'Kelas 1 – 6', warna: 'warna-orange', desc: 'Menggambar dan mewarnai dengan berbagai media: krayon, cat air, dan kolase.' },
+  { id: 'tahfidz', minKelas: 1, nama: 'Tahfidz', ikon: 'buku', hari: 'Senin & Kamis', jam: '12.15 – 13.00', pembina: 'Nur Aisyah, S.Pd.I.', untuk: 'Kelas 1 – 6', warna: 'warna-teal', desc: 'Menghafal juz 30 dengan metode yang menyenangkan dan bertahap.' },
+  { id: 'bulutangkis', minKelas: 3, nama: 'Bulu Tangkis', ikon: 'raket', hari: 'Senin', jam: '13.00 – 14.30', pembina: 'Pelatih PB Harapan', untuk: 'Kelas 3 – 6', warna: 'warna-sky', desc: 'Teknik dasar servis, smash, dan footwork bersama pelatih klub.' },
+  { id: 'english', minKelas: 3, nama: 'English Club', ikon: 'bahasa', hari: 'Kamis', jam: '13.00 – 14.00', pembina: 'Maria Natalia, S.Pd.', untuk: 'Kelas 3 – 6', warna: 'warna-indigo', desc: 'Storytelling, spelling bee, dan permainan bahasa Inggris.' },
 ]
 
 // Kategori poin sikap (apresiasi & catatan perbaikan) yang diberikan guru
@@ -694,19 +694,19 @@ export const PPDB = {
   diampu guru mapel diajar wali kelas. `pengampu` hanya label kegiatan bersama yang tidak punya satu guru.
 */
 export const MAPEL = {
-  upacara: { nama: 'Upacara Bendera', pengampu: 'Semua guru', warna: 'bg-primary-100 text-primary-700', absensi: false },
-  senam: { nama: 'Senam Pagi', warna: 'bg-lime-100 text-lime-700', absensi: false },
-  mtk: { nama: 'Matematika', warna: 'bg-sky-100 text-sky-700' },
-  bindo: { nama: 'Bahasa Indonesia', warna: 'bg-orange-100 text-orange-700' },
-  ipas: { nama: 'IPAS', warna: 'bg-emerald-100 text-emerald-700' },
-  pancasila: { nama: 'Pendidikan Pancasila', warna: 'bg-rose-100 text-rose-700' },
-  senbud: { nama: 'Seni Budaya', warna: 'bg-fuchsia-100 text-fuchsia-700' },
-  mulok: { nama: 'Bahasa Daerah', warna: 'bg-amber-100 text-amber-700' },
-  agama: { nama: 'Pendidikan Agama', warna: 'bg-teal-100 text-teal-700' },
-  bing: { nama: 'Bahasa Inggris', warna: 'bg-indigo-100 text-indigo-700' },
-  pjok: { nama: 'PJOK', warna: 'bg-lime-100 text-lime-700' },
-  info: { nama: 'Informatika', warna: 'bg-cyan-100 text-cyan-700' },
-  pramuka: { nama: 'Pramuka', pengampu: 'Pembina Pramuka', warna: 'bg-yellow-100 text-yellow-800' },
+  upacara: { nama: 'Upacara Bendera', pengampu: 'Semua guru', warna: 'warna-merah', absensi: false },
+  senam: { nama: 'Senam Pagi', warna: 'warna-lime', absensi: false },
+  mtk: { nama: 'Matematika', warna: 'warna-sky' },
+  bindo: { nama: 'Bahasa Indonesia', warna: 'warna-orange' },
+  ipas: { nama: 'IPAS', warna: 'warna-emerald' },
+  pancasila: { nama: 'Pendidikan Pancasila', warna: 'warna-rose' },
+  senbud: { nama: 'Seni Budaya', warna: 'warna-fuchsia' },
+  mulok: { nama: 'Bahasa Daerah', warna: 'warna-amber' },
+  agama: { nama: 'Pendidikan Agama', warna: 'warna-teal' },
+  bing: { nama: 'Bahasa Inggris', warna: 'warna-indigo' },
+  pjok: { nama: 'PJOK', warna: 'warna-lime' },
+  info: { nama: 'Informatika', warna: 'warna-cyan' },
+  pramuka: { nama: 'Pramuka', pengampu: 'Pembina Pramuka', warna: 'warna-yellow' },
 }
 
 // Mapel yang bisa dipilih sebagai "mapel yang diampu" guru mapel (bukan kegiatan bersama)
@@ -743,89 +743,6 @@ export const JAM_SEKOLAH = [
 
 export const HARI_SEKOLAH = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
 
-// Jadwal kelas 4A disusun manual; kelas lain dibuat dengan pola yang sama oleh buatJadwal().
-const JADWAL_4A = {
-  Senin: ['upacara', 'mtk', 'bindo', 'ipas'],
-  Selasa: ['agama', 'mtk', 'bing', 'senbud'],
-  Rabu: ['pjok', 'bindo', 'ipas', 'pancasila'],
-  Kamis: ['mtk', 'info', 'bindo', 'mulok'],
-  Jumat: ['senam', 'agama', 'ipas', 'pramuka'],
-}
-
-/*
-  Jadwal semua kelas: upacara (Senin) & senam (Jumat) di sesi pertama, pramuka di sesi terakhir
-  Jumat untuk kelas 3–6. Jam guru mapel khusus digeser antarkelas agar sebisa mungkin tidak bentrok;
-  sisanya diisi mapel wali kelas. Kelas 1–2 belum belajar IPAS & Informatika.
-*/
-function buatJadwal() {
-  const jadwal = { '4A': JADWAL_4A }
-  const slot = HARI_SEKOLAH.flatMap((h) => SESI.map((_, i) => [h, i])).filter(
-    ([h, i]) => !(h === 'Senin' && i === 0) && !(h === 'Jumat' && (i === 0 || i === SESI.length - 1)),
-  )
-  const sibuk = {} // { mapel: Set('Hari-sesi') } — jam yang sudah dipakai guru mapel tersebut
-  const tandai = (m, h, i) => (sibuk[m] ??= new Set()).add(`${h}-${i}`)
-  for (const [h, isi] of Object.entries(JADWAL_4A)) isi.forEach((m, i) => tandai(m, h, i))
-
-  KELAS.filter((k) => k !== '4A').forEach((kelas, n) => {
-    const atas = Number(kelas[0]) >= 3
-    const hari = Object.fromEntries(HARI_SEKOLAH.map((h) => [h, SESI.map(() => null)]))
-    hari.Senin[0] = 'upacara'
-    hari.Jumat[0] = 'senam'
-    if (atas) hari.Jumat[SESI.length - 1] = 'pramuka'
-
-    const khusus = ['agama', 'bing', 'pjok', 'agama', ...(atas ? ['info'] : [])]
-    khusus.forEach((m, j) => {
-      const urut = slot.map((_, x) => slot[(x + n * 3 + j * 4) % slot.length])
-      const kosong = ([h, i]) => !hari[h][i] && !hari[h].includes(m)
-      const [h, i] = urut.find((sl) => kosong(sl) && !sibuk[m]?.has(sl.join('-'))) ?? urut.find(kosong)
-      hari[h][i] = m
-      tandai(m, h, i)
-    })
-
-    const umum = atas
-      ? ['mtk', 'bindo', 'ipas', 'pancasila', 'mtk', 'bindo', 'ipas', 'senbud', 'mtk', 'bindo', 'ipas', 'mulok']
-      : ['mtk', 'bindo', 'pancasila', 'senbud', 'mtk', 'bindo', 'mulok', 'bindo', 'mtk', 'pancasila', 'bindo', 'senbud', 'mtk', 'bindo']
-    let u = n
-    for (const h of HARI_SEKOLAH) hari[h] = hari[h].map((m) => m ?? umum[u++ % umum.length])
-    jadwal[kelas] = hari
-  })
-  return jadwal
-}
-
-// Jadwal pelajaran per kelas: { kelas: { hari: [kunci MAPEL per sesi] } }
-export const JADWAL = buatJadwal()
-
-// Kalender akademik 2026/2027. Tanggal libur keagamaan bertanda `perkiraan`
-// perlu dicocokkan dengan SKB 3 Menteri yang resmi.
-export const KALENDER = [
-  { mulai: '2026-07-13', selesai: '2026-07-15', judul: 'Masa Pengenalan Lingkungan Sekolah (MPLS)', jenis: 'kegiatan' },
-  { mulai: '2026-08-17', judul: 'HUT Kemerdekaan RI ke-81', jenis: 'libur' },
-  { mulai: '2026-08-25', judul: 'Maulid Nabi Muhammad SAW', jenis: 'libur', perkiraan: true },
-  { mulai: '2026-10-12', selesai: '2026-10-16', judul: 'Penilaian Tengah Semester (PTS) Ganjil', jenis: 'ujian' },
-  { mulai: '2026-10-14', judul: 'Pemeriksaan Kesehatan Gigi', jenis: 'kegiatan' },
-  { mulai: '2026-10-23', judul: 'Field Trip Kelas 4 ke Museum Nasional', jenis: 'kegiatan' },
-  { mulai: '2026-10-28', judul: 'Upacara Hari Sumpah Pemuda', jenis: 'kegiatan' },
-  { mulai: '2026-11-10', judul: 'Upacara Hari Pahlawan', jenis: 'kegiatan' },
-  { mulai: '2026-11-25', judul: 'Peringatan Hari Guru Nasional', jenis: 'kegiatan' },
-  { mulai: '2026-12-07', selesai: '2026-12-11', judul: 'Penilaian Akhir Semester (PAS) Ganjil', jenis: 'ujian' },
-  { mulai: '2026-12-18', judul: 'Pembagian Rapor Semester Ganjil', jenis: 'kegiatan' },
-  { mulai: '2026-12-21', selesai: '2027-01-01', judul: 'Libur Semester Ganjil', jenis: 'libur' },
-  { mulai: '2026-12-25', judul: 'Hari Raya Natal', jenis: 'libur' },
-  { mulai: '2027-01-01', judul: 'Tahun Baru 2027', jenis: 'libur' },
-  { mulai: '2027-01-04', judul: 'Hari Pertama Semester Genap', jenis: 'kegiatan' },
-  { mulai: '2027-01-05', judul: 'Isra Mikraj Nabi Muhammad SAW', jenis: 'libur', perkiraan: true },
-  { mulai: '2027-02-06', judul: 'Tahun Baru Imlek', jenis: 'libur', perkiraan: true },
-  { mulai: '2027-03-08', selesai: '2027-03-16', judul: 'Libur Hari Raya Idulfitri', jenis: 'libur', perkiraan: true },
-  { mulai: '2027-03-22', selesai: '2027-03-26', judul: 'Penilaian Tengah Semester (PTS) Genap', jenis: 'ujian' },
-  { mulai: '2027-03-26', judul: 'Wafat Yesus Kristus', jenis: 'libur' },
-  { mulai: '2027-05-06', judul: 'Kenaikan Yesus Kristus', jenis: 'libur' },
-  { mulai: '2027-05-17', judul: 'Hari Raya Iduladha', jenis: 'libur', perkiraan: true },
-  { mulai: '2027-05-20', judul: 'Hari Raya Waisak', jenis: 'libur', perkiraan: true },
-  { mulai: '2027-06-01', judul: 'Hari Lahir Pancasila', jenis: 'libur' },
-  { mulai: '2027-06-07', selesai: '2027-06-11', judul: 'Penilaian Akhir Tahun (PAT)', jenis: 'ujian' },
-  { mulai: '2027-06-18', judul: 'Pembagian Rapor Kenaikan Kelas', jenis: 'kegiatan' },
-  { mulai: '2027-06-21', selesai: '2027-07-09', judul: 'Libur Kenaikan Kelas', jenis: 'libur' },
-]
 
 // Tugas/PR awal; guru menambah tugas lewat menu Tugas Kelas.
 // Tanggal dihitung relatif dari hari ini supaya demo selalu relevan.

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ArrowRight, LayoutDashboard, LogIn, Menu, Phone, X } from 'lucide-react'
 import { tombol, wadah } from './Situs'
 import { useAuth } from '../context/AuthContext'
+import { useAnimasiKeluar } from '../utils/gerak'
 import { PPDB, SEKOLAH } from '../data/dummy'
 
 const MENU = [
@@ -21,11 +22,11 @@ const AKHIR_DAFTAR = PPDB.jadwal[0].tanggal.split('–').pop().trim()
 
 export function Merek({ terang = false }) {
   return (
-    <Link to="/" aria-label={`${SEKOLAH.nama}, ke beranda`} className="flex items-center gap-3">
-      <img src="/logo.png" alt="" className="h-11 w-11 shrink-0 object-contain" />
-      <span className="leading-none">
-        <span className={`block text-[1.2rem] font-extrabold tracking-tight ${terang ? 'text-white' : 'text-tinta'}`}>Harapan Gemilang</span>
-        <span className={`mt-1 block text-[11px] font-bold uppercase tracking-[0.2em] ${terang ? 'text-krem' : 'text-primary-700'}`}>Sekolah Dasar</span>
+    <Link to="/" aria-label={`${SEKOLAH.nama}, ke beranda`} className="d-flex align-items-center gap-3">
+      <img src="/logo.png" alt="" className="ukuran-11 flex-shrink-0 object-fit-contain" />
+      <span className="lh-1">
+        <span className={`d-block fs-xl fw-extrabold ls-tight ${terang ? 'text-white' : 'text-tinta'}`}>Harapan Gemilang</span>
+        <span className={`mt-1 d-block fs-2xs fw-bold text-uppercase ls-lebar-2 ${terang ? 'text-krem' : 'text-merah-700'}`}>Sekolah Dasar</span>
       </span>
     </Link>
   )
@@ -36,6 +37,7 @@ export default function Navbar() {
   const [tergulir, setTergulir] = useState(false)
   const { user } = useAuth()
   const { pathname } = useLocation()
+  const [menuTampil, menuKeluar] = useAnimasiKeluar(buka)
 
   // Garis bawah navbar muncul setelah halaman digulir
   useEffect(() => {
@@ -55,33 +57,37 @@ export default function Navbar() {
   return (
     <>
       {/* Pita pengumuman PPDB */}
-      <div className="bg-primary-900 text-white">
-        <div className={`${wadah} flex min-h-10 flex-wrap items-center justify-between gap-x-6 gap-y-1 py-2 text-[13px]`}>
+      <div className="bg-merah-900 text-white">
+        <div className={`${wadah} d-flex min-h-10 flex-wrap align-items-center justify-content-between column-gap-6 row-gap-1 py-2 fs-13`}>
           <p>
-            <span className="font-semibold text-stabilo">PPDB {PPDB.tahunAjaran}</span> dibuka sampai {AKHIR_DAFTAR}.{' '}
-            <Link to="/ppdb#daftar" className="font-semibold underline decoration-krem/50 underline-offset-4 hover:decoration-white">
+            <span className="fw-semibold text-stabilo">PPDB {PPDB.tahunAjaran}</span> dibuka sampai {AKHIR_DAFTAR}.{' '}
+            <Link to="/ppdb#daftar" className="tautan-garis fw-semibold">
               Daftar online
             </Link>
           </p>
-          <a href={`tel:${SEKOLAH.telepon.replace(/\D/g, '')}`} className="hidden items-center gap-1.5 text-krem hover:text-white md:flex">
-            <Phone className="h-3.5 w-3.5" /> {SEKOLAH.telepon} · {SEKOLAH.jamOperasional}
+          <a href={`tel:${SEKOLAH.telepon.replace(/\D/g, '')}`} className="d-none d-md-flex align-items-center gap-1-5 text-krem hover-teks-putih">
+            <Phone className="ukuran-3-5" /> {SEKOLAH.telepon} · {SEKOLAH.jamOperasional}
           </a>
         </div>
       </div>
 
-      <header className={`sticky top-0 z-40 border-b bg-white/90 backdrop-blur-md transition ${tergulir || buka ? 'border-garis shadow-[0_8px_30px_-20px_rgb(26_21_18/0.35)]' : 'border-transparent'}`}>
-        <nav aria-label="Menu utama" className={`${wadah} flex h-[4.75rem] items-center justify-between gap-4`}>
+      <header
+        className={`navbar-sekolah position-sticky top-0 z-40 border-bottom bg-white bg-opacity-90 buram transisi ${
+          tergulir || buka ? 'border-garis tergulir' : 'border-transparent'
+        }`}
+      >
+        <nav aria-label="Menu utama" className={`${wadah} navbar py-0 tinggi-navbar flex-nowrap gap-4`}>
           <Merek />
 
-          <ul className="hidden items-center gap-1 xl:flex">
+          <ul className="d-none d-xl-flex align-items-center gap-1">
             {MENU.map((m) => (
               <li key={m.to}>
                 <NavLink
                   to={m.to}
                   end={m.to === '/'}
                   className={({ isActive }) =>
-                    `inline-flex min-h-10 items-center rounded-full px-3.5 text-[15px] font-semibold transition ${
-                      isActive ? 'bg-primary-50 text-primary-700' : 'text-tinta-2 hover:bg-kertas-tua hover:text-tinta'
+                    `d-inline-flex min-h-10 align-items-center rounded-pill px-3-5 fs-15 fw-semibold transisi tekan ${
+                      isActive ? 'bg-primary text-white bayangan-aktif' : 'text-tinta-2 hover-latar-merah hover-teks-merah'
                     }`
                   }
                 >
@@ -91,50 +97,60 @@ export default function Navbar() {
             ))}
           </ul>
 
-          <div className="hidden items-center gap-5 xl:flex">
-            <Link to={masuk.to} className="inline-flex min-h-10 items-center gap-1.5 text-[15px] font-bold text-tinta hover:text-primary-700">
-              <masuk.icon className="h-4 w-4" /> {masuk.label}
+          <div className="d-none d-xl-flex align-items-center gap-5">
+            <Link to={masuk.to} className="d-inline-flex min-h-10 align-items-center gap-1-5 fs-15 fw-bold text-tinta hover-teks-merah">
+              <masuk.icon className="ukuran-4" /> {masuk.label}
             </Link>
-            <Link to="/ppdb" className={`${tombol.utama} min-h-11! px-5! py-2!`}>
+            <Link to="/ppdb" className="btn btn-primary bayangan min-h-11 px-5 py-2 fs-15">
               Daftar PPDB
             </Link>
           </div>
 
           <button
+            type="button"
             onClick={() => setBuka(!buka)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-kertas-tua px-4 text-[15px] font-bold text-tinta hover:bg-garis xl:hidden"
+            className="d-inline-flex d-xl-none min-h-11 align-items-center gap-2 rounded-pill bg-kertas-tua px-4 fs-15 fw-bold text-tinta hover-latar-garis transisi"
             aria-expanded={buka}
             aria-controls="menu-hp"
           >
-            {buka ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {buka ? <X key="tutup" className="ikon-putar ukuran-5" /> : <Menu key="menu" className="ikon-putar ukuran-5" />}
             {buka ? 'Tutup' : 'Menu'}
           </button>
         </nav>
 
-        {buka && (
-          <div id="menu-hp" className="max-h-[calc(100dvh-4.75rem)] overflow-y-auto border-t border-garis bg-white xl:hidden">
-            <ul className={`${wadah} divide-y divide-garis py-2`}>
+        {menuTampil && (
+          <div
+            id="menu-hp"
+            data-keluar={menuKeluar || undefined}
+            className="menu-hp overflow-y-auto border-top border-garis bg-white d-xl-none"
+            style={{ maxHeight: 'calc(100dvh - 4.75rem)' }}
+          >
+            <ul className={`${wadah} bertahap pembatas-y py-2`}>
               {MENU.map((m) => (
                 <li key={m.to}>
                   <NavLink
                     to={m.to}
                     end={m.to === '/'}
                     className={({ isActive }) =>
-                      `flex items-center justify-between py-3.5 text-xl font-bold tracking-tight ${isActive ? 'text-primary-700' : 'text-tinta'}`
+                      `d-flex align-items-center justify-content-between py-3-5 fs-xl fw-bold ls-tight transisi tekan ${isActive ? 'text-primary' : 'text-tinta hover-teks-merah'}`
                     }
                   >
-                    {m.label}
-                    <ArrowRight className="h-4 w-4 text-tinta-3" aria-hidden="true" />
+                    {({ isActive }) => (
+                      <>
+                        {m.label}
+                        <ArrowRight className={`ukuran-4 ${isActive ? 'text-primary' : 'text-tinta-3'}`} aria-hidden="true" />
+                      </>
+                    )}
                   </NavLink>
                 </li>
               ))}
             </ul>
-            <div className={`${wadah} grid gap-3 pb-6 pt-2 sm:grid-cols-2`}>
+            <div className={`${wadah} d-grid gap-3 pb-6 pt-2 kolom-sm-2`}>
               <Link to="/ppdb" className={tombol.utama}>
                 Daftar PPDB {PPDB.tahunAjaran}
               </Link>
               <Link to={masuk.to} className={tombol.kedua}>
-                <masuk.icon className="h-4 w-4" /> {masuk.label}
+                <masuk.icon className="ukuran-4" /> {masuk.label}
               </Link>
             </div>
           </div>

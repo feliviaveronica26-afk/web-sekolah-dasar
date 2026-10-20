@@ -57,12 +57,17 @@ final class Rapor
         $nilai = DataSekolah::petaNilai(DB::table('nilai')->whereIn('nis', $siswa)->get())['nilai'];
         $nilai = is_array($nilai) ? $nilai : [];
 
+        // Siswa yang belum punya nilai (mis. siswa baru) belum diberi peringkat dan tidak dihitung
         $rata = [];
         foreach ($siswa as $n) {
-            $rata[$n] = self::rataRata($nilai[$n] ?? [], $kelas) ?? 0;
+            $r = self::rataRata($nilai[$n] ?? [], $kelas);
+            if ($r !== null) {
+                $rata[$n] = $r;
+            }
         }
         arsort($rata);
+        $posisi = array_search($nis, array_map('strval', array_keys($rata)), true);
 
-        return ['posisi' => array_search($nis, array_map('strval', array_keys($rata)), true) + 1, 'dari' => count($siswa)];
+        return ['posisi' => $posisi === false ? null : $posisi + 1, 'dari' => count($rata)];
     }
 }

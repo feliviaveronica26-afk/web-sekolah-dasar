@@ -1,0 +1,578 @@
+{
+ "4A": {
+  "Senin": [
+   "upacara",
+   "mtk",
+   "bindo",
+   "ipas"
+  ],
+  "Selasa": [
+   "agama",
+   "mtk",
+   "bing",
+   "senbud"
+  ],
+  "Rabu": [
+   "pjok",
+   "bindo",
+   "ipas",
+   "pancasila"
+  ],
+  "Kamis": [
+   "mtk",
+   "info",
+   "bindo",
+   "mulok"
+  ],
+  "Jumat": [
+   "senam",
+   "agama",
+   "ipas",
+   "pramuka"
+  ]
+ },
+ "1A": {
+  "Senin": [
+   "upacara",
+   "agama",
+   "mtk",
+   "bindo"
+  ],
+  "Selasa": [
+   "pancasila",
+   "bing",
+   "senbud",
+   "mtk"
+  ],
+  "Rabu": [
+   "bindo",
+   "pjok",
+   "mulok",
+   "bindo"
+  ],
+  "Kamis": [
+   "mtk",
+   "agama",
+   "pancasila",
+   "bindo"
+  ],
+  "Jumat": [
+   "senam",
+   "senbud",
+   "mtk",
+   "bindo"
+  ]
+ },
+ "1B": {
+  "Senin": [
+   "upacara",
+   "bindo",
+   "pancasila",
+   "senbud"
+  ],
+  "Selasa": [
+   "mtk",
+   "agama",
+   "bindo",
+   "mulok"
+  ],
+  "Rabu": [
+   "bing",
+   "bindo",
+   "mtk",
+   "pancasila"
+  ],
+  "Kamis": [
+   "pjok",
+   "bindo",
+   "senbud",
+   "mtk"
+  ],
+  "Jumat": [
+   "senam",
+   "bindo",
+   "agama",
+   "mtk"
+  ]
+ },
+ "1C": {
+  "Senin": [
+   "upacara",
+   "pancasila",
+   "agama",
+   "senbud"
+  ],
+  "Selasa": [
+   "mtk",
+   "bindo",
+   "mulok",
+   "agama"
+  ],
+  "Rabu": [
+   "bindo",
+   "mtk",
+   "pancasila",
+   "bing"
+  ],
+  "Kamis": [
+   "bindo",
+   "senbud",
+   "mtk",
+   "pjok"
+  ],
+  "Jumat": [
+   "senam",
+   "bindo",
+   "mtk",
+   "bindo"
+  ]
+ },
+ "2A": {
+  "Senin": [
+   "upacara",
+   "pjok",
+   "senbud",
+   "mtk"
+  ],
+  "Selasa": [
+   "bindo",
+   "mulok",
+   "agama",
+   "bindo"
+  ],
+  "Rabu": [
+   "mtk",
+   "pancasila",
+   "agama",
+   "bindo"
+  ],
+  "Kamis": [
+   "senbud",
+   "mtk",
+   "bing",
+   "bindo"
+  ],
+  "Jumat": [
+   "senam",
+   "mtk",
+   "bindo",
+   "pancasila"
+  ]
+ },
+ "2B": {
+  "Senin": [
+   "upacara",
+   "mtk",
+   "bindo",
+   "mulok"
+  ],
+  "Selasa": [
+   "pjok",
+   "bindo",
+   "mtk",
+   "pancasila"
+  ],
+  "Rabu": [
+   "agama",
+   "bindo",
+   "senbud",
+   "mtk"
+  ],
+  "Kamis": [
+   "bindo",
+   "mtk",
+   "agama",
+   "bindo"
+  ],
+  "Jumat": [
+   "senam",
+   "pancasila",
+   "bing",
+   "senbud"
+  ]
+ },
+ "2C": {
+  "Senin": [
+   "upacara",
+   "bindo",
+   "mulok",
+   "agama"
+  ],
+  "Selasa": [
+   "bing",
+   "bindo",
+   "mtk",
+   "pjok"
+  ],
+  "Rabu": [
+   "pancasila",
+   "bindo",
+   "senbud",
+   "agama"
+  ],
+  "Kamis": [
+   "mtk",
+   "bindo",
+   "mtk",
+   "bindo"
+  ],
+  "Jumat": [
+   "senam",
+   "pancasila",
+   "senbud",
+   "mtk"
+  ]
+ },
+ "3A": {
+  "Senin": [
+   "upacara",
+   "info",
+   "ipas",
+   "senbud"
+  ],
+  "Selasa": [
+   "mtk",
+   "bindo",
+   "ipas",
+   "bing"
+  ],
+  "Rabu": [
+   "mulok",
+   "agama",
+   "pjok",
+   "mtk"
+  ],
+  "Kamis": [
+   "bindo",
+   "ipas",
+   "pancasila",
+   "agama"
+  ],
+  "Jumat": [
+   "senam",
+   "mtk",
+   "bindo",
+   "pramuka"
+  ]
+ },
+ "3B": {
+  "Senin": [
+   "upacara",
+   "senbud",
+   "mtk",
+   "bindo"
+  ],
+  "Selasa": [
+   "info",
+   "ipas",
+   "mulok",
+   "mtk"
+  ],
+  "Rabu": [
+   "bindo",
+   "bing",
+   "ipas",
+   "pancasila"
+  ],
+  "Kamis": [
+   "agama",
+   "pjok",
+   "mtk",
+   "bindo"
+  ],
+  "Jumat": [
+   "senam",
+   "ipas",
+   "agama",
+   "pramuka"
+  ]
+ },
+ "3C": {
+  "Senin": [
+   "upacara",
+   "mtk",
+   "bindo",
+   "agama"
+  ],
+  "Selasa": [
+   "ipas",
+   "mulok",
+   "mtk",
+   "info"
+  ],
+  "Rabu": [
+   "agama",
+   "bindo",
+   "ipas",
+   "pancasila"
+  ],
+  "Kamis": [
+   "bing",
+   "mtk",
+   "bindo",
+   "ipas"
+  ],
+  "Jumat": [
+   "senam",
+   "pjok",
+   "senbud",
+   "pramuka"
+  ]
+ },
+ "4B": {
+  "Senin": [
+   "upacara",
+   "bindo",
+   "pjok",
+   "ipas"
+  ],
+  "Selasa": [
+   "mulok",
+   "mtk",
+   "agama",
+   "bindo"
+  ],
+  "Rabu": [
+   "ipas",
+   "pancasila",
+   "info",
+   "agama"
+  ],
+  "Kamis": [
+   "mtk",
+   "bindo",
+   "ipas",
+   "bing"
+  ],
+  "Jumat": [
+   "senam",
+   "senbud",
+   "mtk",
+   "pramuka"
+  ]
+ },
+ "4C": {
+  "Senin": [
+   "upacara",
+   "bing",
+   "ipas",
+   "mulok"
+  ],
+  "Selasa": [
+   "mtk",
+   "pjok",
+   "bindo",
+   "ipas"
+  ],
+  "Rabu": [
+   "pancasila",
+   "agama",
+   "mtk",
+   "bindo"
+  ],
+  "Kamis": [
+   "ipas",
+   "senbud",
+   "agama",
+   "info"
+  ],
+  "Jumat": [
+   "senam",
+   "mtk",
+   "bindo",
+   "pramuka"
+  ]
+ },
+ "5A": {
+  "Senin": [
+   "upacara",
+   "mulok",
+   "mtk",
+   "bindo"
+  ],
+  "Selasa": [
+   "ipas",
+   "pancasila",
+   "mtk",
+   "bindo"
+  ],
+  "Rabu": [
+   "ipas",
+   "senbud",
+   "bing",
+   "pjok"
+  ],
+  "Kamis": [
+   "agama",
+   "mtk",
+   "bindo",
+   "ipas"
+  ],
+  "Jumat": [
+   "senam",
+   "info",
+   "agama",
+   "pramuka"
+  ]
+ },
+ "5B": {
+  "Senin": [
+   "upacara",
+   "mtk",
+   "info",
+   "agama"
+  ],
+  "Selasa": [
+   "bindo",
+   "ipas",
+   "pancasila",
+   "mtk"
+  ],
+  "Rabu": [
+   "bindo",
+   "ipas",
+   "senbud",
+   "mtk"
+  ],
+  "Kamis": [
+   "bindo",
+   "bing",
+   "pjok",
+   "agama"
+  ],
+  "Jumat": [
+   "senam",
+   "ipas",
+   "mulok",
+   "pramuka"
+  ]
+ },
+ "5C": {
+  "Senin": [
+   "upacara",
+   "agama",
+   "bindo",
+   "ipas"
+  ],
+  "Selasa": [
+   "pancasila",
+   "info",
+   "agama",
+   "mtk"
+  ],
+  "Rabu": [
+   "bindo",
+   "ipas",
+   "senbud",
+   "mtk"
+  ],
+  "Kamis": [
+   "bindo",
+   "ipas",
+   "mulok",
+   "mtk"
+  ],
+  "Jumat": [
+   "senam",
+   "bing",
+   "pjok",
+   "pramuka"
+  ]
+ },
+ "6A": {
+  "Senin": [
+   "upacara",
+   "ipas",
+   "bing",
+   "pjok"
+  ],
+  "Selasa": [
+   "agama",
+   "pancasila",
+   "mtk",
+   "bindo"
+  ],
+  "Rabu": [
+   "info",
+   "agama",
+   "ipas",
+   "senbud"
+  ],
+  "Kamis": [
+   "mtk",
+   "bindo",
+   "ipas",
+   "mulok"
+  ],
+  "Jumat": [
+   "senam",
+   "mtk",
+   "bindo",
+   "pramuka"
+  ]
+ },
+ "6B": {
+  "Senin": [
+   "upacara",
+   "pancasila",
+   "mtk",
+   "bing"
+  ],
+  "Selasa": [
+   "bindo",
+   "ipas",
+   "pjok",
+   "agama"
+  ],
+  "Rabu": [
+   "senbud",
+   "mtk",
+   "bindo",
+   "info"
+  ],
+  "Kamis": [
+   "agama",
+   "ipas",
+   "mulok",
+   "mtk"
+  ],
+  "Jumat": [
+   "senam",
+   "bindo",
+   "ipas",
+   "pramuka"
+  ]
+ },
+ "6C": {
+  "Senin": [
+   "upacara",
+   "mtk",
+   "bing",
+   "bindo"
+  ],
+  "Selasa": [
+   "ipas",
+   "senbud",
+   "pjok",
+   "mtk"
+  ],
+  "Rabu": [
+   "bindo",
+   "ipas",
+   "agama",
+   "mulok"
+  ],
+  "Kamis": [
+   "mtk",
+   "bindo",
+   "info",
+   "agama"
+  ],
+  "Jumat": [
+   "senam",
+   "ipas",
+   "pancasila",
+   "pramuka"
+  ]
+ }
+}

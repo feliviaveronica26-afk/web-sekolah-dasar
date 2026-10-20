@@ -6,6 +6,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\GatewaySppController;
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\KoleksiController;
@@ -88,6 +89,9 @@ Route::middleware('batas.sesi')->group(function () {
                 Route::put('/keuangan/{transaksi}', [KeuanganController::class, 'update']);
                 Route::delete('/keuangan/{transaksi}', [KeuanganController::class, 'destroy']);
             });
+
+            // Jadwal pelajaran per kelas (Wakasek Kurikulum & Kepala Sekolah). Agenda kalender lewat KoleksiController.
+            Route::put('/jadwal/{kelas}', [JadwalController::class, 'simpan']);
 
             // Data siswa + akun login siswa (akun: Tata Usaha & Kepala Sekolah)
             Route::post('/siswa', [SiswaController::class, 'store']);

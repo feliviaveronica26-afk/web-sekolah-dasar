@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import { ClipboardList, HeartPulse, KeyRound, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { ClipboardList, HeartPulse, KeyRound, Users, X } from 'lucide-react'
 import CrudPage from '../../components/CrudPage'
 import ModalAkun, { StatusAkun, TombolAkun } from '../../components/ModalAkun'
-import { Avatar, Badge, StatCard } from '../../components/ui'
+import { Alert, Avatar, Badge, StatCard } from '../../components/ui'
 import { useAkses } from '../../context/akses'
 import { useData } from '../../context/DataContext'
 import { KELAS, PPDB } from '../../data/dummy'
+import { todayKey } from '../../utils/format'
 import { GOLONGAN_DARAH, teksLahir } from '../../utils/siswa'
 
 // Biodata pokok yang sebaiknya terisi untuk rapor & Dapodik
@@ -17,6 +19,14 @@ export default function DataSiswa() {
   const [akunUntuk, setAkunUntuk] = useState(null)
   // Akun siswa diatur Tata Usaha & Kepala Sekolah (sama dengan Akses::kelolaAkunSiswa di Laravel)
   const kelolaAkun = akses.kepsek || akses.peran.includes('tata_usaha')
+  // Pintasan "Tambah Siswa" di beranda membuka halaman ini dengan ?tambah=1
+  const [params, setParams] = useSearchParams()
+  const [tambahAwal] = useState(() => (params.has('tambah') ? {} : null))
+  const [baruDitambah, setBaruDitambah] = useState(null)
+
+  useEffect(() => {
+    if (params.has('tambah')) setParams({}, { replace: true })
+  }, [params, setParams])
 
   const siswa = data.siswa
   const punyaAkun = siswa.filter((s) => s.akun).length
@@ -32,17 +42,38 @@ export default function DataSiswa() {
         desc="Data pokok, biodata, riwayat sekolah, dan catatan kesehatan seluruh siswa. Biodata hanya terlihat oleh pengelola data siswa, wali kelasnya, dan keluarga siswa itu sendiri."
         koleksi="siswa"
         itemLabel="Siswa"
+        tambahAwal={tambahAwal}
+        onTersimpan={(form, baru) => baru && setBaruDitambah({ nama: form.nama.trim(), kelas: form.kelas })}
         ringkasan={
-          <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard icon={Users} label="Siswa" value={siswa.length} hint={`${laki} laki-laki · ${siswa.length - laki} perempuan`} tone="sky" />
-            <StatCard icon={ClipboardList} label="Biodata belum lengkap" value={kurang} hint="NISN, kelahiran, atau agama kosong" tone="amber" />
-            <StatCard icon={HeartPulse} label="Punya catatan kesehatan" value={catatanSehat} hint="Alergi atau kondisi khusus" tone="primary" />
-            {kelolaAkun ? (
-              <StatCard icon={KeyRound} label="Punya akun login" value={punyaAkun} hint={`${siswa.length - punyaAkun} belum`} tone="emerald" />
-            ) : (
-              <StatCard icon={KeyRound} label="Kelas" value={KELAS.length} hint="Kelas 1A – 6C" tone="emerald" />
+          <>
+            {/* Siswa baru langsung terhubung ke portal lain; yang masih perlu dilengkapi diserahkan ke Tata Usaha */}
+            {baruDitambah && (
+              <div className="mb-6 d-flex align-items-start gap-2">
+                <div className="flex-1">
+                  <Alert tone="success">
+                    <b>{baruDitambah.nama}</b> sudah masuk kelas {baruDitambah.kelas}: langsung tampil di Daftar Siswa wali kelas & guru, Presensi Siswa,
+                    Input Nilai, Rapor, Poin Sikap, Rekap Kehadiran, Keuangan SPP (ditagih mulai bulan masuk), dan beranda Kepala Sekolah.{' '}
+                    {kelolaAkun
+                      ? 'Berikutnya: buat akun login siswa lewat tombol kunci, lalu hubungkan data orang tuanya di menu Data Orang Tua.'
+                      : 'Tata Usaha akan membuat akun login siswa dan melengkapi data orang tuanya.'}
+                  </Alert>
+                </div>
+                <button type="button" onClick={() => setBaruDitambah(null)} className="rounded-1 p-2 text-tinta-3 hover-latar-abu hover-teks-tinta" aria-label="Tutup pesan">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             )}
-          </div>
+            <div className="mb-6 d-grid kolom-2 gap-4 kolom-lg-4">
+              <StatCard icon={Users} label="Siswa" value={siswa.length} hint={`${laki} laki-laki · ${siswa.length - laki} perempuan`} tone="sky" />
+              <StatCard icon={ClipboardList} label="Biodata belum lengkap" value={kurang} hint="NISN, kelahiran, atau agama kosong" tone="amber" />
+              <StatCard icon={HeartPulse} label="Punya catatan kesehatan" value={catatanSehat} hint="Alergi atau kondisi khusus" tone="primary" />
+              {kelolaAkun ? (
+                <StatCard icon={KeyRound} label="Punya akun login" value={punyaAkun} hint={`${siswa.length - punyaAkun} belum`} tone="emerald" />
+              ) : (
+                <StatCard icon={KeyRound} label="Kelas" value={KELAS.length} hint="Kelas 1A – 6C" tone="emerald" />
+              )}
+            </div>
+          </>
         }
         searchKeys={['nama', 'nis', 'nisn', 'ortu']}
         cariTambahan={(s) => [s.catatanKesehatan, s.asalSekolah, s.akun?.username].filter(Boolean).join(' ')}
@@ -50,7 +81,8 @@ export default function DataSiswa() {
         urutkan={(a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama)}
         kosong={{
           nis: '', nisn: '', nama: '', kelas: '', jk: '', ortu: '', tempatLahir: '', tanggalLahir: '', agama: '', golonganDarah: '',
-          tanggalMasuk: '', asalSekolah: '', catatanKesehatan: '',
+          // Siswa baru/pindahan umumnya masuk hari ini; bisa diubah bila mendata siswa lama
+          tanggalMasuk: todayKey(), asalSekolah: '', catatanKesehatan: '',
         }}
         validasi={(form, semua, editId) => {
           const nis = form.nis.trim()
@@ -75,7 +107,7 @@ export default function DataSiswa() {
           { name: 'agama', label: 'Agama', type: 'select', options: PPDB.agama },
           { name: 'golonganDarah', label: 'Golongan Darah', type: 'select', options: GOLONGAN_DARAH },
           { name: 'judul-riwayat', label: 'Riwayat sekolah', type: 'judul' },
-          { name: 'tanggalMasuk', label: 'Tanggal Masuk', type: 'date' },
+          { name: 'tanggalMasuk', label: 'Tanggal Masuk', type: 'date', hint: 'SPP siswa baru/pindahan ditagih mulai bulan masuknya.' },
           { name: 'asalSekolah', label: 'Asal TK / Sekolah', placeholder: 'Contoh: TK Pertiwi', hint: 'Untuk siswa pindahan, isi sekolah asalnya.' },
           { name: 'judul-kesehatan', label: 'Kesehatan', type: 'judul' },
           {
@@ -91,9 +123,9 @@ export default function DataSiswa() {
             key: 'nis',
             label: 'NIS',
             render: (s) => (
-              <span className="block whitespace-nowrap">
-                <span className="block font-mono text-slate-800">{s.nis}</span>
-                {s.nisn && <span className="block font-mono text-[11px] text-slate-400">NISN {s.nisn}</span>}
+              <span className="d-block text-nowrap">
+                <span className="d-block font-monospace text-tinta">{s.nis}</span>
+                {s.nisn && <span className="d-block font-monospace fs-2xs text-abu-400">NISN {s.nisn}</span>}
               </span>
             ),
           },
@@ -101,21 +133,21 @@ export default function DataSiswa() {
             key: 'nama',
             label: 'Nama',
             render: (s) => (
-              <span className="flex items-center gap-3">
+              <span className="d-flex align-items-center gap-3">
                 <Avatar nama={s.nama} size="sm" />
                 <span className="min-w-0">
-                  <span className="block font-semibold text-slate-800">{s.nama}</span>
-                  {teksLahir(s) && <span className="block text-xs text-slate-500">{teksLahir(s)}</span>}
+                  <span className="d-block fw-semibold text-tinta">{s.nama}</span>
+                  {teksLahir(s) && <span className="d-block fs-xs text-tinta-3">{teksLahir(s)}</span>}
                   {s.catatanKesehatan && (
-                    <span className="mt-0.5 flex items-center gap-1 text-xs font-medium text-amber-700">
-                      <HeartPulse className="h-3 w-3 shrink-0" aria-hidden="true" /> {s.catatanKesehatan}
+                    <span className="mt-0-5 d-flex align-items-center gap-1 fs-xs fw-medium text-warning-emphasis">
+                      <HeartPulse className="h-3 w-3 flex-shrink-0" aria-hidden="true" /> {s.catatanKesehatan}
                     </span>
                   )}
                 </span>
               </span>
             ),
           },
-          { key: 'kelas', label: 'Kelas', render: (s) => <Badge className="bg-primary-50 text-primary-700">{s.kelas}</Badge> },
+          { key: 'kelas', label: 'Kelas', render: (s) => <Badge className="bg-merah-50 text-merah-700">{s.kelas}</Badge> },
           { key: 'jk', label: 'L/P' },
           { key: 'ortu', label: 'Orang Tua' },
           ...(kelolaAkun ? [{ key: 'akun', label: 'Akun Login', render: (s) => <StatusAkun akun={s.akun} /> }] : []),

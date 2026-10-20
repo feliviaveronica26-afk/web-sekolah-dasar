@@ -26,9 +26,9 @@ export default function OrtuTugas() {
       <DashHeader title="Tugas Ananda" desc={`Pantau tugas dan PR ${panggilan}. Status "selesai" ditandai sendiri oleh ananda di Portal Siswa.`} />
 
       <Card className="mb-6 p-5">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold text-slate-700">Progres tugas kelas {anak.kelas}</span>
-          <span className="font-bold text-slate-900">
+        <div className="d-flex align-items-center justify-content-between fs-sm">
+          <span className="fw-semibold text-tinta-2">Progres tugas kelas {anak.kelas}</span>
+          <span className="fw-bold text-tinta">
             {tugas.length - aktif.length}/{tugas.length} selesai
           </span>
         </div>
@@ -50,23 +50,23 @@ export default function OrtuTugas() {
           <EmptyState icon={ClipboardList} title={tab === 'aktif' ? 'Semua tugas sudah selesai 🎉' : 'Belum ada tugas yang selesai'} />
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="d-grid gap-4 kolom-md-2">
           {daftar.map((t) => {
             const done = selesai.includes(t.id)
             const tenggat = infoTenggat(t.tenggat)
             return (
               <Card key={t.id} className="p-5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className={`rounded-lg px-2 py-0.5 text-xs font-bold ${MAPEL[t.mapel].warna}`}>{MAPEL[t.mapel].nama}</span>
-                  {done ? <Badge className="bg-emerald-100 text-emerald-700">Selesai</Badge> : <Badge className={tenggat.cls}>{tenggat.teks}</Badge>}
+                <div className="d-flex flex-wrap align-items-center gap-2">
+                  <span className={`rounded-1 px-2 py-0-5 fs-xs fw-bold ${MAPEL[t.mapel].warna}`}>{MAPEL[t.mapel].nama}</span>
+                  {done ? <Badge className="bg-success-subtle text-success">Selesai</Badge> : <Badge className={tenggat.cls}>{tenggat.teks}</Badge>}
                 </div>
-                <h3 className="mt-2 flex items-start gap-2 font-bold text-slate-900">
-                  {done ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" /> : <CircleDashed className="mt-0.5 h-5 w-5 shrink-0 text-slate-300" />}
+                <h3 className="mt-2 d-flex align-items-start gap-2 fw-bold text-tinta">
+                  {done ? <CheckCircle2 className="mt-0-5 h-5 w-5 flex-shrink-0 teks-terang-emerald" /> : <CircleDashed className="mt-0-5 h-5 w-5 flex-shrink-0 text-abu-300" />}
                   {t.judul}
                 </h3>
-                <p className="mt-1 text-sm text-slate-600">{t.deskripsi}</p>
-                <p className="mt-3 text-xs text-slate-500">
-                  Diberikan {formatTanggal(t.diberikan, { year: undefined })} · Dikumpulkan <span className="font-semibold text-slate-700">{formatTanggal(t.tenggat, { year: undefined })}</span> · {namaPengampu(data.guru, anak.kelas, t.mapel)}
+                <p className="mt-1 fs-sm text-tinta-2">{t.deskripsi}</p>
+                <p className="mt-3 fs-xs text-tinta-3">
+                  Diberikan {formatTanggal(t.diberikan, { year: undefined })} · Dikumpulkan <span className="fw-semibold text-tinta-2">{formatTanggal(t.tenggat, { year: undefined })}</span> · {namaPengampu(data.guru, anak.kelas, t.mapel)}
                 </p>
               </Card>
             )

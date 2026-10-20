@@ -1,3 +1,5 @@
+import { liburPada } from './acuan'
+
 // Semua tanggal disimpan sebagai string 'YYYY-MM-DD' (waktu lokal)
 export const toKey = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -21,7 +23,8 @@ export const namaHari = (key) => {
   return cacheHari.get(key)
 }
 
-export const isHariSekolah = (d) => d.getDay() !== 0 && d.getDay() !== 6
+// Senin – Jumat yang bukan agenda libur di kalender akademik (sama dengan Waktu::hariSekolah di Laravel)
+export const isHariSekolah = (d) => d.getDay() !== 0 && d.getDay() !== 6 && !liburPada(toKey(d))
 
 // n hari sekolah terakhir sebelum tanggal `dari` (tidak termasuk hari itu)
 export function hariSekolahSebelum(n, dari = new Date()) {

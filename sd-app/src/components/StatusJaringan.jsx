@@ -12,24 +12,24 @@ const PESAN = {
     ikon: WifiOff,
     judul: 'Anda sedang offline',
     teks: 'Periksa WiFi atau data seluler. Halaman akan tersambung lagi secara otomatis.',
-    cls: 'bg-slate-900 text-white',
+    cls: 'bg-tinta text-white',
     peran: 'alert',
   },
   terputus: {
     ikon: CloudOff,
     judul: 'Tidak dapat terhubung ke server sekolah',
     teks: 'Koneksi internet bermasalah. Kami terus mencoba menyambung kembali.',
-    cls: 'bg-rose-600 text-white',
+    cls: 'bg-danger text-white',
     peran: 'alert',
   },
   lemah: {
     ikon: TriangleAlert,
     judul: 'Jaringan kurang stabil',
     teks: 'Halaman mungkin lambat dimuat. Tunggu sebentar sebelum menyimpan atau mengirim data.',
-    cls: 'bg-amber-400 text-amber-950',
+    cls: 'titik-amber text-tinta',
     peran: 'status',
   },
-  pulih: { ikon: CheckCircle2, judul: 'Koneksi kembali normal', cls: 'bg-emerald-600 text-white', peran: 'status' },
+  pulih: { ikon: CheckCircle2, judul: 'Koneksi kembali normal', cls: 'bg-success text-white', peran: 'status' },
 }
 
 // Kualitas jaringan menurut browser (Network Information API, tersedia di Chrome & Android)
@@ -130,24 +130,20 @@ export default function StatusJaringan() {
   const { ikon: Ikon, judul, teks, cls, peran } = pesan ?? {}
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-3 z-[70] flex flex-col items-center gap-2 px-4">
+    <div className="pe-none position-fixed start-0 end-0 top-3 z-70 d-flex flex-column align-items-center gap-2 px-4">
       <BilahMuat lemah={status === 'lemah' || status === 'terputus'} />
       {pesan && (
-        <div role={peran} className={`tampil-lembut pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl px-4 py-3 shadow-2xl ${cls}`}>
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-black/10">
-            <Ikon className="h-5 w-5" />
+        <div role={peran} className={`tampil-lembut pe-auto d-flex w-100 mw-md align-items-center gap-3 rounded-3 px-4 py-3 shadow-lg ${cls}`}>
+          <span className="d-flex align-items-center justify-content-center ukuran-9 flex-shrink-0 rounded-2 bg-black bg-opacity-10">
+            <Ikon className="ukuran-5" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold">{judul}</p>
-            {teks && <p className="text-xs opacity-90">{teks}</p>}
+            <p className="fs-sm fw-bold">{judul}</p>
+            {teks && <p className="fs-xs opacity-90">{teks}</p>}
           </div>
           {status !== 'pulih' && (
-            <button
-              onClick={() => setDitutup(status)}
-              aria-label="Tutup pemberitahuan"
-              className="rounded-lg p-1.5 opacity-80 transition hover:bg-white/15 hover:opacity-100"
-            >
-              <X className="h-4 w-4" />
+            <button type="button" onClick={() => setDitutup(status)} aria-label="Tutup pemberitahuan" className="tutup-pemberitahuan rounded-1 p-1-5 opacity-80 transisi">
+              <X className="ukuran-4" />
             </button>
           )}
         </div>

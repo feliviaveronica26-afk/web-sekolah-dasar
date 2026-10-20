@@ -57,30 +57,30 @@ export default function SimulasiBayar() {
   }
 
   return (
-    <main className="min-h-dvh bg-slate-900 px-4 py-8 text-slate-900">
-      <div className="mx-auto max-w-sm">
-        <p className="mb-4 flex items-center justify-center gap-2 text-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+    <main className="min-h-layar bg-tinta px-4 py-8 text-tinta">
+      <div className="mx-auto mw-sm">
+        <p className="mb-4 d-flex align-items-center justify-content-center gap-2 text-center fs-xs fw-semibold text-uppercase ls-lebar text-abu-300">
           <Landmark className="h-4 w-4" aria-hidden="true" /> Simulator Bank · Mode Demo
         </p>
 
-        <div className="overflow-hidden rounded-[2rem] bg-white shadow-2xl">
-          <div className="bg-slate-800 px-6 py-5 text-white">
-            <h1 className="font-sans text-lg font-bold">Bayar Tagihan</h1>
-            <p className="mt-1 text-xs text-slate-300">
+        <div className="overflow-hidden rounded-5 bg-white shadow-lg">
+          <div className="bg-tinta px-6 py-5 text-white">
+            <h1 className="fs-lg fw-bold">Bayar Tagihan</h1>
+            <p className="mt-1 fs-xs text-abu-300">
               Pengganti aplikasi bank/e-wallet untuk demo. Bukan bagian dari website sekolah dan tidak memakai uang sungguhan.
             </p>
           </div>
 
-          <div className="space-y-5 p-6">
+          <div className="antara-y-5 p-6">
             {hasil ? (
               <div className="py-4 text-center" role="status">
-                <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-100 text-emerald-600">
+                <span className="mx-auto d-flex h-16 w-16 align-items-center justify-content-center rounded-pill bg-success-subtle text-success">
                   <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
                 </span>
-                <p className="mt-4 text-xl font-extrabold">Pembayaran berhasil</p>
-                <p className="mt-1 text-2xl font-extrabold text-emerald-600">{rupiah(hasil.jumlah)}</p>
-                <p className="mt-1 text-xs text-slate-500">Ref. {hasil.noTransaksi}</p>
-                <p className="mt-4 text-sm text-slate-600">Bank sudah mengirim konfirmasi ke sekolah. Status di Portal Orang Tua berubah menjadi Lunas dengan sendirinya.</p>
+                <p className="mt-4 fs-xl fw-extrabold">Pembayaran berhasil</p>
+                <p className="mt-1 fs-2xl fw-extrabold text-success">{rupiah(hasil.jumlah)}</p>
+                <p className="mt-1 fs-xs text-tinta-3">Ref. {hasil.noTransaksi}</p>
+                <p className="mt-4 fs-sm text-tinta-2">Bank sudah mengirim konfirmasi ke sekolah. Status di Portal Orang Tua berubah menjadi Lunas dengan sendirinya.</p>
               </div>
             ) : (
               <>
@@ -90,12 +90,12 @@ export default function SimulasiBayar() {
                     cari()
                   }}
                 >
-                  <label htmlFor="kode-bayar" className="mb-1.5 block text-sm font-semibold text-slate-700">
+                  <label htmlFor="kode-bayar" className="mb-1-5 d-block fs-sm fw-semibold text-tinta-2">
                     Kode QRIS / nomor virtual account
                   </label>
-                  <div className="flex gap-2">
+                  <div className="d-flex gap-2">
                     <input id="kode-bayar" value={kode} onChange={(e) => setKode(e.target.value)} className={inputCls} placeholder="Tempel kode di sini" autoComplete="off" />
-                    <button type="submit" disabled={proses} className={`${btn.secondary} shrink-0`} aria-label="Cari tagihan">
+                    <button type="submit" disabled={proses} className={`${btn.secondary} flex-shrink-0`} aria-label="Cari tagihan">
                       <Search className="h-4 w-4" />
                     </button>
                   </div>
@@ -105,27 +105,27 @@ export default function SimulasiBayar() {
 
                 {tagihan && (
                   <>
-                    <dl className="divide-y divide-slate-100 rounded-2xl border border-slate-200 text-sm">
+                    <dl className="pembatas-y pembatas-abu rounded-3 border border-abu-200 fs-sm">
                       {[
                         ['Penerima', tagihan.merchant],
                         ['Keterangan', tagihan.keterangan],
                         ['Atas nama', tagihan.atasNama],
                         ['Metode', tagihan.metode],
                       ].map(([k, v]) => (
-                        <div key={k} className="flex justify-between gap-4 px-4 py-2.5">
-                          <dt className="text-slate-500">{k}</dt>
-                          <dd className="text-right font-semibold">{v || '–'}</dd>
+                        <div key={k} className="d-flex justify-content-between gap-4 px-4 py-2-5">
+                          <dt className="text-tinta-3">{k}</dt>
+                          <dd className="text-end fw-semibold">{v || '–'}</dd>
                         </div>
                       ))}
-                      <div className="flex items-baseline justify-between gap-4 px-4 py-3">
-                        <dt className="text-slate-500">Nominal</dt>
-                        <dd className="text-xl font-extrabold">{rupiah(tagihan.jumlah)}</dd>
+                      <div className="d-flex align-items-baseline justify-content-between gap-4 px-4 py-3">
+                        <dt className="text-tinta-3">Nominal</dt>
+                        <dd className="fs-xl fw-extrabold">{rupiah(tagihan.jumlah)}</dd>
                       </div>
                     </dl>
 
                     {tagihan.status === 'menunggu' ? (
-                      <form onSubmit={bayar} className="space-y-3">
-                        <label htmlFor="pin-bayar" className="block text-sm font-semibold text-slate-700">
+                      <form onSubmit={bayar} className="antara-y-3">
+                        <label htmlFor="pin-bayar" className="d-block fs-sm fw-semibold text-tinta-2">
                           PIN (6 angka, bebas untuk demo)
                         </label>
                         <input
@@ -136,16 +136,16 @@ export default function SimulasiBayar() {
                           maxLength={6}
                           value={pin}
                           onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          className={`${inputCls} text-center font-mono text-xl tracking-[0.5em]`}
+                          className={`${inputCls} text-center font-monospace fs-xl ls-kode`}
                           placeholder="••••••"
                         />
-                        <button type="submit" disabled={proses || pin.length !== 6} className={`${btn.primary} w-full py-3 disabled:opacity-60`}>
-                          {proses ? <Loader2 className="h-4 w-4 animate-spin" /> : <LockKeyhole className="h-4 w-4" />} Bayar {rupiah(tagihan.jumlah)}
+                        <button type="submit" disabled={proses || pin.length !== 6} className={`${btn.primary} w-100 py-3`}>
+                          {proses ? <Loader2 className="h-4 w-4 berputar" /> : <LockKeyhole className="h-4 w-4" />} Bayar {rupiah(tagihan.jumlah)}
                         </button>
                       </form>
                     ) : (
-                      <p className="flex items-start gap-2 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
-                        <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                      <p className="d-flex align-items-start gap-2 rounded-3 bg-warning-subtle p-4 fs-sm text-warning-emphasis">
+                        <TriangleAlert className="mt-0-5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
                         {tagihan.status === 'berhasil'
                           ? 'Tagihan ini sudah dibayar.'
                           : tagihan.status === 'kedaluwarsa'

@@ -24,18 +24,18 @@ export default function SiswaTugas() {
       <DashHeader title="Tugas & PR" desc="Centang tugas yang sudah kamu kerjakan supaya tidak ada yang terlewat." />
 
       <Card className="mb-6 p-5">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold text-slate-700">Progres tugasku</span>
-          <span className="font-bold text-slate-900">
+        <div className="d-flex align-items-center justify-content-between fs-sm">
+          <span className="fw-semibold text-tinta-2">Progres tugasku</span>
+          <span className="fw-bold text-tinta">
             {sudah.length}/{tugasKelas.length} selesai
           </span>
         </div>
-        <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-100">
-          <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${progres}%` }} />
+        <div className="mt-3 h-3 overflow-hidden rounded-pill bg-abu-100">
+          <div className="h-100 rounded-pill titik-emerald transisi" style={{ width: `${progres}%` }} />
         </div>
       </Card>
 
-      <div className="mb-5 inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1">
+      <div className="mb-5 d-inline-flex mw-100 overflow-x-auto rounded-2 bg-abu-100 p-1">
         {[
           ['belum', 'Belum Selesai', belum.length],
           ['sudah', 'Sudah Selesai', sudah.length],
@@ -43,9 +43,9 @@ export default function SiswaTugas() {
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={`shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+            className={`flex-shrink-0 text-nowrap rounded-1 px-4 py-2 fs-sm fw-semibold transisi ${tab === k ? 'bg-white text-tinta shadow-sm' : 'text-tinta-3'}`}
           >
-            {label} <span className="ml-1 text-xs text-slate-400">({n})</span>
+            {label} <span className="ms-1 fs-xs text-abu-400">({n})</span>
           </button>
         ))}
       </div>
@@ -59,32 +59,32 @@ export default function SiswaTugas() {
           />
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="d-grid gap-4 kolom-md-2">
           {daftar.map((t) => {
             const done = selesai.includes(t.id)
             const tenggat = infoTenggat(t.tenggat)
             return (
               <Card key={t.id} className={`p-5 ${done ? 'opacity-75' : ''}`}>
-                <div className="flex items-start gap-4">
+                <div className="d-flex align-items-start gap-4">
                   <button
                     onClick={() => toggleTugas(t.id)}
-                    className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg border-2 transition ${
-                      done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 hover:border-primary-500'
+                    className={`mt-0-5 d-flex h-7 w-7 flex-shrink-0 align-items-center justify-content-center rounded-1 border border-2 transisi ${
+                      done ? 'border-success titik-emerald text-white' : 'border-abu-300 hover-garis-merah'
                     }`}
                     aria-label={done ? 'Tandai belum selesai' : 'Tandai selesai'}
                   >
                     {done && <Check className="h-4 w-4" />}
                   </button>
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className={`rounded-lg px-2 py-0.5 text-xs font-bold ${MAPEL[t.mapel].warna}`}>{MAPEL[t.mapel].nama}</span>
+                    <div className="d-flex flex-wrap align-items-center gap-2">
+                      <span className={`rounded-1 px-2 py-0-5 fs-xs fw-bold ${MAPEL[t.mapel].warna}`}>{MAPEL[t.mapel].nama}</span>
                       {!done && <Badge className={tenggat.cls}>{tenggat.teks}</Badge>}
                     </div>
-                    <h3 className={`mt-2 font-bold text-slate-900 ${done ? 'line-through' : ''}`}>{t.judul}</h3>
-                    <p className="mt-1 text-sm text-slate-600">{t.deskripsi}</p>
-                    <p className="mt-3 text-xs text-slate-500">
+                    <h3 className={`mt-2 fw-bold text-tinta ${done ? 'line-through' : ''}`}>{t.judul}</h3>
+                    <p className="mt-1 fs-sm text-tinta-2">{t.deskripsi}</p>
+                    <p className="mt-3 fs-xs text-tinta-3">
                       Diberikan {formatTanggal(t.diberikan, { year: undefined })} · Dikumpulkan{' '}
-                      <span className="font-semibold text-slate-700">{formatTanggal(t.tenggat, { year: undefined })}</span>
+                      <span className="fw-semibold text-tinta-2">{formatTanggal(t.tenggat, { year: undefined })}</span>
                     </p>
                   </div>
                 </div>

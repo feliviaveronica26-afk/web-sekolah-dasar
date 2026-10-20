@@ -8,7 +8,7 @@ tersimpan di MySQL lewat backend Laravel; setiap pengguna hanya menerima data ya
 
 | Folder     | Isi                                                                        |
 |------------|----------------------------------------------------------------------------|
-| `sd-app/`  | Frontend: React 19, Vite 6, Tailwind CSS 4 — tampilan website & portal      |
+| `sd-app/`  | Frontend: React 19, Vite 6, Bootstrap 5.3 — tampilan website & portal       |
 | `laravel/` | Backend: Laravel 13 — API, login & sesi, hak akses, migrasi, seeder, tes    |
 
 ```

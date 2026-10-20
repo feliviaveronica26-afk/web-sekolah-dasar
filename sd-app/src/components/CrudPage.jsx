@@ -14,8 +14,10 @@ import { useData } from '../context/DataContext'
   tanpaHeader: sembunyikan judul halaman (untuk ditanam di dalam tab)
   ringkasan: elemen tambahan di antara judul dan tabel (mis. kartu statistik)
   saring:   fungsi (item) => boolean untuk membatasi data yang boleh dilihat pengguna
+  tambahAwal: objek isian awal; setiap objek baru langsung membuka formulir tambah (mis. dari pintasan beranda)
+  onTersimpan: fungsi (form, baru) setelah data tersimpan di server
 */
-export default function CrudPage({ title, desc, koleksi, itemLabel, fields, columns, searchKeys, filter, kosong, urutkan, validasi, tanpaHeader, ringkasan, saring, aksiBaris, cariTambahan, namaItem }) {
+export default function CrudPage({ title, desc, koleksi, itemLabel, fields, columns, searchKeys, filter, kosong, urutkan, validasi, tanpaHeader, ringkasan, saring, aksiBaris, cariTambahan, namaItem, tambahAwal, onTersimpan }) {
   const { data, tambah, ubah, hapus } = useData()
   const [cari, setCari] = useState('')
   const [nilaiFilter, setNilaiFilter] = useState('')
@@ -25,6 +27,15 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
   const [hapusItem, setHapusItem] = useState(null)
   const [galatHapus, setGalatHapus] = useState('')
   const [menyimpan, setMenyimpan] = useState(false)
+  const [awalDibuka, setAwalDibuka] = useState(null)
+
+  // Buka formulir tambah berisi isian awal (disesuaikan saat render, tanpa efek)
+  if (tambahAwal && tambahAwal !== awalDibuka) {
+    setAwalDibuka(tambahAwal)
+    setForm({ ...kosong, ...tambahAwal })
+    setEditId(null)
+    setError('')
+  }
 
   const q = cari.trim().toLowerCase()
   // Koleksi yang belum dimuat (mis. data lama di browser) dianggap kosong
@@ -61,6 +72,7 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
     const galat = await (editId ? ubah(koleksi, editId, form, { diam: true }) : tambah(koleksi, form, { diam: true }))
     setMenyimpan(false)
     if (galat) return setError(galat)
+    onTersimpan?.(form, !editId)
     tutup()
   }
 
@@ -79,7 +91,7 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
   }
 
   const tombolTambah = (
-    <button onClick={bukaTambah} className={btn.primary}>
+    <button onClick={bukaTambah} className={`${btn.primary} flex-shrink-0 text-nowrap`}>
       <Plus className="h-4 w-4" /> Tambah {itemLabel}
     </button>
   )
@@ -90,14 +102,14 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
       {ringkasan}
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row">
+        <div className="d-flex flex-column gap-3 border-bottom border-abu-100 p-4 flex-sm-row">
           {tanpaHeader && tombolTambah}
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari..." className={`${inputCls} pl-10`} />
+          <div className="position-relative flex-1">
+            <Search className="pe-none position-absolute start-3-5 top-50 h-4 w-4 translate-middle-y text-abu-400" />
+            <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari..." className={`${inputCls} ps-10`} />
           </div>
           {filter && (
-            <select value={nilaiFilter} onChange={(e) => setNilaiFilter(e.target.value)} className={`${inputCls} sm:w-48`}>
+            <select value={nilaiFilter} onChange={(e) => setNilaiFilter(e.target.value)} className={`${inputCls} w-sm-48`}>
               <option value="">Semua {filter.label}</option>
               {filter.options.map((o) => (
                 <option key={o} value={o}>
@@ -112,32 +124,32 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
           <EmptyState icon={Inbox} title="Data tidak ditemukan" desc="Coba ubah kata kunci pencarian atau tambahkan data baru." />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <table className="w-100 min-w-640 text-start fs-sm">
+              <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                 <tr>
                   {columns.map((c) => (
-                    <th key={c.key} className="px-5 py-3 font-semibold">
+                    <th key={c.key} className="px-5 py-3 fw-semibold">
                       {c.label}
                     </th>
                   ))}
-                  <th className="px-5 py-3 text-right font-semibold">Aksi</th>
+                  <th className="px-5 py-3 text-end fw-semibold">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="pembatas-y pembatas-abu">
                 {daftar.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/60">
+                  <tr key={item.id} className="hover-latar">
                     {columns.map((c) => (
-                      <td key={c.key} className="px-5 py-3 text-slate-700">
+                      <td key={c.key} className="px-5 py-3 text-tinta-2">
                         {c.render ? c.render(item) : item[c.key]}
                       </td>
                     ))}
                     <td className="px-5 py-3">
-                      <div className="flex justify-end gap-1">
+                      <div className="d-flex justify-content-end gap-1">
                         {aksiBaris?.(item)}
-                        <button onClick={() => bukaUbah(item)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Ubah">
+                        <button onClick={() => bukaUbah(item)} className="rounded-1 p-2 text-tinta-3 hover-latar-abu hover-teks-tinta" aria-label="Ubah">
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => bukaHapus(item)} className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600" aria-label="Hapus">
+                        <button onClick={() => bukaHapus(item)} className="rounded-1 p-2 text-tinta-3 hover-latar-merah hover-teks-merah" aria-label="Hapus">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -148,7 +160,7 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
             </table>
           </div>
         )}
-        <div className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
+        <div className="border-top border-abu-100 px-5 py-3 fs-xs text-tinta-3">
           Menampilkan {daftar.length} dari {milik.length} data
         </div>
       </Card>
@@ -156,10 +168,10 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
       {/* Modal tambah/ubah */}
       <Modal open={!!form} onClose={tutup} title={`${editId ? 'Ubah' : 'Tambah'} ${itemLabel}`}>
         {form && (
-          <form id="crud-form" onSubmit={simpan} className="grid gap-4 sm:grid-cols-2">
+          <form id="crud-form" onSubmit={simpan} className="d-grid gap-4 kolom-sm-2">
             {error && (
               // Gulir ke pesan galat (formulir panjang bisa sedang tergulir ke bawah)
-              <div key={error} ref={(el) => el?.scrollIntoView({ block: 'nearest' })} className="sm:col-span-2">
+              <div key={error} ref={(el) => el?.scrollIntoView({ block: 'nearest' })} className="rentang-sm-2">
                 <Alert tone="error">{error}</Alert>
               </div>
             )}
@@ -167,7 +179,7 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
               if (f.tampil && !f.tampil(form)) return null
               if (f.type === 'judul') {
                 return (
-                  <p key={f.name} className="border-t border-slate-100 pt-4 text-xs font-bold uppercase tracking-wider text-slate-500 first:border-t-0 first:pt-0 sm:col-span-2">
+                  <p key={f.name} className="border-top border-abu-100 pt-4 fs-xs fw-bold text-uppercase ls-wider text-tinta-3 pertama-tanpa-garis pertama-pt-0 rentang-sm-2">
                     {f.label}
                   </p>
                 )
@@ -185,27 +197,27 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
                 const toggle = (v) =>
                   setForm({ ...form, [f.name]: nilai.includes(v) ? nilai.filter((x) => x !== v) : [...nilai, v] })
                 return (
-                  <fieldset key={f.name} className="sm:col-span-2">
+                  <fieldset key={f.name} className="rentang-sm-2">
                     <legend className={labelCls}>{f.label}</legend>
-                    <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="d-grid gap-2 kolom-sm-2">
                       {f.options.map((o) => (
                         <label
                           key={o.value}
-                          className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition ${
-                            nilai.includes(o.value) ? 'border-primary-400 bg-primary-50 font-semibold text-primary-800' : 'border-slate-200 text-slate-700'
+                          className={`d-flex cursor-pointer align-items-center gap-2-5 rounded-2 border px-3 py-2-5 fs-sm transisi ${
+                            nilai.includes(o.value) ? 'border-merah-400 bg-merah-50 fw-semibold text-merah-800' : 'border-abu-200 text-tinta-2'
                           }`}
                         >
-                          <input type="checkbox" checked={nilai.includes(o.value)} onChange={() => toggle(o.value)} className="h-4 w-4 accent-primary-600" />
+                          <input type="checkbox" checked={nilai.includes(o.value)} onChange={() => toggle(o.value)} className="h-4 w-4 aksen-merah" />
                           {o.label}
                         </label>
                       ))}
                     </div>
-                    {f.hint && <p className="mt-1.5 text-xs text-slate-500">{f.hint}</p>}
+                    {f.hint && <p className="mt-1-5 fs-xs text-tinta-3">{f.hint}</p>}
                   </fieldset>
                 )
               }
               return (
-                <div key={f.name} className={f.full || f.type === 'textarea' ? 'sm:col-span-2' : ''}>
+                <div key={f.name} className={f.full || f.type === 'textarea' ? 'rentang-sm-2' : ''}>
                   <label htmlFor={f.name} className={labelCls}>
                     {f.label}
                   </label>
@@ -223,17 +235,17 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
                   ) : (
                     <input type={f.type || 'text'} {...props} />
                   )}
-                  {f.hint && <p className="mt-1.5 text-xs text-slate-500">{f.hint}</p>}
+                  {f.hint && <p className="mt-1-5 fs-xs text-tinta-3">{f.hint}</p>}
                 </div>
               )
             })}
           </form>
         )}
-        <div className="mt-6 flex flex-wrap justify-end gap-2">
+        <div className="mt-6 d-flex flex-wrap justify-content-end gap-2">
           <button type="button" onClick={tutup} className={btn.secondary}>
             Batal
           </button>
-          <button type="submit" form="crud-form" disabled={menyimpan} className={`${btn.primary} disabled:opacity-60`}>
+          <button type="submit" form="crud-form" disabled={menyimpan} className={`${btn.primary}`}>
             {menyimpan ? 'Menyimpan…' : 'Simpan'}
           </button>
         </div>
@@ -250,7 +262,7 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
             <button onClick={() => setHapusItem(null)} className={btn.secondary}>
               Batal
             </button>
-            <button onClick={konfirmasiHapus} disabled={menyimpan} className={`${btn.primary} bg-rose-600 hover:bg-rose-700 disabled:opacity-60`}>
+            <button onClick={konfirmasiHapus} disabled={menyimpan} className="btn btn-danger">
               <Trash2 className="h-4 w-4" /> {menyimpan ? 'Menghapus…' : 'Hapus'}
             </button>
           </>
@@ -261,8 +273,8 @@ export default function CrudPage({ title, desc, koleksi, itemLabel, fields, colu
             <Alert tone="error">{galatHapus}</Alert>
           </div>
         )}
-        <p className="text-slate-600">
-          Data <span className="font-semibold text-slate-900">{hapusItem && (namaItem?.(hapusItem) ?? (hapusItem.nama || hapusItem.judul))}</span> akan dihapus permanen.
+        <p className="text-tinta-2">
+          Data <span className="fw-semibold text-tinta">{hapusItem && (namaItem?.(hapusItem) ?? (hapusItem.nama || hapusItem.judul))}</span> akan dihapus permanen.
         </p>
       </Modal>
     </>

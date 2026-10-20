@@ -10,20 +10,20 @@ export default function JamSekolah({ untukGuru = false, className = '' }) {
   // Portal satpam: kartu marun dengan jam berlatar kuning, seperti linimasa "Sehari di sekolah" di beranda
   if (situs)
     return (
-      <Card className={`border-primary-950! bg-primary-950 p-6 text-white sm:p-7 ${className}`}>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <Card className={`border-merah-950 bg-merah-950 p-6 text-white p-sm-7 ${className}`}>
+        <div className="d-flex flex-wrap align-items-center column-gap-2 row-gap-1">
           <Clock className="h-5 w-5 text-stabilo" aria-hidden="true" />
-          <h2 className="text-xl text-white">Jam Sekolah</h2>
-          <span className="text-sm text-krem">· Senin – Jumat</span>
+          <h2 className="fs-xl text-white">Jam Sekolah</h2>
+          <span className="fs-sm text-krem">· Senin – Jumat</span>
         </div>
-        <div className={`mt-5 grid grid-cols-2 gap-3 ${untukGuru ? 'sm:grid-cols-3 lg:grid-cols-6' : 'sm:grid-cols-4'}`}>
+        <div className={`mt-5 d-grid kolom-2 gap-3 ${untukGuru ? 'kolom-sm-3 kolom-lg-6' : 'kolom-sm-4'}`}>
           {daftar.map((j) => (
             <div
               key={j.label}
-              className={`rounded-[1.25rem] p-4 ring-1 ring-inset ${j.guru ? 'bg-white/10 ring-stabilo/40' : 'bg-white/[0.06] ring-white/10'}`}
+              className={`rounded-3 p-4 border ${j.guru ? 'bg-white bg-opacity-10 border-stabilo border-opacity-40' : 'bg-white/[0.06] ring-white/10'}`}
             >
-              <p className="text-sm text-krem">{j.label}</p>
-              <p className="angka mt-2 inline-block rounded-[0.9rem] bg-stabilo px-3 py-1 text-[15px] font-extrabold text-tinta">{j.jam}</p>
+              <p className="fs-sm text-krem">{j.label}</p>
+              <p className="angka mt-2 d-inline-block rounded-3 bg-stabilo px-3 py-1 fs-15 fw-extrabold text-tinta">{j.jam}</p>
             </div>
           ))}
         </div>
@@ -32,16 +32,16 @@ export default function JamSekolah({ untukGuru = false, className = '' }) {
 
   return (
     <Card className={`p-5 ${className}`}>
-      <div className="flex items-center gap-2">
-        <Clock className="h-5 w-5 text-primary-600" />
-        <h2 className="font-bold text-slate-900">Jam Sekolah</h2>
-        <span className="text-sm text-slate-500">· Senin – Jumat</span>
+      <div className="d-flex align-items-center gap-2">
+        <Clock className="h-5 w-5 text-primary" />
+        <h2 className="fw-bold text-tinta">Jam Sekolah</h2>
+        <span className="fs-sm text-tinta-3">· Senin – Jumat</span>
       </div>
-      <div className={`mt-4 grid grid-cols-2 gap-2 ${untukGuru ? 'sm:grid-cols-3 lg:grid-cols-6' : 'sm:grid-cols-4'}`}>
+      <div className={`mt-4 d-grid kolom-2 gap-2 ${untukGuru ? 'kolom-sm-3 kolom-lg-6' : 'kolom-sm-4'}`}>
         {daftar.map((j) => (
-          <div key={j.label} className={`rounded-xl px-3 py-2.5 ${j.guru ? 'bg-sky-50' : 'bg-slate-50'}`}>
-            <p className="text-xs text-slate-500">{j.label}</p>
-            <p className="font-bold text-slate-900">{j.jam}</p>
+          <div key={j.label} className={`rounded-2 px-3 py-2-5 ${j.guru ? 'bg-info-subtle' : 'bg-abu-50'}`}>
+            <p className="fs-xs text-tinta-3">{j.label}</p>
+            <p className="fw-bold text-tinta">{j.jam}</p>
           </div>
         ))}
       </div>

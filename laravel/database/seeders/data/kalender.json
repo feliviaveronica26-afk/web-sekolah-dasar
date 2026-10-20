@@ -1,0 +1,218 @@
+[
+ {
+  "selesai": "2026-07-15",
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-07-13",
+  "judul": "Masa Pengenalan Lingkungan Sekolah (MPLS)",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-08-17",
+  "judul": "HUT Kemerdekaan RI ke-81",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": true,
+  "keterangan": "",
+  "mulai": "2026-08-25",
+  "judul": "Maulid Nabi Muhammad SAW",
+  "jenis": "libur"
+ },
+ {
+  "selesai": "2026-10-16",
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-10-12",
+  "judul": "Penilaian Tengah Semester (PTS) Ganjil",
+  "jenis": "ujian"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-10-14",
+  "judul": "Pemeriksaan Kesehatan Gigi",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-10-23",
+  "judul": "Field Trip Kelas 4 ke Museum Nasional",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-10-28",
+  "judul": "Upacara Hari Sumpah Pemuda",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-11-10",
+  "judul": "Upacara Hari Pahlawan",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-11-25",
+  "judul": "Peringatan Hari Guru Nasional",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": "2026-12-11",
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-12-07",
+  "judul": "Penilaian Akhir Semester (PAS) Ganjil",
+  "jenis": "ujian"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-12-18",
+  "judul": "Pembagian Rapor Semester Ganjil",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": "2027-01-01",
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-12-21",
+  "judul": "Libur Semester Ganjil",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2026-12-25",
+  "judul": "Hari Raya Natal",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-01-01",
+  "judul": "Tahun Baru 2027",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-01-04",
+  "judul": "Hari Pertama Semester Genap",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": null,
+  "perkiraan": true,
+  "keterangan": "",
+  "mulai": "2027-01-05",
+  "judul": "Isra Mikraj Nabi Muhammad SAW",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": true,
+  "keterangan": "",
+  "mulai": "2027-02-06",
+  "judul": "Tahun Baru Imlek",
+  "jenis": "libur"
+ },
+ {
+  "selesai": "2027-03-16",
+  "perkiraan": true,
+  "keterangan": "",
+  "mulai": "2027-03-08",
+  "judul": "Libur Hari Raya Idulfitri",
+  "jenis": "libur"
+ },
+ {
+  "selesai": "2027-03-26",
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-03-22",
+  "judul": "Penilaian Tengah Semester (PTS) Genap",
+  "jenis": "ujian"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-03-26",
+  "judul": "Wafat Yesus Kristus",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-05-06",
+  "judul": "Kenaikan Yesus Kristus",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": true,
+  "keterangan": "",
+  "mulai": "2027-05-17",
+  "judul": "Hari Raya Iduladha",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": true,
+  "keterangan": "",
+  "mulai": "2027-05-20",
+  "judul": "Hari Raya Waisak",
+  "jenis": "libur"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-06-01",
+  "judul": "Hari Lahir Pancasila",
+  "jenis": "libur"
+ },
+ {
+  "selesai": "2027-06-11",
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-06-07",
+  "judul": "Penilaian Akhir Tahun (PAT)",
+  "jenis": "ujian"
+ },
+ {
+  "selesai": null,
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-06-18",
+  "judul": "Pembagian Rapor Kenaikan Kelas",
+  "jenis": "kegiatan"
+ },
+ {
+  "selesai": "2027-07-09",
+  "perkiraan": false,
+  "keterangan": "",
+  "mulai": "2027-06-21",
+  "judul": "Libur Kenaikan Kelas",
+  "jenis": "libur"
+ }
+]

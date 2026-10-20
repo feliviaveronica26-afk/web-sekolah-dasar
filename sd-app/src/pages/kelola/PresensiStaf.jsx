@@ -28,6 +28,7 @@ import { Alert, Avatar, Badge, Card, DashHeader, EmptyState, IzinBadge, Modal, P
 import { useAkses } from '../../context/akses'
 import { useData } from '../../context/DataContext'
 import { JENIS_IZIN_STAF } from '../../data/dummy'
+import { liburPada } from '../../utils/acuan'
 import { formatHari, formatTanggal, isHariSekolah, namaHari, parseKey, rentangHariSekolah, tambahHari, todayKey } from '../../utils/format'
 import { unduhFileCsv } from '../../utils/keamanan'
 import {
@@ -66,14 +67,14 @@ function Keterangan({ rec, g, kosong = '–' }) {
       boleh ? (
         <p key="ket">{rec.ket}</p>
       ) : (
-        <p key="ket" className="flex items-center gap-1 text-slate-400">
+        <p key="ket" className="d-flex align-items-center gap-1 text-abu-400">
           <Lock className="h-3 w-3" /> Rincian bersifat pribadi
         </p>
       ),
     )
   if (rec.izinId)
     isi.push(
-      <p key="izin" className="text-emerald-700">
+      <p key="izin" className="text-success">
         Izin disetujui Kepala Sekolah
       </p>,
     )
@@ -82,25 +83,25 @@ function Keterangan({ rec, g, kosong = '–' }) {
   if (rec.koreksi?.length) {
     const k = rec.koreksi.at(-1)
     isi.push(
-      <p key="kr" className="flex items-start gap-1 text-amber-700">
-        <History className="mt-0.5 h-3 w-3 shrink-0" /> Dikoreksi {k.oleh}: {k.alasan}
+      <p key="kr" className="d-flex align-items-start gap-1 text-warning-emphasis">
+        <History className="mt-0-5 h-3 w-3 flex-shrink-0" /> Dikoreksi {k.oleh}: {k.alasan}
       </p>,
     )
   }
-  return isi.length ? <div className="space-y-0.5">{isi}</div> : kosong
+  return isi.length ? <div className="antara-y-0-5">{isi}</div> : kosong
 }
 
 function RiwayatKoreksi({ koreksi }) {
   return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
-      <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-amber-800">
-        <History className="h-3.5 w-3.5" /> Riwayat koreksi
+    <div className="rounded-2 border border-warning-subtle bg-warning-subtle p-3">
+      <p className="mb-2 d-flex align-items-center gap-1-5 fs-xs fw-bold text-warning-emphasis">
+        <History className="h-3-5 w-3-5" /> Riwayat koreksi
       </p>
-      <ul className="space-y-2 text-xs text-slate-600">
+      <ul className="antara-y-2 fs-xs text-tinta-2">
         {[...koreksi].reverse().map((k) => (
           <li key={k.waktu}>
-            <span className="font-semibold text-slate-800">{k.oleh}</span> · {waktuLengkap(k.waktu)}
-            <span className="block">
+            <span className="fw-semibold text-tinta">{k.oleh}</span> · {waktuLengkap(k.waktu)}
+            <span className="d-block">
               Sebelumnya: {k.sebelum ? ringkasCatatan(k.sebelum) : 'tidak ada catatan'} — {k.alasan}
             </span>
           </li>
@@ -146,7 +147,7 @@ function PapanHarian({ onDetail, onKoreksi }) {
 
   return (
     <>
-      <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-4 d-grid kolom-2 gap-4 kolom-lg-4">
         <StatCard icon={UserCheck} label="Hadir di sekolah" value={`${r.tepat + r.terlambat}/${r.total}`} hint={`${r.tepat} tepat waktu`} tone="emerald" />
         <StatCard icon={Timer} label="Terlambat" value={r.terlambat} hint={totalTelat ? `total ${totalTelat} menit` : 'tidak ada'} tone="amber" />
         <StatCard icon={Briefcase} label="Dinas luar & izin" value={r.dinas + r.izin} hint={`${r.dinas} dinas · ${r.izin} izin/sakit/cuti`} tone="sky" />
@@ -159,11 +160,11 @@ function PapanHarian({ onDetail, onKoreksi }) {
         />
       </div>
 
-      <Card className="mb-4 flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
+      <Card className="mb-4 d-flex flex-column gap-3 p-4 flex-lg-row align-items-lg-center justify-content-lg-between">
+        <div className="d-flex flex-wrap align-items-center gap-2">
           <button
             onClick={() => setTanggal(hariSekolahGeser(tanggal, -1))}
-            className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
+            className="rounded-1 border border-abu-200 p-2 text-tinta-2 hover-latar"
             aria-label="Hari sekolah sebelumnya"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -173,48 +174,52 @@ function PapanHarian({ onDetail, onKoreksi }) {
             value={tanggal}
             max={hariIni}
             onChange={(e) => e.target.value && setTanggal(e.target.value)}
-            className={`${inputCls} w-auto!`}
+            className={`${inputCls} w-auto`}
             aria-label="Pilih tanggal"
           />
           <button
             onClick={() => setTanggal(berikut)}
             disabled={berikut > hariIni}
-            className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+            className="rounded-1 border border-abu-200 p-2 text-tinta-2 hover-latar"
             aria-label="Hari sekolah berikutnya"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
-          <span className="text-sm font-semibold text-slate-700">{formatHari(tanggal)}</span>
+          <span className="fs-sm fw-semibold text-tinta-2">{formatHari(tanggal)}</span>
           {!adalahHariIni && (
-            <button onClick={() => setTanggal(hariIni)} className="text-sm font-semibold text-primary-600 hover:underline">
+            <button onClick={() => setTanggal(hariIni)} className="fs-sm fw-semibold text-primary hover-garis-bawah">
               Kembali ke hari ini
             </button>
           )}
         </div>
-        <div className="relative lg:w-64">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama..." className={`${inputCls} pl-10`} />
+        <div className="position-relative w-lg-64">
+          <Search className="pe-none position-absolute start-3-5 top-50 h-4 w-4 translate-middle-y text-abu-400" />
+          <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama..." className={`${inputCls} ps-10`} />
         </div>
       </Card>
 
       {libur ? (
         <Card>
-          <EmptyState icon={Clock} title="Hari libur" desc="Tidak ada presensi pada akhir pekan. Pilih hari sekolah lain." />
+          <EmptyState
+            icon={Clock}
+            title={liburPada(tanggal) ? `Libur: ${liburPada(tanggal)}` : 'Hari libur'}
+            desc={liburPada(tanggal) ? 'Tanggal ini libur di kalender akademik, tidak ada presensi. Pilih hari sekolah lain.' : 'Tidak ada presensi pada akhir pekan. Pilih hari sekolah lain.'}
+          />
         </Card>
       ) : (
         <>
-          <div className="mb-4 flex flex-wrap gap-2">
+          <div className="mb-4 d-flex flex-wrap gap-2">
             {SARING.filter(([k]) => k === 'semua' || k === saring || jumlah(k) > 0).map(([k, label]) => (
               <button
                 key={k}
                 onClick={() => setSaring(k)}
                 aria-pressed={saring === k}
-                className={`ui-saring rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
-                  saring === k ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
+                className={`ui-saring rounded-pill px-3-5 py-1-5 fs-sm fw-semibold transisi ${
+                  saring === k ? 'bg-tinta text-white' : 'bg-white text-tinta-2 border border-abu-200 hover-latar'
                 }`}
               >
                 {k === 'belum' && !adalahHariIni ? 'Tanpa catatan' : label}
-                <span className="ml-1.5 text-xs opacity-70">{jumlah(k)}</span>
+                <span className="ms-1-5 fs-xs opacity-70">{jumlah(k)}</span>
               </button>
             ))}
           </div>
@@ -224,64 +229,64 @@ function PapanHarian({ onDetail, onKoreksi }) {
               <EmptyState icon={Users} title="Tidak ada yang cocok" desc="Coba ubah saringan atau kata pencarian." />
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[860px] text-left text-sm">
-                  <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+                <table className="w-100 min-w-860 text-start fs-sm">
+                  <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                     <tr>
-                      <th className="px-5 py-3 font-semibold">Guru / Staf</th>
-                      <th className="px-3 py-3 font-semibold">Jam kerja</th>
-                      <th className="px-3 py-3 font-semibold">Masuk</th>
-                      <th className="px-3 py-3 font-semibold">Pulang</th>
-                      <th className="px-3 py-3 font-semibold">Status</th>
-                      <th className="px-3 py-3 font-semibold">Keterangan</th>
-                      {akses.kepsek && <th className="px-5 py-3 text-right font-semibold">Aksi</th>}
+                      <th className="px-5 py-3 fw-semibold">Guru / Staf</th>
+                      <th className="px-3 py-3 fw-semibold">Jam kerja</th>
+                      <th className="px-3 py-3 fw-semibold">Masuk</th>
+                      <th className="px-3 py-3 fw-semibold">Pulang</th>
+                      <th className="px-3 py-3 fw-semibold">Status</th>
+                      <th className="px-3 py-3 fw-semibold">Keterangan</th>
+                      {akses.kepsek && <th className="px-5 py-3 text-end fw-semibold">Aksi</th>}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="pembatas-y pembatas-abu">
                     {daftar.map(({ g, rec, kode }) => {
                       const saya = g.id === akses.guruId
                       const jam = jamKerja(g)
                       const telat = menitTerlambat(rec, g)
                       return (
-                        <tr key={g.id} className={saya ? 'bg-primary-50/50' : 'hover:bg-slate-50/60'}>
+                        <tr key={g.id} className={saya ? 'bg-merah-50' : 'hover-latar'}>
                           <td className="px-5 py-3">
-                            <button onClick={() => onDetail(g.id)} className="group flex items-center gap-3 text-left">
+                            <button onClick={() => onDetail(g.id)} className="grup d-flex align-items-center gap-3 text-start">
                               <Avatar nama={g.nama} size="sm" />
                               <span>
-                                <span className="block font-semibold text-slate-800 group-hover:text-primary-700">
+                                <span className="d-block fw-semibold text-tinta judul-sorot">
                                   {g.nama}
-                                  {saya && <Badge className="ml-2 bg-primary-100 text-primary-700">Anda</Badge>}
+                                  {saya && <Badge className="ms-2 bg-merah-100 text-merah-700">Anda</Badge>}
                                 </span>
-                                <span className="block text-xs text-slate-500">{g.jabatan}</span>
+                                <span className="d-block fs-xs text-tinta-3">{g.jabatan}</span>
                               </span>
                             </button>
                           </td>
-                          <td className="whitespace-nowrap px-3 py-3 tabular-nums text-slate-500">
+                          <td className="text-nowrap px-3 py-3 angka text-tinta-3">
                             {jam.masuk}–{jam.pulang}
                           </td>
-                          <td className="whitespace-nowrap px-3 py-3 tabular-nums">
-                            <span className="font-semibold text-slate-800">{rec?.masuk ?? '–'}</span>
-                            {telat > 0 && <span className="block text-xs font-medium text-amber-700">+{telat} menit</span>}
+                          <td className="text-nowrap px-3 py-3 angka">
+                            <span className="fw-semibold text-tinta">{rec?.masuk ?? '–'}</span>
+                            {telat > 0 && <span className="d-block fs-xs fw-medium text-warning-emphasis">+{telat} menit</span>}
                           </td>
-                          <td className="whitespace-nowrap px-3 py-3 tabular-nums">
-                            <span className="font-semibold text-slate-800">{rec?.pulang ?? '–'}</span>
-                            {pulangCepat(rec, g) && <span className="block text-xs font-medium text-amber-700">lebih awal</span>}
+                          <td className="text-nowrap px-3 py-3 angka">
+                            <span className="fw-semibold text-tinta">{rec?.pulang ?? '–'}</span>
+                            {pulangCepat(rec, g) && <span className="d-block fs-xs fw-medium text-warning-emphasis">lebih awal</span>}
                             {rec?.status === 'H' && rec.masuk && !rec.pulang && tanggal < hariIni && (
-                              <span className="block text-xs text-slate-400">tidak absen pulang</span>
+                              <span className="d-block fs-xs text-abu-400">tidak absen pulang</span>
                             )}
                           </td>
                           <td className="px-3 py-3">
                             <StatusPresensi kode={kode} hariIni={adalahHariIni} />
                           </td>
-                          <td className="max-w-xs px-3 py-3 text-xs text-slate-600">
+                          <td className="mw-xs px-3 py-3 fs-xs text-tinta-2">
                             <Keterangan rec={rec} g={g} />
                           </td>
                           {akses.kepsek && (
-                            <td className="px-5 py-3 text-right">
+                            <td className="px-5 py-3 text-end">
                               <button
                                 onClick={() => onKoreksi({ g, rec, tanggal })}
-                                className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                                className="d-inline-flex align-items-center gap-1 rounded-1 px-2-5 py-1-5 fs-xs fw-semibold text-tinta-2 hover-latar-abu"
                               >
-                                <PencilLine className="h-3.5 w-3.5" /> Koreksi
+                                <PencilLine className="h-3-5 w-3-5" /> Koreksi
                               </button>
                             </td>
                           )}
@@ -292,8 +297,8 @@ function PapanHarian({ onDetail, onKoreksi }) {
                 </table>
               </div>
             )}
-            <p className="flex items-start gap-2 border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-              <Eye className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <p className="d-flex align-items-start gap-2 border-top border-abu-100 px-5 py-3 fs-xs text-tinta-3">
+              <Eye className="mt-0-5 h-3-5 w-3-5 flex-shrink-0" />
               Semua guru & staf dapat melihat papan ini. Alasan izin dan keterlambatan hanya terlihat oleh yang bersangkutan dan Kepala Sekolah. Setiap koreksi
               tercatat beserta nama pengoreksi dan alasannya.
             </p>
@@ -352,15 +357,15 @@ function ModalKoreksi({ item, onClose }) {
         </>
       }
     >
-      <div className="mb-4 flex items-center gap-3 rounded-xl bg-slate-50 p-3">
+      <div className="mb-4 d-flex align-items-center gap-3 rounded-2 bg-abu-50 p-3">
         <Avatar nama={g.nama} size="sm" />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-slate-800">{g.nama}</p>
-          <p className="text-xs text-slate-500">{formatHari(tanggal)}</p>
+          <p className="fw-semibold text-tinta">{g.nama}</p>
+          <p className="fs-xs text-tinta-3">{formatHari(tanggal)}</p>
         </div>
         <StatusPresensi kode={kodePresensi(rec, g)} hariIni={tanggal === todayKey()} />
       </div>
-      <form id="form-koreksi" onSubmit={simpan} className="space-y-4">
+      <form id="form-koreksi" onSubmit={simpan} className="antara-y-4">
         {galat && <Alert tone="error">{galat}</Alert>}
         <div>
           <label htmlFor="status-koreksi" className={labelCls}>
@@ -375,10 +380,10 @@ function ModalKoreksi({ item, onClose }) {
                 </option>
               ))}
           </select>
-          {form.status === 'H' && <p className="mt-1 text-xs text-slate-500">Status terlambat dihitung otomatis dari jam masuk.</p>}
+          {form.status === 'H' && <p className="mt-1 fs-xs text-tinta-3">Status terlambat dihitung otomatis dari jam masuk.</p>}
         </div>
         {form.status === 'H' ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="d-grid kolom-2 gap-3">
             <div>
               <label htmlFor="jam-masuk" className={labelCls}>
                 Jam masuk
@@ -402,7 +407,7 @@ function ModalKoreksi({ item, onClose }) {
         )}
         <div>
           <label htmlFor="alasan-koreksi" className={labelCls}>
-            Alasan koreksi <span className="text-rose-600">*</span>
+            Alasan koreksi <span className="text-danger">*</span>
           </label>
           <textarea
             id="alasan-koreksi"
@@ -412,7 +417,7 @@ function ModalKoreksi({ item, onClose }) {
             className={inputCls}
             placeholder="Contoh: Lupa absen masuk, kehadiran dikonfirmasi satpam."
           />
-          <p className="mt-1 text-xs text-slate-500">Koreksi dicatat atas nama {nama} dan terlihat oleh semua guru & staf.</p>
+          <p className="mt-1 fs-xs text-tinta-3">Koreksi dicatat atas nama {nama} dan terlihat oleh semua guru & staf.</p>
         </div>
         {rec?.koreksi?.length > 0 && <RiwayatKoreksi koreksi={rec.koreksi} />}
       </form>
@@ -424,15 +429,15 @@ const URUT = { jabatan: 'Urut jabatan', hadir: 'Kehadiran terendah', telat: 'Ter
 
 function Legenda() {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-2 border-t border-slate-100 px-5 py-3 text-xs text-slate-600">
+    <div className="d-flex flex-wrap column-gap-4 row-gap-2 border-top border-abu-100 px-5 py-3 fs-xs text-tinta-2">
       {Object.entries(STATUS_PRESENSI).map(([k, s]) => (
-        <span key={k} className="flex items-center gap-1.5">
-          <span className={`grid h-5 w-5 place-items-center rounded text-[10px] font-bold ${s.sel}`}>{k}</span>
+        <span key={k} className="d-flex align-items-center gap-1-5">
+          <span className={`d-flex h-5 w-5 align-items-center justify-content-center rounded-1 fs-10 fw-bold ${s.sel}`}>{k}</span>
           {s.label}
         </span>
       ))}
-      <span className="flex items-center gap-1.5">
-        <span className="grid h-5 w-5 place-items-center rounded bg-slate-100 text-slate-400">·</span>
+      <span className="d-flex align-items-center gap-1-5">
+        <span className="d-flex h-5 w-5 align-items-center justify-content-center rounded-1 bg-abu-100 text-abu-400">·</span>
         Tidak ada catatan
       </span>
     </div>
@@ -440,10 +445,10 @@ function Legenda() {
 }
 
 function Angka({ n }) {
-  return <td className={`px-2 py-3 text-center tabular-nums ${n ? 'font-semibold text-slate-800' : 'text-slate-300'}`}>{n}</td>
+  return <td className={`px-2 py-3 text-center angka ${n ? 'fw-semibold text-tinta' : 'text-abu-300'}`}>{n}</td>
 }
 
-const warnaPersen = (p) => (p >= 95 ? 'bg-emerald-500' : p >= 85 ? 'bg-amber-400' : 'bg-rose-500')
+const warnaPersen = (p) => (p >= 95 ? 'titik-emerald' : p >= 85 ? 'titik-amber' : 'titik-rose')
 
 function Rekap({ onDetail }) {
   const { data } = useData()
@@ -507,16 +512,16 @@ function Rekap({ onDetail }) {
 
   return (
     <>
-      <Card className="mb-4 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-3">
-          <select value={p.kode} onChange={(e) => setKode(e.target.value)} className={`${inputCls} w-auto!`} aria-label="Periode rekap">
+      <Card className="mb-4 d-flex flex-column gap-3 p-4 flex-sm-row align-items-sm-center justify-content-sm-between">
+        <div className="d-flex flex-wrap gap-3">
+          <select value={p.kode} onChange={(e) => setKode(e.target.value)} className={`${inputCls} w-auto`} aria-label="Periode rekap">
             {periode.map((x) => (
               <option key={x.kode} value={x.kode}>
                 {x.label}
               </option>
             ))}
           </select>
-          <select value={urut} onChange={(e) => setUrut(e.target.value)} className={`${inputCls} w-auto!`} aria-label="Urutan">
+          <select value={urut} onChange={(e) => setUrut(e.target.value)} className={`${inputCls} w-auto`} aria-label="Urutan">
             {Object.entries(URUT).map(([k, label]) => (
               <option key={k} value={k}>
                 {label}
@@ -529,7 +534,7 @@ function Rekap({ onDetail }) {
         </button>
       </Card>
 
-      <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-4 d-grid kolom-2 gap-4 kolom-lg-4">
         <StatCard
           icon={UserCheck}
           label="Rata-rata kehadiran"
@@ -549,18 +554,18 @@ function Rekap({ onDetail }) {
       </div>
 
       <Card className="mb-4 overflow-hidden">
-        <div className="border-b border-slate-100 px-5 py-4">
-          <h2 className="font-bold text-slate-900">Kalender kehadiran</h2>
-          <p className="text-sm text-slate-500">Satu kotak = satu hari kerja. Arahkan kursor ke kotak untuk melihat jam masuk dan pulang.</p>
+        <div className="border-bottom border-abu-100 px-5 py-4">
+          <h2 className="fw-bold text-tinta">Kalender kehadiran</h2>
+          <p className="fs-sm text-tinta-3">Satu kotak = satu hari kerja. Arahkan kursor ke kotak untuk melihat jam masuk dan pulang.</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="text-xs">
+          <table className="fs-xs">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 bg-white px-5 py-2 text-left font-semibold text-slate-500">Nama</th>
+                <th className="position-sticky start-0 z-10 bg-white px-5 py-2 text-start fw-semibold text-tinta-3">Nama</th>
                 {p.tanggal.map((t) => (
-                  <th key={t} className={`px-0.5 py-2 text-center font-semibold tabular-nums ${t === hariIni ? 'text-primary-600' : 'text-slate-500'}`}>
-                    <span className="block text-[10px] font-medium text-slate-400">{namaHari(t).slice(0, 3)}</span>
+                  <th key={t} className={`px-0-5 py-2 text-center fw-semibold angka ${t === hariIni ? 'text-primary' : 'text-tinta-3'}`}>
+                    <span className="d-block fs-10 fw-medium text-abu-400">{namaHari(t).slice(0, 3)}</span>
                     {parseKey(t).getDate()}
                   </th>
                 ))}
@@ -569,10 +574,10 @@ function Rekap({ onDetail }) {
             <tbody>
               {baris.map(({ g }) => (
                 <tr key={g.id}>
-                  <th scope="row" className="sticky left-0 z-10 bg-white px-5 py-0.5 text-left font-semibold text-slate-700">
+                  <th scope="row" className="position-sticky start-0 z-10 bg-white px-5 py-0-5 text-start fw-semibold text-tinta-2">
                     <button
                       onClick={() => onDetail(g.id)}
-                      className={`block max-w-44 truncate hover:text-primary-700 ${g.id === akses.guruId ? 'text-primary-700' : ''}`}
+                      className={`d-block mw-44 text-truncate hover-teks-merah ${g.id === akses.guruId ? 'text-merah-700' : ''}`}
                     >
                       {g.nama.split(',')[0]}
                     </button>
@@ -583,11 +588,11 @@ function Rekap({ onDetail }) {
                     const label = k ? STATUS_PRESENSI[k].label : 'Tidak ada catatan'
                     const jam = rec?.masuk ? ` · ${rec.masuk}–${rec.pulang ?? '…'}` : ''
                     return (
-                      <td key={t} className="px-0.5 py-0.5">
+                      <td key={t} className="px-0-5 py-0-5">
                         <span
                           title={`${g.nama.split(',')[0]} · ${formatTanggal(t, { weekday: 'short', year: undefined })}: ${label}${jam}`}
-                          className={`grid h-7 w-7 place-items-center rounded-md text-[11px] font-bold ${k ? STATUS_PRESENSI[k].sel : 'bg-slate-100 text-slate-400'} ${
-                            rec?.koreksi?.length ? 'ring-2 ring-slate-900/40 ring-offset-1' : ''
+                          className={`d-flex h-7 w-7 align-items-center justify-content-center rounded-1 fs-2xs fw-bold ${k ? STATUS_PRESENSI[k].sel : 'bg-abu-100 text-abu-400'} ${
+                            rec?.koreksi?.length ? 'cincin-tanda' : ''
                           }`}
                         >
                           {k ?? '·'}
@@ -605,54 +610,54 @@ function Rekap({ onDetail }) {
 
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+          <table className="w-100 min-w-980 text-start fs-sm">
+            <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
               <tr>
-                <th className="px-5 py-3 font-semibold">Guru / Staf</th>
-                <th className="px-2 py-3 text-center font-semibold">Tepat</th>
-                <th className="px-2 py-3 text-center font-semibold">Telat</th>
-                <th className="px-2 py-3 text-center font-semibold">Dinas</th>
-                <th className="px-2 py-3 text-center font-semibold">Izin</th>
-                <th className="px-2 py-3 text-center font-semibold">Sakit</th>
-                <th className="px-2 py-3 text-center font-semibold">Cuti</th>
-                <th className="px-2 py-3 text-center font-semibold">Alpa</th>
-                <th className="px-3 py-3 font-semibold">Kehadiran</th>
-                <th className="px-2 py-3 text-center font-semibold">Tepat waktu</th>
-                <th className="px-2 py-3 text-center font-semibold">Rata² masuk</th>
-                <th className="px-5 py-3 font-semibold">Catatan</th>
+                <th className="px-5 py-3 fw-semibold">Guru / Staf</th>
+                <th className="px-2 py-3 text-center fw-semibold">Tepat</th>
+                <th className="px-2 py-3 text-center fw-semibold">Telat</th>
+                <th className="px-2 py-3 text-center fw-semibold">Dinas</th>
+                <th className="px-2 py-3 text-center fw-semibold">Izin</th>
+                <th className="px-2 py-3 text-center fw-semibold">Sakit</th>
+                <th className="px-2 py-3 text-center fw-semibold">Cuti</th>
+                <th className="px-2 py-3 text-center fw-semibold">Alpa</th>
+                <th className="px-3 py-3 fw-semibold">Kehadiran</th>
+                <th className="px-2 py-3 text-center fw-semibold">Tepat waktu</th>
+                <th className="px-2 py-3 text-center fw-semibold">Rata² masuk</th>
+                <th className="px-5 py-3 fw-semibold">Catatan</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="pembatas-y pembatas-abu">
               {baris.map(({ g, r }) => (
-                <tr key={g.id} className={g.id === akses.guruId ? 'bg-primary-50/50' : 'hover:bg-slate-50/60'}>
+                <tr key={g.id} className={g.id === akses.guruId ? 'bg-merah-50' : 'hover-latar'}>
                   <td className="px-5 py-3">
-                    <button onClick={() => onDetail(g.id)} className="group flex items-center gap-3 text-left">
+                    <button onClick={() => onDetail(g.id)} className="grup d-flex align-items-center gap-3 text-start">
                       <Avatar nama={g.nama} size="sm" />
                       <span>
-                        <span className="block font-semibold text-slate-800 group-hover:text-primary-700">{g.nama}</span>
-                        <span className="block text-xs text-slate-500">{g.jabatan}</span>
+                        <span className="d-block fw-semibold text-tinta judul-sorot">{g.nama}</span>
+                        <span className="d-block fs-xs text-tinta-3">{g.jabatan}</span>
                       </span>
                     </button>
                   </td>
                   <Angka n={r.H} />
-                  <td className={`px-2 py-3 text-center tabular-nums ${r.T ? 'font-semibold text-amber-700' : 'text-slate-300'}`}>
+                  <td className={`px-2 py-3 text-center angka ${r.T ? 'fw-semibold text-warning-emphasis' : 'text-abu-300'}`}>
                     {r.T}
-                    {r.T > 0 && <span className="block whitespace-nowrap text-[11px] font-normal text-slate-400">{r.menitTelat} mnt</span>}
+                    {r.T > 0 && <span className="d-block text-nowrap fs-2xs fw-normal text-abu-400">{r.menitTelat} mnt</span>}
                   </td>
                   <Angka n={r.D} />
                   <Angka n={r.I} />
                   <Angka n={r.S} />
                   <Angka n={r.C} />
-                  <td className={`px-2 py-3 text-center tabular-nums ${r.A ? 'font-semibold text-rose-700' : 'text-slate-300'}`}>{r.A}</td>
+                  <td className={`px-2 py-3 text-center angka ${r.A ? 'fw-semibold text-danger' : 'text-abu-300'}`}>{r.A}</td>
                   <td className="w-44 px-3 py-3">
-                    <div className="flex items-center gap-2">
+                    <div className="d-flex align-items-center gap-2">
                       <Progres nilai={r.persenHadir ?? 0} warna={warnaPersen(r.persenHadir ?? 0)} className="flex-1" />
-                      <span className="w-10 text-right font-bold tabular-nums text-slate-900">{r.persenHadir === null ? '–' : `${r.persenHadir}%`}</span>
+                      <span className="w-10 text-end fw-bold angka text-tinta">{r.persenHadir === null ? '–' : `${r.persenHadir}%`}</span>
                     </div>
                   </td>
-                  <td className="px-2 py-3 text-center tabular-nums text-slate-700">{r.persenTepat === null ? '–' : `${r.persenTepat}%`}</td>
-                  <td className="px-2 py-3 text-center tabular-nums text-slate-700">{r.rataMasuk ?? '–'}</td>
-                  <td className="px-5 py-3 text-xs text-slate-500">
+                  <td className="px-2 py-3 text-center angka text-tinta-2">{r.persenTepat === null ? '–' : `${r.persenTepat}%`}</td>
+                  <td className="px-2 py-3 text-center angka text-tinta-2">{r.rataMasuk ?? '–'}</td>
+                  <td className="px-5 py-3 fs-xs text-tinta-3">
                     {[r.lupaPulang > 0 && `${r.lupaPulang}× tidak absen pulang`, r.pulangAwal > 0 && `${r.pulangAwal}× pulang awal`]
                       .filter(Boolean)
                       .join(' · ') || '–'}
@@ -662,8 +667,8 @@ function Rekap({ onDetail }) {
             </tbody>
           </table>
         </div>
-        <p className="flex items-start gap-2 border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <p className="d-flex align-items-start gap-2 border-top border-abu-100 px-5 py-3 fs-xs text-tinta-3">
+          <Info className="mt-0-5 h-3-5 w-3-5 flex-shrink-0" />
           Kehadiran = (hadir + dinas luar) ÷ hari yang tercatat. Ketepatan waktu dihitung dari hari hadir di sekolah. Hari tanpa catatan tidak ikut dihitung.
           Kotak bergaris tepi di kalender menandakan catatan yang pernah dikoreksi.
         </p>
@@ -695,18 +700,18 @@ function DaftarIzin() {
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div className="mb-4 d-flex flex-wrap gap-2">
         {pilihan.map(([k, label, f]) => (
           <button
             key={k}
             onClick={() => setSaring(k)}
             aria-pressed={saring === k}
-            className={`ui-saring rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
-              saring === k ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
+            className={`ui-saring rounded-pill px-3-5 py-1-5 fs-sm fw-semibold transisi ${
+              saring === k ? 'bg-tinta text-white' : 'bg-white text-tinta-2 border border-abu-200 hover-latar'
             }`}
           >
             {label}
-            <span className="ml-1.5 text-xs opacity-70">{semua.filter(f).length}</span>
+            <span className="ms-1-5 fs-xs opacity-70">{semua.filter(f).length}</span>
           </button>
         ))}
       </div>
@@ -720,51 +725,51 @@ function DaftarIzin() {
           />
         </Card>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="d-grid gap-4 kolom-lg-2">
           {daftar.map((i) => {
             const Icon = IKON_IZIN[i.jenis] ?? FileText
             const boleh = bolehLihat(akses, i.guruId)
             const hari = rentangHariSekolah(i.tanggalMulai, i.tanggalSelesai).length
             return (
-              <Card key={i.id} className="flex flex-col p-5">
-                <div className="flex items-start gap-3">
+              <Card key={i.id} className="d-flex flex-column p-5">
+                <div className="d-flex align-items-start gap-3">
                   <Avatar nama={i.nama} />
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-slate-900">{i.nama}</p>
-                    <p className="text-xs text-slate-500">{jabatan(i.guruId)}</p>
+                    <p className="fw-bold text-tinta">{i.nama}</p>
+                    <p className="fs-xs text-tinta-3">{jabatan(i.guruId)}</p>
                   </div>
                   <IzinBadge status={i.status} />
                 </div>
-                <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+                <div className="mt-4 d-flex flex-wrap align-items-center gap-2 fs-sm">
                   <Badge className={STATUS_PRESENSI[KODE_IZIN_STAF[i.jenis]].cls}>
-                    <Icon className="mr-1 h-3.5 w-3.5" /> {i.jenis}
+                    <Icon className="me-1 h-3-5 w-3-5" /> {i.jenis}
                   </Badge>
-                  <span className="font-medium text-slate-700">{rentang(i.tanggalMulai, i.tanggalSelesai)}</span>
-                  <span className="text-xs text-slate-400">· {hari} hari kerja</span>
+                  <span className="fw-medium text-tinta-2">{rentang(i.tanggalMulai, i.tanggalSelesai)}</span>
+                  <span className="fs-xs text-abu-400">· {hari} hari kerja</span>
                 </div>
 
                 {boleh || i.jenis === 'Dinas Luar' ? (
                   <>
-                    <p className="mt-3 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">{i.alasan}</p>
+                    <p className="mt-3 rounded-2 bg-abu-50 px-4 py-3 fs-sm text-tinta-2">{i.alasan}</p>
                     {i.lampiran && (
-                      <p className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
-                        <Paperclip className="h-3.5 w-3.5" /> {i.lampiran}
+                      <p className="mt-2 d-flex align-items-center gap-1-5 fs-xs text-tinta-3">
+                        <Paperclip className="h-3-5 w-3-5" /> {i.lampiran}
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="mt-3 flex items-center gap-1.5 rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
-                    <Lock className="h-3.5 w-3.5" /> Alasan hanya dapat dilihat oleh yang bersangkutan dan Kepala Sekolah.
+                  <p className="mt-3 d-flex align-items-center gap-1-5 rounded-2 bg-abu-50 px-4 py-3 fs-xs text-tinta-3">
+                    <Lock className="h-3-5 w-3-5" /> Alasan hanya dapat dilihat oleh yang bersangkutan dan Kepala Sekolah.
                   </p>
                 )}
 
-                <p className="mt-3 text-xs text-slate-400">Diajukan {waktuLengkap(i.diajukan)}</p>
+                <p className="mt-3 fs-xs text-abu-400">Diajukan {waktuLengkap(i.diajukan)}</p>
 
                 {i.status !== 'Menunggu' && (
-                  <div className="mt-2 text-xs text-slate-500">
-                    {i.status} oleh <span className="font-semibold text-slate-700">{i.diprosesOleh}</span>
+                  <div className="mt-2 fs-xs text-tinta-3">
+                    {i.status} oleh <span className="fw-semibold text-tinta-2">{i.diprosesOleh}</span>
                     {i.diproses && ` · ${waktuLengkap(i.diproses)}`}
-                    {i.catatan && boleh && <p className="mt-1.5 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">“{i.catatan}”</p>}
+                    {i.catatan && boleh && <p className="mt-1-5 rounded-1 bg-abu-50 px-3 py-2 fs-sm text-tinta-2">“{i.catatan}”</p>}
                   </div>
                 )}
 
@@ -777,7 +782,7 @@ function DaftarIzin() {
                       aria-label={`Catatan untuk ${i.nama}`}
                       className={inputCls}
                     />
-                    <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="mt-3 d-grid kolom-2 gap-2">
                       <button onClick={() => proses(i.id, 'Ditolak')} className={btn.danger}>
                         <X className="h-4 w-4" /> Tolak
                       </button>
@@ -845,11 +850,11 @@ function FormIzinStaf({ onClose, onTerkirim }) {
         </>
       }
     >
-      <form id="form-izin-staf" onSubmit={kirim} className="space-y-4">
+      <form id="form-izin-staf" onSubmit={kirim} className="antara-y-4">
         {galat && <Alert tone="error">{galat}</Alert>}
         <div>
           <span className={labelCls}>Jenis</span>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="d-grid kolom-2 gap-2 kolom-sm-4">
             {JENIS_IZIN_STAF.map((j) => {
               const Icon = IKON_IZIN[j]
               return (
@@ -858,8 +863,8 @@ function FormIzinStaf({ onClose, onTerkirim }) {
                   type="button"
                   aria-pressed={form.jenis === j}
                   onClick={() => setForm({ ...form, jenis: j })}
-                  className={`flex flex-col items-center gap-1 rounded-xl border-2 px-3 py-3 text-xs font-semibold transition ${
-                    form.jenis === j ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                  className={`d-flex flex-column align-items-center gap-1 rounded-2 border border-2 px-3 py-3 fs-xs fw-semibold transisi ${
+                    form.jenis === j ? 'border-merah-500 bg-merah-50 text-merah-700' : 'border-abu-200 text-tinta-2 hover-garis-abu'
                   }`}
                 >
                   <Icon className="h-5 w-5" /> {j}
@@ -868,7 +873,7 @@ function FormIzinStaf({ onClose, onTerkirim }) {
             })}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="d-grid kolom-2 gap-3">
           <div>
             <label htmlFor="izin-mulai" className={labelCls}>
               Dari tanggal
@@ -882,7 +887,7 @@ function FormIzinStaf({ onClose, onTerkirim }) {
             <input id="izin-selesai" type="date" required value={form.tanggalSelesai} onChange={set('tanggalSelesai')} className={inputCls} />
           </div>
         </div>
-        <p className="-mt-2 text-xs text-slate-500">{hari} hari kerja (Sabtu & Minggu tidak dihitung)</p>
+        <p className="mt-n2 fs-xs text-tinta-3">{hari} hari kerja (Sabtu & Minggu tidak dihitung)</p>
         <div>
           <label htmlFor="izin-alasan" className={labelCls}>
             Keterangan
@@ -906,12 +911,12 @@ function FormIzinStaf({ onClose, onTerkirim }) {
             type="file"
             accept="image/*,.pdf"
             onChange={(e) => setForm({ ...form, lampiran: e.target.files[0]?.name ?? '' })}
-            className="block w-full text-sm text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-700 hover:file:bg-primary-100"
+            className="isian-berkas d-block w-100 fs-sm text-tinta-3"
           />
-          <p className="mt-1 text-xs text-slate-500">Surat dokter, surat tugas, atau undangan (JPG, PNG, PDF).</p>
+          <p className="mt-1 fs-xs text-tinta-3">Surat dokter, surat tugas, atau undangan (JPG, PNG, PDF).</p>
         </div>
-        <p className="flex items-start gap-2 rounded-xl bg-sky-50 px-3 py-2.5 text-xs text-sky-800">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <p className="d-flex align-items-start gap-2 rounded-2 bg-info-subtle px-3 py-2-5 fs-xs text-info-emphasis">
+          <Info className="mt-0-5 h-3-5 w-3-5 flex-shrink-0" />
           Setelah disetujui Kepala Sekolah, tanggal tersebut otomatis tercatat di presensi.{' '}
           {form.jenis === 'Dinas Luar'
             ? 'Keterangan dinas luar dapat dilihat semua staf.'
@@ -935,27 +940,27 @@ function DetailStaf({ guruId, onClose }) {
   const jam = jamKerja(g)
   const hariIni = todayKey()
   const kotak = [
-    ['Kehadiran', r.persenHadir === null ? '–' : `${r.persenHadir}%`, 'bg-emerald-50 text-emerald-700'],
-    ['Tepat waktu', r.persenTepat === null ? '–' : `${r.persenTepat}%`, 'bg-sky-50 text-sky-700'],
-    ['Terlambat', `${r.T}×`, 'bg-amber-50 text-amber-800'],
-    ['Rata-rata masuk', r.rataMasuk ?? '–', 'bg-slate-100 text-slate-700'],
+    ['Kehadiran', r.persenHadir === null ? '–' : `${r.persenHadir}%`, 'bg-success-subtle text-success'],
+    ['Tepat waktu', r.persenTepat === null ? '–' : `${r.persenTepat}%`, 'bg-info-subtle text-info'],
+    ['Terlambat', `${r.T}×`, 'bg-warning-subtle text-warning-emphasis'],
+    ['Rata-rata masuk', r.rataMasuk ?? '–', 'bg-abu-100 text-tinta-2'],
   ]
 
   return (
     <Modal open onClose={onClose} title="Riwayat presensi" size="max-w-2xl">
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="d-flex flex-wrap align-items-center gap-4">
         <Avatar nama={g.nama} size="lg" />
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold text-slate-900">{g.nama}</p>
-          <p className="text-sm text-slate-500">
+          <p className="fs-lg fw-bold text-tinta">{g.nama}</p>
+          <p className="fs-sm text-tinta-3">
             {g.jabatan}
             {g.nip && ` · NIP ${g.nip}`}
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="fs-xs text-tinta-3">
             Jam kerja {jam.masuk} – {jam.pulang}
           </p>
         </div>
-        <select value={p.kode} onChange={(e) => setKode(e.target.value)} className={`${inputCls} w-auto!`} aria-label="Periode">
+        <select value={p.kode} onChange={(e) => setKode(e.target.value)} className={`${inputCls} w-auto`} aria-label="Periode">
           {periode.map((x) => (
             <option key={x.kode} value={x.kode}>
               {x.label}
@@ -964,44 +969,44 @@ function DetailStaf({ guruId, onClose }) {
         </select>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mt-5 d-grid kolom-2 gap-3 kolom-sm-4">
         {kotak.map(([label, nilai, warna]) => (
-          <div key={label} className={`rounded-xl p-3 ${warna}`}>
-            <p className="text-xs">{label}</p>
-            <p className="text-xl font-extrabold">{nilai}</p>
+          <div key={label} className={`rounded-2 p-3 ${warna}`}>
+            <p className="fs-xs">{label}</p>
+            <p className="fs-xl fw-extrabold">{nilai}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 d-flex flex-wrap gap-2">
         {Object.entries(STATUS_PRESENSI).map(([k, s]) => (
-          <Badge key={k} className={r[k] ? s.cls : 'bg-slate-50 text-slate-400'}>
+          <Badge key={k} className={r[k] ? s.cls : 'bg-abu-50 text-abu-400'}>
             {s.label} {r[k]}
           </Badge>
         ))}
       </div>
 
-      <ul className="mt-5 divide-y divide-slate-100 border-t border-slate-100">
+      <ul className="mt-5 pembatas-y pembatas-abu border-top border-abu-100">
         {[...p.tanggal].reverse().map((t) => {
           const rec = data.presensiStaf[t]?.[g.id]
           const durasi = durasiKerja(rec)
           return (
-            <li key={t} className="py-2.5 text-sm">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                <span className="w-40 whitespace-nowrap font-medium text-slate-700">{formatTanggal(t, { weekday: 'short', year: undefined })}</span>
+            <li key={t} className="py-2-5 fs-sm">
+              <div className="d-flex flex-wrap align-items-center column-gap-4 row-gap-1">
+                <span className="w-40 text-nowrap fw-medium text-tinta-2">{formatTanggal(t, { weekday: 'short', year: undefined })}</span>
                 <StatusPresensi kode={kodePresensi(rec, g)} hariIni={t === hariIni} />
                 {rec?.masuk && (
-                  <span className="tabular-nums text-slate-600">
+                  <span className="angka text-tinta-2">
                     {rec.masuk} – {rec.pulang ?? '…'}
                   </span>
                 )}
-                {durasi && <span className="text-xs text-slate-400">{durasi}</span>}
+                {durasi && <span className="fs-xs text-abu-400">{durasi}</span>}
               </div>
-              <div className="mt-1 text-xs text-slate-500 sm:pl-44">
+              <div className="mt-1 fs-xs text-tinta-3 ps-sm-44">
                 <Keterangan rec={rec} g={g} kosong={null} />
               </div>
               {rec?.koreksi?.length > 0 && (
-                <div className="mt-2 sm:pl-44">
+                <div className="mt-2 ps-sm-44">
                   <RiwayatKoreksi koreksi={rec.koreksi} />
                 </div>
               )}
@@ -1051,7 +1056,7 @@ export default function PresensiStaf() {
 
       {akses.guruId && <KartuPresensiSaya className="mb-6" />}
 
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-5 d-flex flex-wrap align-items-center justify-content-between gap-3">
         <Tabs
           value={tab}
           onChange={setTab}
@@ -1061,7 +1066,7 @@ export default function PresensiStaf() {
             ['izin', 'Pengajuan Izin', menunggu],
           ]}
         />
-        <p className="flex items-center gap-1.5 text-xs text-slate-500">
+        <p className="d-flex align-items-center gap-1-5 fs-xs text-tinta-3">
           <Eye className="h-4 w-4" /> Dapat dilihat oleh semua guru & staf
         </p>
       </div>

@@ -16,30 +16,30 @@ export default function Pengumuman() {
   return (
     <>
       <DashHeader title="Pengumuman" desc="Informasi terbaru dari sekolah untuk orang tua dan siswa." />
-      <div className="space-y-3">
+      <div className="antara-y-3">
         {daftar.map((p) => {
           const buka = terbuka === p.id
           return (
-            <Card key={p.id} id={`pengumuman-${p.id}`} className={buka ? 'ring-2 ring-primary-100' : ''}>
+            <Card key={p.id} id={`pengumuman-${p.id}`} className={buka ? 'border border-2 border-merah-100' : ''}>
               <button
                 ref={(el) => buka && params.get('buka') === p.id && el?.scrollIntoView({ block: 'center' })}
                 onClick={() => setTerbuka(buka ? null : p.id)}
-                className="flex w-full items-start gap-4 p-5 text-left"
+                className="d-flex w-100 align-items-start gap-4 p-5 text-start"
                 aria-expanded={buka}
               >
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="d-flex flex-wrap align-items-center gap-2">
                     <KategoriBadge kategori={p.kategori} />
-                    <span className="text-xs text-slate-500">{formatHari(p.tanggal)}</span>
+                    <span className="fs-xs text-tinta-3">{formatHari(p.tanggal)}</span>
                   </div>
-                  <p className="mt-2 font-bold text-slate-900">{p.judul}</p>
+                  <p className="mt-2 fw-bold text-tinta">{p.judul}</p>
                   {buka ? (
-                    <p className="mt-3 whitespace-pre-line leading-relaxed text-slate-700">{p.isi}</p>
+                    <p className="mt-3 spasi-pre-line lh-relaxed text-tinta-2">{p.isi}</p>
                   ) : (
-                    <p className="mt-1 line-clamp-1 text-sm text-slate-500">{p.isi}</p>
+                    <p className="mt-1 clamp-1 fs-sm text-tinta-3">{p.isi}</p>
                   )}
                 </div>
-                <ChevronDown className={`mt-1 h-5 w-5 shrink-0 text-slate-400 transition ${buka ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`mt-1 h-5 w-5 flex-shrink-0 text-abu-400 transisi ${buka ? 'rotate-180' : ''}`} />
               </button>
             </Card>
           )

@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { useAuth } from './AuthContext'
 import { jamSekarang, todayKey } from '../utils/format'
 import { pelajaranHari } from '../utils/jadwal'
+import { sinkronkanAcuan } from '../utils/acuan'
 import { api, unduhBerkas } from '../utils/api'
 
 const DataContext = createContext(null)
@@ -49,10 +50,12 @@ export const DATA_KOSONG = {
   inventaris: [],
   kerusakan: [],
   konseling: [],
+  jadwal: {}, // { kelas: { hari: [kode mapel | null per sesi] } } — diatur Wakasek Kurikulum
+  kalender: [], // agenda akademik; jenis 'libur' menghentikan presensi (lihat src/utils/acuan.js)
 }
 
 // Koleksi berbentuk peta: jumlah tingkat kunci sampai satu catatan (untuk menggabungkan potongan data)
-const KEDALAMAN = { absensi: 2, jejakAbsensi: 2, absensiMapel: 3, jejakMapel: 3, presensiStaf: 2, nilai: 2, peringkat: 1, catatanWali: 1, ekskul: 1, tugasSelesai: 1, spp: 2 }
+const KEDALAMAN = { absensi: 2, jejakAbsensi: 2, absensiMapel: 3, jejakMapel: 3, presensiStaf: 2, nilai: 2, peringkat: 1, catatanWali: 1, ekskul: 1, tugasSelesai: 1, spp: 2, jadwal: 1 }
 
 function gabungPeta(lama, baru, kedalaman) {
   const hasil = { ...lama }
@@ -114,6 +117,8 @@ function bersihkanDataLama() {
 export function DataProvider({ children, awal }) {
   const { user } = useAuth()
   const [data, setData] = useState(() => awal ?? DATA_KOSONG)
+  // Salin jadwal & kalender terbaru untuk fungsi bantu (presensi, hari sekolah) sebelum isi halaman tergambar
+  sinkronkanAcuan(data)
   const [status, setStatus] = useState(awal ? 'siap' : 'memuat') // 'memuat' | 'siap' | 'terputus'
   // Hasil hubungan terakhir ke server; data yang sudah dimuat tetap tampil walau server sempat mati
   const [terhubung, setTerhubung] = useState(true)
@@ -275,6 +280,9 @@ export function DataProvider({ children, awal }) {
     const { hasil, galat } = await kirim(`/orang-tua/${encodeURIComponent(id)}/akun`, { diam: true })
     return hasil ? { username: hasil.username, password: hasil.password } : { galat }
   }
+
+  // Wakasek Kurikulum menyimpan jadwal mingguan satu kelas: { Senin: [kode mapel | null per sesi], ... }. Hasil: null atau pesan galat
+  const simpanJadwal = (kelas, jadwal) => ubahData(`/jadwal/${encodeURIComponent(kelas)}`, { method: 'PUT', body: { jadwal }, diam: true })
 
   // Tata Usaha / Kepala Sekolah membuat akun login siswa (username = NIS) atau mengatur ulang password-nya
   const buatAkunSiswa = async (id) => {
@@ -452,6 +460,7 @@ export function DataProvider({ children, awal }) {
         buatAkunGuru,
         buatAkunOrangTua,
         buatAkunSiswa,
+        simpanJadwal,
         tambah,
         ubah,
         hapus,
@@ -491,9 +500,13 @@ export function DataProvider({ children, awal }) {
     >
       {children}
       {pemberitahuan && (
-        <div role="alert" className="fixed inset-x-4 bottom-4 z-[60] mx-auto flex max-w-md items-start gap-3 rounded-2xl bg-slate-900 px-4 py-3 text-sm text-white shadow-2xl sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2">
+        <div
+          key={pemberitahuan.id}
+          role="alert"
+          className="toast-masuk posisi-toast z-60 d-flex mw-md align-items-start gap-3 rounded-3 bg-tinta px-4 py-3 fs-sm text-white shadow-lg"
+        >
           <p className="flex-1">{pemberitahuan.teks}</p>
-          <button onClick={() => setPemberitahuan(null)} className="rounded p-0.5 text-slate-400 hover:text-white" aria-label="Tutup pemberitahuan">
+          <button onClick={() => setPemberitahuan(null)} className="rounded-1 p-0-5 text-abu-400 hover-teks-putih" aria-label="Tutup pemberitahuan">
             <X className="h-4 w-4" />
           </button>
         </div>

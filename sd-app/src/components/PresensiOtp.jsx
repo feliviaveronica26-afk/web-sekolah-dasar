@@ -5,6 +5,7 @@ import { useJamBerjalan } from './Presensi'
 import { useAuth } from '../context/AuthContext'
 import { useData, useSegarCepat } from '../context/DataContext'
 import { MAPEL } from '../data/dummy'
+import { liburPada } from '../utils/acuan'
 import { isHariSekolah, jamSekarang, parseKey, todayKey } from '../utils/format'
 import { jamPelajaran, labelSesi, pelajaranHari, statusPelajaran } from '../utils/jadwal'
 import { MAKS_PERCOBAAN, MASA_BERLAKU_MENIT, PANJANG_KODE, formatSisa, sesiBerlaku, sesiTerakhir, sisaDetik, sudahHadirDiSesi } from '../utils/otp'
@@ -15,11 +16,11 @@ export function teksJejak(j) {
   if (j.cara === 'otp') {
     // Presensi harian yang ikut tercatat dari kode pelajaran (mis. siswa datang terlambat)
     const mapel = j.pelajaran && MAPEL[j.pelajaran.split('-')[1]]?.nama
-    return { teks: `Kode OTP${mapel ? ` ${mapel}` : ''} · ${j.jam}`, cls: 'text-emerald-700' }
+    return { teks: `Kode OTP${mapel ? ` ${mapel}` : ''} · ${j.jam}`, cls: 'text-success' }
   }
-  if (j.cara === 'izin') return { teks: 'Izin orang tua disetujui', cls: 'text-sky-700' }
+  if (j.cara === 'izin') return { teks: 'Izin orang tua disetujui', cls: 'text-info' }
   const sebelum = j.sebelum ? `, sebelumnya ${STATUS_ABSEN[j.sebelum]?.label ?? j.sebelum}` : ''
-  return { teks: `Diubah ${j.oleh?.split(',')[0] ?? 'guru'} · ${j.jam}${sebelum}`, cls: 'text-amber-700' }
+  return { teks: `Diubah ${j.oleh?.split(',')[0] ?? 'guru'} · ${j.jam}${sebelum}`, cls: 'text-warning-emphasis' }
 }
 
 const PESAN = {
@@ -64,11 +65,13 @@ export function IsiPresensiOtp({ className = '' }) {
 
   if (!isHariSekolah(sekarang)) {
     return (
-      <Card className={`flex items-center gap-4 p-5 ${className}`}>
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-500">
+      <Card className={`d-flex align-items-center gap-4 p-5 ${className}`}>
+        <span className="d-flex h-12 w-12 flex-shrink-0 align-items-center justify-content-center rounded-3 bg-abu-100 text-tinta-3">
           <KeyRound className="h-6 w-6" />
         </span>
-        <p className="text-sm text-slate-600">Hari ini libur, tidak ada presensi. Selamat beristirahat! 🌤️</p>
+        <p className="fs-sm text-tinta-2">
+          Hari ini libur{liburPada(todayKey()) ? ` (${liburPada(todayKey())})` : ''}, tidak ada presensi. Selamat beristirahat! 🌤️
+        </p>
       </Card>
     )
   }
@@ -77,15 +80,15 @@ export function IsiPresensiOtp({ className = '' }) {
     const jejakMapel = namaMapel && data.jejakMapel[hariIni]?.[user.nis]?.[sesi.kunci]
     const j = namaMapel ? jejakMapel : jejak
     return (
-      <Card className={`flex items-center gap-4 border-emerald-200 bg-emerald-50 p-5 ${className}`}>
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-emerald-500 text-white">
+      <Card className={`d-flex align-items-center gap-4 border-success-subtle bg-success-subtle p-5 ${className}`}>
+        <span className="d-flex h-12 w-12 flex-shrink-0 align-items-center justify-content-center rounded-3 titik-emerald text-white">
           <CircleCheck className="h-7 w-7" />
         </span>
         <div>
-          <p className="font-display text-lg font-bold text-emerald-800">
+          <p className="fs-lg fw-bold text-success-emphasis">
             {namaMapel ? `Kamu sudah hadir di pelajaran ${namaMapel}! 🎉` : 'Kamu sudah hadir hari ini! 🎉'}
           </p>
-          <p className="text-sm text-emerald-700">
+          <p className="fs-sm text-success">
             {j?.cara === 'otp' ? `Tercatat pukul ${j.jam} lewat kode presensi.` : 'Kehadiranmu sudah dicatat oleh guru.'}
             {!aktif && ' Jika guru membuka presensi pelajaran, masukkan kodenya di sini.'}
           </p>
@@ -98,40 +101,40 @@ export function IsiPresensiOtp({ className = '' }) {
     hasil && !hasil.ok && (hasil.alasan === 'salah' ? `Kode salah. Sisa ${hasil.sisa} kali percobaan.` : hasil.alasan === 'galat' ? hasil.pesan : PESAN[hasil.alasan])
 
   return (
-    <Card className={`@container overflow-hidden ${className}`}>
-      <div className="flex flex-col gap-5 p-5 @2xl:flex-row @2xl:items-center sm:p-6">
-        <div className="flex flex-1 items-start gap-4">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary-50 text-primary-600">
+    <Card className={`wadah-kueri overflow-hidden ${className}`}>
+      <div className="d-flex flex-column gap-5 p-5 kueri-baris p-sm-6">
+        <div className="d-flex flex-1 align-items-start gap-4">
+          <span className="d-flex h-12 w-12 flex-shrink-0 align-items-center justify-content-center rounded-3 bg-merah-50 text-primary">
             <KeyRound className="h-6 w-6" />
           </span>
           <div>
-            <p className="font-display text-lg font-bold text-slate-900">{namaMapel ? `Presensi pelajaran ${namaMapel}` : 'Presensi hari ini'}</p>
-            <p className="text-sm text-slate-500">Masukkan {PANJANG_KODE} angka kode yang ditampilkan gurumu di kelas.</p>
+            <p className="fs-lg fw-bold text-tinta">{namaMapel ? `Presensi pelajaran ${namaMapel}` : 'Presensi hari ini'}</p>
+            <p className="fs-sm text-tinta-3">Masukkan {PANJANG_KODE} angka kode yang ditampilkan gurumu di kelas.</p>
             {aktif ? (
-              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" /> {labelSesi(sesi)} dibuka · sisa {formatSisa(sisaDetik(sesi, sekarang.getTime()))}
+              <p className="mt-2 d-inline-flex align-items-center gap-1-5 rounded-pill bg-success-subtle px-3 py-1 fs-xs fw-semibold text-success">
+                <span className="h-2 w-2 berdenyut rounded-pill titik-emerald" /> {labelSesi(sesi)} dibuka · sisa {formatSisa(sisaDetik(sesi, sekarang.getTime()))}
               </p>
             ) : (
-              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
-                <Hourglass className="h-3.5 w-3.5" /> Menunggu guru membuka presensi
+              <p className="mt-2 d-inline-flex align-items-center gap-1-5 rounded-pill bg-abu-100 px-3 py-1 fs-xs fw-semibold text-tinta-3">
+                <Hourglass className="h-3-5 w-3-5" /> Menunggu guru membuka presensi
               </p>
             )}
             {status && status !== 'H' && (
-              <p className="mt-2 text-xs text-slate-500">Saat ini kamu tercatat {STATUS_ABSEN[status].label}. Jika kamu hadir, masukkan kode dari guru.</p>
+              <p className="mt-2 fs-xs text-tinta-3">Saat ini kamu tercatat {STATUS_ABSEN[status].label}. Jika kamu hadir, masukkan kode dari guru.</p>
             )}
           </div>
         </div>
 
         {terkunci ? (
-          <p className="flex items-center gap-2 rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 @2xl:w-80">
-            <Lock className="h-4 w-4 shrink-0" /> {PESAN.terkunci}
+          <p className="d-flex align-items-center gap-2 rounded-2 bg-danger-subtle px-4 py-3 fs-sm fw-medium text-danger kueri-w-80">
+            <Lock className="h-4 w-4 flex-shrink-0" /> {PESAN.terkunci}
           </p>
         ) : (
-          <form onSubmit={kirim} className="@2xl:w-80">
-            <label htmlFor="kode-otp" className="sr-only">
+          <form onSubmit={kirim} className="kueri-w-80">
+            <label htmlFor="kode-otp" className="visually-hidden">
               Kode presensi
             </label>
-            <div className="flex gap-2">
+            <div className="d-flex gap-2">
               <input
                 id="kode-otp"
                 value={kode}
@@ -142,14 +145,14 @@ export function IsiPresensiOtp({ className = '' }) {
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 placeholder="••••••"
-                className="w-full min-w-0 rounded-xl border-2 border-slate-200 bg-white px-3 py-2.5 text-center font-display text-2xl font-bold tracking-[0.4em] text-slate-900 placeholder:text-slate-300 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-100"
+                className="w-100 min-w-0 rounded-2 border border-2 border-abu-200 bg-white px-3 py-2-5 text-center fs-2xl fw-bold ls-kode-4 text-tinta"
               />
-              <button type="submit" disabled={sibuk} className={`${btn.primary} shrink-0`} aria-label="Kirim kode">
-                <Send className="h-4 w-4" /> <span className="hidden sm:inline">Kirim</span>
+              <button type="submit" disabled={sibuk} className={`${btn.primary} flex-shrink-0`} aria-label="Kirim kode">
+                <Send className="h-4 w-4" /> <span className="d-none d-sm-inline">Kirim</span>
               </button>
             </div>
             {pesanGagal && (
-              <p role="alert" className="mt-2 text-sm font-medium text-rose-600">
+              <p role="alert" className="mt-2 fs-sm fw-medium text-danger">
                 {pesanGagal}
               </p>
             )}
@@ -170,25 +173,25 @@ export function KehadiranPelajaran({ nis, kelas, tanggal = todayKey(), judul = '
   return (
     <Card className={`p-6 ${className}`}>
       <JudulKartu icon={BookOpenCheck} judul={judul} />
-      <ul className="space-y-2">
+      <ul className="antara-y-2">
         {daftar.map((p) => {
           const sp = statusPelajaran(data, tanggal, nis, p.kunci)
           const j = sp.sumber === 'pelajaran' ? teksJejak(data.jejakMapel[tanggal]?.[nis]?.[p.kunci]) : null
           // Hadir harian belum berarti hadir di pelajaran: tunggu dicatat guru pengampunya
           const info = sp.status && (sp.sumber === 'pelajaran' || sp.status !== 'H') ? STATUS_ABSEN[sp.status] : null
           return (
-            <li key={p.kunci} className="flex items-center gap-3 rounded-xl bg-slate-50 px-3.5 py-2.5">
-              <span className="w-12 shrink-0 text-xs font-semibold text-slate-500">{p.mulai}</span>
+            <li key={p.kunci} className="d-flex align-items-center gap-3 rounded-2 bg-abu-50 px-3-5 py-2-5">
+              <span className="w-12 flex-shrink-0 fs-xs fw-semibold text-tinta-3">{p.mulai}</span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-slate-800">{MAPEL[p.mapel].nama}</p>
-                <p className={`truncate text-xs ${j ? j.cls : 'text-slate-400'}`}>
+                <p className="text-truncate fs-sm fw-semibold text-tinta">{MAPEL[p.mapel].nama}</p>
+                <p className={`text-truncate fs-xs ${j ? j.cls : 'text-abu-400'}`}>
                   {j ? j.teks : sp.sumber === 'harian' && info ? 'Mengikuti presensi harian' : jamPelajaran(p)}
                 </p>
               </div>
               {info ? (
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${info.cls}`}>{info.label}</span>
+                <span className={`rounded-pill px-2-5 py-0-5 fs-xs fw-semibold ${info.cls}`}>{info.label}</span>
               ) : (
-                <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200">
+                <span className="rounded-pill bg-white px-2-5 py-0-5 fs-xs fw-semibold text-abu-400 border border-abu-200">
                   {lewat(p) ? 'Belum dicatat' : 'Belum mulai'}
                 </span>
               )}

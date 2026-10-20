@@ -6,8 +6,7 @@ import { useData } from '../../context/DataContext'
 import { formatHari, formatTanggal } from '../../utils/format'
 import { Sampul } from './Berita'
 
-const tombolBagi =
-  'inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-tinta ring-1 ring-inset ring-garis transition hover:ring-tinta/40'
+const tombolBagi = 'btn btn-kedua min-h-11 px-5 fs-sm'
 
 export default function BeritaDetail() {
   const { id } = useParams()
@@ -31,8 +30,8 @@ export default function BeritaDetail() {
 
   return (
     <>
-      <PitaMerah className={`pt-8 sm:pt-12 ${berita ? 'pb-32 sm:pb-44' : 'pb-14'}`}>
-        <div className="mx-auto max-w-3xl">
+      <PitaMerah className={`pt-8 pt-sm-12 ${berita ? 'pb-32 pb-sm-44' : 'pb-14'}`}>
+        <div className="mx-auto mw-3xl">
           <Jejak
             daftar={[
               ['/', 'Beranda'],
@@ -42,45 +41,43 @@ export default function BeritaDetail() {
           />
           {berita ? (
             <>
-              <p className="mt-10 flex flex-wrap items-center gap-3 text-sm">
-                <span className="rounded-full bg-stabilo px-3 py-1 font-bold text-tinta">{berita.kategori}</span>
+              <p className="mt-10 d-flex flex-wrap align-items-center gap-3 fs-sm">
+                <span className="rounded-pill bg-stabilo px-3 py-1 fw-bold text-tinta">{berita.kategori}</span>
                 <span className="angka text-krem">{formatHari(berita.tanggal)}</span>
               </p>
-              <h1 className="mt-4 text-[2.5rem] leading-[1.06] sm:text-6xl">{berita.judul}</h1>
+              <h1 className="judul-berita mt-4">{berita.judul}</h1>
             </>
           ) : (
-            <h1 className="mt-10 text-4xl sm:text-5xl">Berita tidak ditemukan.</h1>
+            <h1 className="mt-10 fs-4xl fs-sm-5xl">Berita tidak ditemukan.</h1>
           )}
         </div>
       </PitaMerah>
 
-      <article className="relative mx-auto w-full max-w-4xl px-4 pb-16 pt-10 sm:px-6">
+      <article className="position-relative mx-auto w-100 mw-4xl px-4 pb-16 pt-10 px-sm-6">
         {!berita ? (
           <div className="pb-8">
-            <p className="text-lg text-tinta-2">Berita mungkin sudah dihapus atau tautannya salah.</p>
-            <Link to="/berita" className="mt-6 inline-flex items-center gap-1.5 font-semibold text-primary-700 underline underline-offset-4">
-              <ArrowLeft className="h-4 w-4" /> Kembali ke berita
+            <p className="fs-lg text-tinta-2">Berita mungkin sudah dihapus atau tautannya salah.</p>
+            <Link to="/berita" className="mt-6 d-inline-flex align-items-center gap-1-5 fw-semibold text-merah-700 text-decoration-underline link-offset-2">
+              <ArrowLeft className="ukuran-4" /> Kembali ke berita
             </Link>
           </div>
         ) : (
           <>
-            <Sampul berita={berita} besar className="-mt-36 aspect-[16/9] rounded-[2rem]! shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)] sm:-mt-48" />
-            <p className="mx-auto mt-12 max-w-3xl whitespace-pre-line text-lg leading-[1.8] text-tinta first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:text-6xl first-letter:font-extrabold first-letter:leading-[0.85] first-letter:text-primary-600 sm:text-xl sm:leading-[1.8]">
-              {berita.isi}
-            </p>
+            <Sampul berita={berita} besar className="sampul-berita rasio-16x9 rounded-5" />
+            <p className="isi-berita mx-auto mt-12 mw-3xl text-tinta">{berita.isi}</p>
 
-            <div className="mx-auto mt-12 flex max-w-3xl flex-wrap items-center gap-3 rounded-[1.5rem] bg-kertas-tua/70 p-4 sm:px-6">
-              <span className="mr-2 text-sm font-semibold text-tinta-2">Bagikan</span>
+            <div className="mx-auto mt-12 d-flex mw-3xl flex-wrap align-items-center gap-3 rounded-4 latar-kertas-lembut p-4 px-sm-6">
+              <span className="me-2 fs-sm fw-semibold text-tinta-2">Bagikan</span>
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(`${berita.judul} — ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
                 target="_blank"
                 rel="noreferrer"
                 className={tombolBagi}
               >
-                <MessageCircle className="h-4 w-4" /> WhatsApp
+                <MessageCircle className="ukuran-4" /> WhatsApp
               </a>
               <button type="button" onClick={salinTautan} className={tombolBagi}>
-                {tersalin ? <Check className="h-4 w-4 text-emerald-700" /> : <Link2 className="h-4 w-4" />} {tersalin ? 'Tersalin' : 'Salin tautan'}
+                {tersalin ? <Check className="ukuran-4 text-success" /> : <Link2 className="ukuran-4" />} {tersalin ? 'Tersalin' : 'Salin tautan'}
               </button>
             </div>
           </>
@@ -88,18 +85,18 @@ export default function BeritaDetail() {
       </article>
 
       {lainnya.length > 0 && (
-        <section className="bg-kertas-tua/70 py-16 lg:py-20">
+        <section className="latar-kertas-lembut py-16 py-lg-20">
           <div className={wadah}>
-            <h2 className="text-3xl">Berita lainnya</h2>
-            <ul className="mt-8 grid gap-4 sm:grid-cols-3">
+            <h2 className="fs-3xl">Berita lainnya</h2>
+            <ul className="mt-8 d-grid gap-4 kolom-sm-3">
               {lainnya.map((p) => (
                 <li key={p.id}>
-                  <Link to={`/berita/${p.id}`} className="group block h-full rounded-[1.75rem] bg-white p-3 pb-5 ring-1 ring-garis">
+                  <Link to={`/berita/${p.id}`} className="kartu-zoom d-block h-100 rounded-kartu bg-white p-3 pb-5 border border-garis">
                     <Sampul berita={p} />
-                    <p className="angka mt-4 px-2 text-sm text-tinta-3">
-                      <span className="font-bold text-primary-700">{p.kategori}</span> · {formatTanggal(p.tanggal)}
+                    <p className="angka mt-4 px-2 fs-sm text-tinta-3">
+                      <span className="fw-bold text-merah-700">{p.kategori}</span> · {formatTanggal(p.tanggal)}
                     </p>
-                    <p className="mt-1 px-2 text-lg font-bold leading-snug group-hover:text-primary-700">{p.judul}</p>
+                    <p className="judul-sorot mt-1 px-2 fs-lg fw-bold lh-snug">{p.judul}</p>
                   </Link>
                 </li>
               ))}

@@ -1,24 +1,23 @@
-import { JADWAL } from '../../data/dummy'
-import { agendaPada } from '../../components/KalenderAkademik'
+import { jadwalKelas, liburPada } from '../../utils/acuan'
 import { namaHari, selisihHari, tambahHari, todayKey } from '../../utils/format'
 
 const JAM_PULANG = 12
 
-const hariBelajar = (kelas, key) =>
-  JADWAL[kelas]?.[namaHari(key)] && !agendaPada(key).some((e) => e.jenis === 'libur')
+// Ada pelajaran di jadwal kelas pada hari itu dan bukan agenda libur
+const hariBelajar = (kelas, key) => jadwalKelas(kelas)[namaHari(key)]?.some(Boolean) && !liburPada(key)
 
 // Jadwal hari ini (jika belum pulang) atau hari sekolah berikutnya
 export function jadwalBerikutnya(kelas) {
   const hariIni = todayKey()
   if (hariBelajar(kelas, hariIni) && new Date().getHours() < JAM_PULANG) {
-    return { tanggal: hariIni, label: 'Hari ini', sesi: JADWAL[kelas][namaHari(hariIni)] }
+    return { tanggal: hariIni, label: 'Hari ini', sesi: jadwalKelas(kelas)[namaHari(hariIni)] }
   }
   let key = hariIni
   for (let i = 0; i < 60; i++) {
     key = tambahHari(key, 1)
     if (hariBelajar(kelas, key)) {
       const label = selisihHari(hariIni, key) === 1 ? 'Besok' : namaHari(key)
-      return { tanggal: key, label, sesi: JADWAL[kelas][namaHari(key)] }
+      return { tanggal: key, label, sesi: jadwalKelas(kelas)[namaHari(key)] }
     }
   }
   return null
@@ -26,8 +25,8 @@ export function jadwalBerikutnya(kelas) {
 
 export function infoTenggat(tenggat) {
   const sisa = selisihHari(todayKey(), tenggat)
-  if (sisa < 0) return { teks: `Terlambat ${-sisa} hari`, cls: 'bg-rose-100 text-rose-700' }
-  if (sisa === 0) return { teks: 'Hari ini', cls: 'bg-amber-100 text-amber-800' }
-  if (sisa === 1) return { teks: 'Besok', cls: 'bg-amber-100 text-amber-800' }
-  return { teks: `${sisa} hari lagi`, cls: 'bg-slate-100 text-slate-600' }
+  if (sisa < 0) return { teks: `Terlambat ${-sisa} hari`, cls: 'warna-rose' }
+  if (sisa === 0) return { teks: 'Hari ini', cls: 'warna-amber' }
+  if (sisa === 1) return { teks: 'Besok', cls: 'warna-amber' }
+  return { teks: `${sisa} hari lagi`, cls: 'warna-abu' }
 }

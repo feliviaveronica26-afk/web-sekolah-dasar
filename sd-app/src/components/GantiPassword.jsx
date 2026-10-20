@@ -14,7 +14,7 @@ function IsianPassword({ id, label, value, onChange, autoComplete, galat, petunj
       <label htmlFor={id} className={labelCls}>
         {label}
       </label>
-      <div className="relative">
+      <div className="position-relative">
         <input
           id={id}
           type={lihat ? 'text' : 'password'}
@@ -25,19 +25,19 @@ function IsianPassword({ id, label, value, onChange, autoComplete, galat, petunj
           maxLength={72}
           aria-invalid={galat ? true : undefined}
           aria-describedby={petunjuk ? `${id}-petunjuk` : undefined}
-          className={`${inputCls} pr-11 ${galat ? 'border-rose-400' : ''}`}
+          className={`${inputCls} pe-11 ${galat ? 'border-danger' : ''}`}
         />
         <button
           type="button"
           onClick={() => setLihat(!lihat)}
-          className="absolute inset-y-0 right-0 grid w-11 place-items-center rounded-r-xl text-slate-400 hover:text-slate-700"
+          className="position-absolute top-0 bottom-0 end-0 d-flex w-11 align-items-center justify-content-center rounded-end-2 text-abu-400 hover-teks-tinta"
           aria-label={lihat ? `Sembunyikan ${label.toLowerCase()}` : `Tampilkan ${label.toLowerCase()}`}
         >
           {lihat ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
       {petunjuk && (
-        <p id={`${id}-petunjuk`} className="mt-1.5 text-xs text-slate-500">
+        <p id={`${id}-petunjuk`} className="mt-1-5 fs-xs text-tinta-3">
           {petunjuk}
         </p>
       )}
@@ -71,7 +71,7 @@ export function FormGantiPassword({ onSelesai, tombolLain }) {
   }
 
   return (
-    <form onSubmit={kirim} className="space-y-4" noValidate>
+    <form onSubmit={kirim} className="antara-y-4" noValidate>
       {galat && (
         <Alert key={galat.galat} tone="error">
           {galat.galat}
@@ -88,9 +88,9 @@ export function FormGantiPassword({ onSelesai, tombolLain }) {
         petunjuk={`Minimal ${MIN} karakter dan tidak memuat username. Gabungan kata, angka, dan tanda baca lebih aman.`}
       />
       <IsianPassword id="password-ulangi" label="Ulangi password baru" value={ulangi} onChange={setUlangi} autoComplete="new-password" galat={galat?.kolom === 'passwordBaru'} />
-      <div className="flex flex-wrap justify-end gap-2 pt-2">
+      <div className="d-flex flex-wrap justify-content-end gap-2 pt-2">
         {tombolLain}
-        <button type="submit" disabled={menyimpan} className={`${btn.primary} disabled:opacity-60`}>
+        <button type="submit" disabled={menyimpan} className={`${btn.primary}`}>
           <KeyRound className="h-4 w-4" /> {menyimpan ? 'Menyimpan…' : 'Simpan Password'}
         </button>
       </div>
@@ -103,13 +103,13 @@ export function WajibGantiPassword() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   return (
-    <Card className="mx-auto max-w-lg p-6 sm:p-8">
-      <span className="grid h-12 w-12 place-items-center rounded-full bg-primary-50 text-primary-600">
+    <Card className="mx-auto mw-lg p-6 p-sm-8">
+      <span className="d-flex h-12 w-12 align-items-center justify-content-center rounded-pill bg-merah-50 text-primary">
         <ShieldCheck className="h-6 w-6" />
       </span>
-      <h1 className="mt-4 text-xl font-extrabold text-slate-900">Buat password baru Anda</h1>
-      <p className="mt-2 text-sm text-slate-600">
-        Akun <span className="font-semibold text-slate-800">{user.username}</span> masih memakai password awal dari sekolah. Demi keamanan, ganti dulu dengan
+      <h1 className="mt-4 fs-xl fw-extrabold text-tinta">Buat password baru Anda</h1>
+      <p className="mt-2 fs-sm text-tinta-2">
+        Akun <span className="fw-semibold text-tinta">{user.username}</span> masih memakai password awal dari sekolah. Demi keamanan, ganti dulu dengan
         password buatan Anda sendiri sebelum memakai portal.
       </p>
       <div className="mt-6">

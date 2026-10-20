@@ -57,8 +57,8 @@ final class ChatSekolah
             $wali = $semuaGuru->first(fn (Guru $g) => in_array('wali_kelas', $g->peran ?? [], true) && $g->kelas === $kelas)?->id;
             $ids = $wali ? [$wali] : [];
             foreach (Referensi::get('hariSekolah') as $hari) {
-                foreach (Referensi::get("jadwal.{$kelas}.{$hari}", []) as $mapel) {
-                    if (! Referensi::get("mapel.{$mapel}.absensi", false)) {
+                foreach (Referensi::jadwal()[$kelas][$hari] ?? [] as $mapel) {
+                    if (! $mapel || ! Referensi::get("mapel.{$mapel}.absensi", false)) {
                         continue;
                     }
                     $g = Referensi::guruPelajaran($semuaGuru, $kelas, $mapel);

@@ -1,0 +1,141 @@
+// ============================================================================
+// Perluasan Utility API Bootstrap (dimuat setelah bootstrap/scss/utilities, sebelum utilities/api).
+// Semua kelas di sini dibuat oleh mesin utilitas Bootstrap sendiri.
+// ============================================================================
+
+// Warna merek sebagai utilitas: text-*, bg-*, border-* (mis. bg-merah-700, text-tinta-3, border-garis).
+// stabilo, tinta, kertas, merah-tua, marun sudah menjadi warna tema (lihat main.scss), jadi tidak diulang di sini.
+$warna-merek: (
+  "kertas-tua": $kertas-tua,
+  "kartu": $kartu,
+  "tinta-2": $tinta-2,
+  "tinta-3": $tinta-3,
+  "garis": $garis,
+  "krem": $krem,
+  "abu-50": $gray-50,
+  "abu-100": $gray-100,
+  "abu-200": $gray-200,
+  "abu-300": $gray-300,
+  "abu-400": $gray-400,
+  "abu-500": $gray-500,
+  "abu-600": $gray-600,
+  "abu-700": $gray-700,
+  "abu-800": $gray-800,
+  "abu-900": $gray-900,
+);
+@each $k, $v in $merah {
+  $warna-merek: map-merge($warna-merek, ("merah-#{$k}": $v));
+}
+
+// Ukuran tetap (rem) untuk ikon, avatar, kotak tanggal, kolom label
+$ukuran-rem: (
+  "0-5": 0.125rem,
+  1: 0.25rem,
+  "1-5": 0.375rem,
+  2: 0.5rem,
+  "2-5": 0.625rem,
+  3: 0.75rem,
+  "3-5": 0.875rem,
+  4: 1rem,
+  "4-5": 1.125rem,
+  5: 1.25rem,
+  6: 1.5rem,
+  7: 1.75rem,
+  8: 2rem,
+  9: 2.25rem,
+  10: 2.5rem,
+  11: 2.75rem,
+  12: 3rem,
+  14: 3.5rem,
+  16: 4rem,
+  20: 5rem,
+  24: 6rem,
+  28: 7rem,
+  32: 8rem,
+  36: 9rem,
+  40: 10rem,
+  44: 11rem,
+  48: 12rem,
+  52: 13rem,
+  56: 14rem,
+  60: 15rem,
+  64: 16rem,
+  72: 18rem,
+  80: 20rem,
+  96: 24rem,
+);
+
+// Posisi negatif untuk hiasan yang menjorok keluar (top-n24, end-n20, …)
+$posisi-negatif: ();
+@each $k in "0-5", 1, "1-5", 2, 4, 6, 8, 9, 10, 12, 16, 20, 24 {
+  $posisi-negatif: map-merge($posisi-negatif, ("n#{$k}": -1 * map-get($spacers, $k)));
+}
+$posisi-nilai: map-merge(map-merge((0: 0, 50: 50%, 100: 100%), $spacers), $posisi-negatif);
+
+// Templat kolom grid khusus (kolom-lg-isi-320 = 1fr 320px, kolom-xl-14-10 = 1.4fr 1fr, …)
+$kolom-khusus: (
+  "isi-auto": unquote("minmax(0, 1fr) auto"),
+  "isi-280": unquote("minmax(0, 1fr) 280px"),
+  "isi-300": unquote("minmax(0, 1fr) 300px"),
+  "isi-320": unquote("minmax(0, 1fr) 320px"),
+  "isi-340": unquote("minmax(0, 1fr) 340px"),
+  "isi-360": unquote("minmax(0, 1fr) 360px"),
+  "isi-380": unquote("minmax(0, 1fr) 380px"),
+  "110-isi": unquote("110px minmax(0, 1fr)"),
+  "200-isi": unquote("200px minmax(0, 1fr)"),
+  "340-isi": unquote("340px minmax(0, 1fr)"),
+  "400-isi": unquote("400px minmax(0, 1fr)"),
+  "auto-isi": unquote("auto minmax(0, 1fr)"),
+  "auto-isi-auto": unquote("auto minmax(0, 1fr) auto"),
+  "10-12": unquote("1fr 1.2fr"),
+  "10-13": unquote("1fr 1.3fr"),
+  "12-10": unquote("1.2fr 1fr"),
+  "14-10": unquote("1.4fr 1fr"),
+  "15-10": unquote("1.5fr 1fr"),
+);
+
+$utilities: map-merge(
+  $utilities,
+  (
+    // Warna merek untuk teks, latar, dan garis
+    "color": map-merge(map-get($utilities, "color"), (values: map-merge(map-get(map-get($utilities, "color"), "values"), $warna-merek))),
+    "background-color": map-merge(map-get($utilities, "background-color"), (values: map-merge(map-get(map-get($utilities, "background-color"), "values"), $warna-merek))),
+    "border-color": map-merge(map-get($utilities, "border-color"), (values: map-merge(map-get(map-get($utilities, "border-color"), "values"), map-merge($warna-merek, (transparent: transparent))))),
+    // Transparansi lebih rinci (bg-opacity-10, text-opacity-75, …)
+    "opacity": map-merge(map-get($utilities, "opacity"), (values: (0: 0, 10: 0.1, 20: 0.2, 25: 0.25, 30: 0.3, 40: 0.4, 50: 0.5, 60: 0.6, 70: 0.7, 75: 0.75, 80: 0.8, 85: 0.85, 90: 0.9, 100: 1))),
+    "bg-opacity": map-merge(map-get($utilities, "bg-opacity"), (values: (5: 0.05, 7: 0.07, 10: 0.1, 15: 0.15, 20: 0.2, 25: 0.25, 30: 0.3, 50: 0.5, 60: 0.6, 70: 0.7, 75: 0.75, 80: 0.8, 85: 0.85, 90: 0.9, 95: 0.95, 100: 1))),
+    "text-opacity": map-merge(map-get($utilities, "text-opacity"), (values: (10: 0.1, 20: 0.2, 25: 0.25, 30: 0.3, 40: 0.4, 50: 0.5, 60: 0.6, 70: 0.7, 75: 0.75, 80: 0.8, 85: 0.85, 90: 0.9, 100: 1))),
+    "border-opacity": map-merge(map-get($utilities, "border-opacity"), (values: (10: 0.1, 15: 0.15, 20: 0.2, 25: 0.25, 30: 0.3, 40: 0.4, 50: 0.5, 60: 0.6, 75: 0.75, 100: 1))),
+    // Posisi & ukuran yang bisa berbeda per breakpoint (position-lg-sticky, w-sm-auto, …)
+    "position": map-merge(map-get($utilities, "position"), (responsive: true)),
+    "top": map-merge(map-get($utilities, "top"), (responsive: true, values: $posisi-nilai)),
+    "bottom": map-merge(map-get($utilities, "bottom"), (values: $posisi-nilai)),
+    "start": map-merge(map-get($utilities, "start"), (values: $posisi-nilai)),
+    "end": map-merge(map-get($utilities, "end"), (values: $posisi-nilai)),
+    "max-height": map-merge(map-get($utilities, "max-height"), (values: (100: 100%, 32: 8rem, 44: 11rem, 60: 15rem, 72: 18rem, 80: 20rem, 96: 24rem, layar: 92dvh))),
+    "width": map-merge(map-get($utilities, "width"), (responsive: true, values: map-merge((25: 25%, 50: 50%, 75: 75%, 100: 100%, auto: auto, fit: fit-content, 120: 30rem), $ukuran-rem))),
+    "height": map-merge(map-get($utilities, "height"), (responsive: true, values: map-merge((25: 25%, 50: 50%, 75: 75%, 100: 100%, auto: auto), $ukuran-rem))),
+    "max-width": map-merge(map-get($utilities, "max-width"), (responsive: true, values: (100: 100%, 44: 11rem, 56: 14rem, xs: 20rem, sm: 24rem, md: 28rem, lg: 32rem, xl: 36rem, "2xl": 42rem, "3xl": 48rem, "4xl": 56rem, "5xl": 64rem, "6xl": 72rem, "7xl": 80rem, none: none))),
+    "font-size": map-merge(map-get($utilities, "font-size"), (responsive: true)),
+    "font-weight": map-merge(map-get($utilities, "font-weight"), (values: map-merge(map-get(map-get($utilities, "font-weight"), "values"), (extrabold: 800)))),
+    "line-height": map-merge(map-get($utilities, "line-height"), (responsive: true, values: (1: 1, none: 1, "105": 1.05, tight: 1.25, snug: 1.375, base: 1.5, relaxed: 1.625, lg: 2))),
+    "flex": map-merge(map-get($utilities, "flex"), (values: (fill: 1 1 auto, 1: 1 1 0%, none: none))),
+    "rounded": map-merge(map-get($utilities, "rounded"), (values: map-merge(map-get(map-get($utilities, "rounded"), "values"), (kartu: 1.75rem)))),
+    "text-align": map-merge(map-get($utilities, "text-align"), (responsive: true)),
+    // Utilitas tambahan
+    // min-w-0 + lebar minimum tabel lebar (min-w-640 …) agar tabel bisa digeser di HP
+    "min-width": (property: min-width, class: min-w, values: map-merge((0: 0, 620: 620px, 640: 640px, 700: 700px, 720: 720px, 760: 760px, 860: 860px, 880: 880px, 980: 980px), $ukuran-rem)),
+    "min-height": (property: min-height, class: min-h, responsive: true, values: map-merge((0: 0, 100: 100%), $ukuran-rem)),
+    "ukuran": (property: width height, class: ukuran, responsive: true, values: $ukuran-rem),
+    "inset": (property: inset, class: inset, values: (0: 0)),
+    "rasio": (property: aspect-ratio, class: rasio, responsive: true, values: ("1x1": 1, "4x3": unquote("4 / 3"), "3x4": unquote("3 / 4"), "16x9": unquote("16 / 9"), "16x10": 1.6, "16x8": 2, "16x11": unquote("16 / 11"), "4x5": 0.8, "3x2": 1.5, "4x3-4": 1.1765, "21x9": unquote("21 / 9"), auto: auto)),
+    "letter-spacing": (property: letter-spacing, class: ls, values: (tighter: -0.05em, tight: -0.025em, normal: 0, wide: 0.025em, wider: 0.05em, widest: 0.1em, lebar: 0.16em, lebar-2: 0.2em, kode-4: 0.4em, kode: 0.5em)),
+    "overflow-x": map-merge(map-get($utilities, "overflow-x"), (values: (auto: auto, hidden: hidden, visible: visible, scroll: scroll, clip: clip))),
+    "cursor": (property: cursor, class: cursor, values: (pointer: pointer, default: default, not-allowed: not-allowed)),
+    "kolom": (property: grid-template-columns, class: kolom, responsive: true, values: map-merge((1: repeat(1, minmax(0, 1fr)), 2: repeat(2, minmax(0, 1fr)), 3: repeat(3, minmax(0, 1fr)), 4: repeat(4, minmax(0, 1fr)), 5: repeat(5, minmax(0, 1fr)), 6: repeat(6, minmax(0, 1fr)), 7: repeat(7, minmax(0, 1fr)), 8: repeat(8, minmax(0, 1fr)), 9: repeat(9, minmax(0, 1fr)), 10: repeat(10, minmax(0, 1fr)), 12: repeat(12, minmax(0, 1fr))), $kolom-khusus)),
+    // Rentang sel grid: rentang-sm-2 = melebar 2 kolom mulai layar sm; rentang-penuh = selebar grid
+    "rentang": (property: grid-column, class: rentang, responsive: true, values: (1: unquote("span 1 / span 1"), 2: unquote("span 2 / span 2"), 3: unquote("span 3 / span 3"), 4: unquote("span 4 / span 4"), penuh: unquote("1 / -1"), auto: auto)),
+    "rentang-baris": (property: grid-row, class: rentang-baris, responsive: true, values: (1: unquote("span 1 / span 1"), 2: unquote("span 2 / span 2"), 3: unquote("span 3 / span 3"), auto: auto)),
+    "white-space": map-merge(map-get($utilities, "white-space"), (responsive: true)),
+  )
+);

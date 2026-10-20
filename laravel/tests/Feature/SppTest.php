@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Siswa;
 use App\Models\SppPembayaran;
 use App\Models\TransaksiSpp;
 use App\Models\User;
@@ -58,6 +59,21 @@ class SppTest extends TestCase
             'jumlah' => $jumlah,
             'tandaTangan' => $tandaTangan ?? PembayaranSpp::tandaTangan($trx->kode, 'berhasil', $jumlah),
         ]);
+    }
+
+    public function test_siswa_baru_tidak_ditagih_spp_sebelum_bulan_masuknya(): void
+    {
+        Siswa::where('nis', '230401')->update(['tanggal_masuk' => '2026-10-19']);
+        SppPembayaran::where('nis', '230401')->delete();
+        $tu = $this->akun('staf', ['guru_id' => 'g9']);
+
+        $this->sebagai($tu)->postJson('/api/spp/tunai', ['nis' => '230401', 'bulan' => ['2026-09', '2026-10']])
+            ->assertUnprocessable()->assertJsonPath('errors.bulan.0', 'Siswa ini masuk Oktober 2026; SPP bulan sebelumnya tidak ditagih.');
+        $this->sebagai($this->ortu())->postJson('/api/transaksi-spp', ['bulan' => ['2026-07'], 'metode' => 'qris'])->assertUnprocessable();
+
+        // Mulai bulan masuknya bisa dibayar seperti biasa
+        $this->sebagai($tu)->postJson('/api/spp/tunai', ['nis' => '230401', 'bulan' => ['2026-10']])->assertOk();
+        $this->assertSame(['2026-10'], SppPembayaran::where('nis', '230401')->pluck('bulan')->all());
     }
 
     public function test_orang_tua_tidak_bisa_menandai_lunas_sendiri(): void

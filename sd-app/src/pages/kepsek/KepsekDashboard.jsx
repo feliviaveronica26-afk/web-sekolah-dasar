@@ -11,6 +11,7 @@ import {
   FileClock,
   GraduationCap,
   HeartHandshake,
+  HouseHeart,
   Timer,
   TrendingUp,
   UserPlus,
@@ -33,7 +34,7 @@ import { formatHari, formatTanggal, isHariSekolah, jamSekarang, todayKey } from 
 import { rekapNilai } from '../../utils/nilai'
 import { JAM_KERJA } from '../../data/dummy'
 import { ringkasPresensi } from '../../utils/presensi'
-import { kehadiranPerKelas, kehadiranSekolah, ringkasSpp } from '../../utils/ringkasan'
+import { kehadiranPerKelas, kehadiranSekolah, ringkasSpp, siswaBaru, siswaTanpaKeluarga } from '../../utils/ringkasan'
 import { bulanIni, namaBulan, rupiah } from '../../utils/spp'
 
 const BASE = '/dashboard/kepsek'
@@ -62,11 +63,15 @@ export default function KepsekDashboard() {
   const pengumuman = [...data.pengumuman].sort((a, b) => b.tanggal.localeCompare(a.tanggal)).slice(0, 3)
   const tren = trenKehadiran(data)
   const rekap = data.siswa.map((s) => ({ s, r: rekapNilai(data, s) }))
-  const rataSekolah = rekap.length ? Math.round((rekap.reduce((a, x) => a + (x.r.rataRata ?? 0), 0) / rekap.length) * 10) / 10 : null
-  const nilaiPerKelas = [...new Set(data.siswa.map((s) => s.kelas))].sort().map((k) => {
-    const daftar = rekap.filter((x) => x.s.kelas === k).map((x) => x.r.rataRata ?? 0)
-    return { label: `Kelas ${k}`, nilai: Math.round((daftar.reduce((a, b) => a + b, 0) / daftar.length) * 10) / 10 }
-  })
+  // Siswa yang belum punya nilai (mis. siswa baru) tidak ikut dirata-rata
+  const rata1 = (daftar) => (daftar.length ? Math.round((daftar.reduce((a, b) => a + b, 0) / daftar.length) * 10) / 10 : null)
+  const adaNilai = rekap.filter((x) => x.r.rataRata !== null)
+  const rataSekolah = rata1(adaNilai.map((x) => x.r.rataRata))
+  const nilaiPerKelas = [...new Set(data.siswa.map((s) => s.kelas))].sort().map((k) => ({
+    label: `Kelas ${k}`,
+    nilai: rata1(adaNilai.filter((x) => x.s.kelas === k).map((x) => x.r.rataRata)) ?? 0,
+  }))
+  const baru = siswaBaru(data)
   const belumTuntas = rekap.filter((x) => x.r.daftar.some((d) => d.akhir !== null && d.akhir < KKTP)).length
   const presensi = ringkasPresensi(data)
   // Staf yang belum absen baru dihitung setelah jam masuk lewat
@@ -82,6 +87,7 @@ export default function KepsekDashboard() {
     { ikon: HeartHandshake, jumlah: data.konseling.filter((k) => k.status === 'Perlu Pemantauan').length, teks: 'kasus BK perlu pemantauan', ke: `${BASE}/konseling` },
     { ikon: BookOpenCheck, jumlah: belumTuntas, teks: 'siswa punya nilai di bawah KKTP', ke: `${BASE}/rapor` },
     { ikon: Wallet, jumlah: spp.menunggak, teks: 'siswa menunggak SPP', ke: `${BASE}/spp` },
+    { ikon: HouseHeart, jumlah: siswaTanpaKeluarga(data).length, teks: 'siswa baru belum terhubung data orang tua', ke: `${BASE}/ortu` },
     { ikon: FileCheck, jumlah: data.izin.filter((i) => i.status === 'Menunggu').length, teks: 'izin siswa belum diproses wali kelas', ke: `${BASE}/kehadiran` },
     { ikon: CalendarCheck, jumlah: data.kunjungan.filter((k) => k.status === 'Menunggu').length, teks: 'permintaan kunjungan sekolah', ke: `${BASE}/kunjungan` },
   ].filter((p) => p.jumlah > 0)
@@ -91,64 +97,64 @@ export default function KepsekDashboard() {
 
   return (
     <>
-      <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-linear-to-br from-slate-800 via-slate-900 to-primary-900 p-6 text-white sm:p-8">
-        <div className="pola-titik absolute inset-0" />
-        <Gumpalan className="absolute -right-20 -top-24 h-80 w-80 text-primary-500/20" />
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <Avatar nama={nama} size="lg" className="bg-white text-primary-700 ring-4 ring-white/20" />
+      <div className="position-relative mb-6 overflow-hidden rounded-5 gradasi-gelap p-6 text-white p-sm-8">
+        <div className="pola-titik position-absolute inset-0" />
+        <Gumpalan className="putar-lambat position-absolute end-n20 top-n24 h-80 w-80 text-primary text-opacity-20" />
+        <div className="position-relative d-flex flex-column gap-5 flex-sm-row align-items-sm-center justify-content-sm-between">
+          <div className="d-flex align-items-center gap-4">
+            <Avatar nama={nama} size="lg" className="bg-white text-merah-700 cincin-putih-tebal-20" />
             <div>
-              <p className="text-sm text-slate-300">{formatHari(hariIni)}</p>
-              <h1 className="text-3xl font-bold">Selamat datang, {nama.split(' ')[0]}</h1>
-              <p className="text-slate-300">Gambaran menyeluruh kondisi sekolah hari ini.</p>
+              <p className="fs-sm text-abu-300">{formatHari(hariIni)}</p>
+              <h1 className="fs-3xl fw-bold">Selamat datang, {nama.split(' ')[0]}</h1>
+              <p className="text-abu-300">Gambaran menyeluruh kondisi sekolah hari ini.</p>
             </div>
           </div>
-          <div className="rounded-2xl bg-white/10 px-5 py-3 ring-1 ring-white/15">
-            <p className="text-xs text-slate-300">Hal yang perlu perhatian</p>
-            <p className="text-3xl font-extrabold">{perhatian.reduce((a, p) => a + p.jumlah, 0)}</p>
+          <div className="rounded-3 bg-white bg-opacity-10 px-5 py-3 border border-white border-opacity-10">
+            <p className="fs-xs text-abu-300">Hal yang perlu perhatian</p>
+            <p className="fs-3xl fw-extrabold">{perhatian.reduce((a, p) => a + p.jumlah, 0)}</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard icon={Users} label="Total siswa" value={data.siswa.length} hint={`${perKelas.length} kelas terdata`} tone="sky" />
+      <div className="d-grid kolom-2 gap-4 kolom-lg-4">
+        <StatCard icon={Users} label="Total siswa" value={data.siswa.length} hint={baru.length ? `${perKelas.length} kelas · ${baru.length} siswa baru` : `${perKelas.length} kelas terdata`} tone="sky" />
         <StatCard icon={CalendarCheck} label="Kehadiran siswa" value={`${kehadiranSekolah(data)}%`} hint="rata-rata 20 hari" tone="emerald" />
         <StatCard icon={TrendingUp} label="Rata-rata nilai" value={rataSekolah ?? '–'} hint={`${belumTuntas} siswa belum tuntas`} tone="amber" />
         <StatCard icon={Wallet} label={`SPP ${namaBulan(bulanIni(), { month: 'long' })}`} value={rupiah(spp.terkumpul)} hint={`${persenLunas}% siswa lunas`} tone="primary" />
       </div>
 
-      <div className={`mt-6 grid gap-6 ${guruId ? 'xl:grid-cols-[1.5fr_1fr]' : ''}`}>
+      <div className={`mt-6 d-grid gap-6 ${guruId ? 'kolom-xl-15-10' : ''}`}>
         {guruId && <KartuPresensiSaya tautan />}
         <RingkasanPresensi />
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+      <div className="mt-6 d-grid gap-6 kolom-xl-15-10">
         <Card className="p-6">
           <JudulKartu icon={CalendarCheck} judul="Tren kehadiran harian">
-            <Link to={`${BASE}/kehadiran`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to={`${BASE}/kehadiran`} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Detail <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
-          <p className="-mt-2 mb-3 text-sm text-slate-500">Persentase siswa hadir, 20 hari sekolah terakhir</p>
+          <p className="mt-n2 mb-3 fs-sm text-tinta-3">Persentase siswa hadir, 20 hari sekolah terakhir</p>
           <GrafikGaris judul="Persentase kehadiran siswa per hari" data={tren} min={Math.min(70, Math.floor(Math.min(...tren.map((t) => t.nilai)) / 10) * 10)} maks={100} satuan="%" tinggi={260} />
         </Card>
 
         <Card className="p-6">
           <JudulKartu icon={ClipboardCheck} judul="Perlu perhatian" />
           {perhatian.length === 0 ? (
-            <p className="rounded-xl bg-emerald-50 px-4 py-6 text-center text-sm font-semibold text-emerald-700">Semua terkendali. 🎉</p>
+            <p className="rounded-2 bg-success-subtle px-4 py-6 text-center fs-sm fw-semibold text-success">Semua terkendali. 🎉</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="bertahap antara-y-2">
               {perhatian.map(({ ikon: Icon, jumlah, teks, ke }) => (
                 <li key={teks}>
-                  <Link to={ke} className="group flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-2.5 transition hover:bg-amber-50">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white text-amber-600 shadow-sm">
+                  <Link to={ke} className="grup d-flex align-items-center gap-3 rounded-2 bg-abu-50 px-3 py-2-5 transisi hover-latar">
+                    <span className="d-flex h-9 w-9 flex-shrink-0 align-items-center justify-content-center rounded-1 bg-white text-warning-emphasis shadow-sm">
                       <Icon className="h-4 w-4" />
                     </span>
-                    <span className="flex-1 text-sm text-slate-700">
-                      <span className="font-bold text-slate-900">{jumlah}</span> {teks}
+                    <span className="flex-1 fs-sm text-tinta-2">
+                      <span className="fw-bold text-tinta">{jumlah}</span> {teks}
                     </span>
-                    <ChevronRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5" />
+                    <ChevronRight className="h-4 w-4 text-abu-400 transisi grup-geser-kecil" />
                   </Link>
                 </li>
               ))}
@@ -157,7 +163,7 @@ export default function KepsekDashboard() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 d-grid gap-6 kolom-lg-2">
         <Card className="p-6">
           <JudulKartu icon={grafik === 'nilai' ? TrendingUp : CalendarCheck} judul="Perbandingan antarkelas">
             <Tabs
@@ -176,52 +182,52 @@ export default function KepsekDashboard() {
           )}
         </Card>
 
-        <div className="space-y-6">
+        <div className="antara-y-6">
           <KartuKas ke={`${BASE}/keuangan`} />
           <Card className="p-6">
             <JudulKartu icon={Wallet} judul="Keuangan SPP">
-              <Link to={`${BASE}/spp`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+              <Link to={`${BASE}/spp`} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
                 Detail <ArrowRight className="h-4 w-4" />
               </Link>
             </JudulKartu>
-            <p className="text-sm text-slate-500">Pembayaran bulan {namaBulan(bulanIni())}</p>
-            <div className="mt-2 flex items-end justify-between">
-              <p className="text-3xl font-extrabold text-slate-900">{persenLunas}%</p>
-              <p className="text-sm text-slate-500">
+            <p className="fs-sm text-tinta-3">Pembayaran bulan {namaBulan(bulanIni())}</p>
+            <div className="mt-2 d-flex align-items-end justify-content-between">
+              <p className="fs-3xl fw-extrabold text-tinta">{persenLunas}%</p>
+              <p className="fs-sm text-tinta-3">
                 {spp.lunasBulanIni} dari {data.siswa.length} siswa lunas
               </p>
             </div>
             <Progres nilai={persenLunas} warna="bg-emerald-500" tinggi="h-3" className="mt-2" />
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl bg-rose-50 p-4">
-                <p className="text-xs text-rose-700">Siswa menunggak</p>
-                <p className="text-xl font-extrabold text-rose-700">{spp.menunggak}</p>
+            <div className="mt-5 d-grid gap-3 kolom-sm-2">
+              <div className="rounded-2 bg-danger-subtle p-4">
+                <p className="fs-xs text-danger">Siswa menunggak</p>
+                <p className="fs-xl fw-extrabold text-danger">{spp.menunggak}</p>
               </div>
-              <div className="rounded-xl bg-amber-50 p-4">
-                <p className="text-xs text-amber-800">Total tunggakan</p>
-                <p className="text-xl font-extrabold text-amber-800">{rupiah(spp.totalTunggakan)}</p>
+              <div className="rounded-2 bg-warning-subtle p-4">
+                <p className="fs-xs text-warning-emphasis">Total tunggakan</p>
+                <p className="fs-xl fw-extrabold text-warning-emphasis">{rupiah(spp.totalTunggakan)}</p>
               </div>
             </div>
           </Card>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+      <div className="mt-6 d-grid gap-6 kolom-lg-3">
         <Card className="p-6">
           <JudulKartu icon={UserPlus} judul={`PPDB ${PPDB.tahunAjaran}`}>
-            <Link to={`${BASE}/ppdb`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to={`${BASE}/ppdb`} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Kelola <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
-          <p className="text-sm text-slate-500">
+          <p className="fs-sm text-tinta-3">
             {data.pendaftar.length} pendaftar · kuota {kuotaPpdb} kursi
           </p>
           <Progres nilai={(data.pendaftar.length / kuotaPpdb) * 100} warna="bg-primary-500" className="mt-2" />
-          <ul className="mt-4 space-y-2">
+          <ul className="bertahap mt-4 antara-y-2">
             {statusPpdb.map(({ st, n }) => (
-              <li key={st} className="flex items-center justify-between text-sm">
+              <li key={st} className="d-flex align-items-center justify-content-between fs-sm">
                 <Badge className={STATUS_PPDB[st].cls}>{st}</Badge>
-                <span className="font-bold text-slate-800">{n}</span>
+                <span className="fw-bold text-tinta">{n}</span>
               </li>
             ))}
           </ul>
@@ -229,15 +235,15 @@ export default function KepsekDashboard() {
 
         <Card className="p-6">
           <JudulKartu icon={CalendarDays} judul="Agenda terdekat">
-            <Link to={`${BASE}/kalender`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to={`${BASE}/kalender`} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Kalender <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
-          <ul className="space-y-2">
+          <ul className="bertahap antara-y-2">
             {agendaMendatang(4).map((e) => (
-              <li key={e.judul + e.mulai} className={`rounded-xl px-4 py-3 ${JENIS_AGENDA[e.jenis].soft}`}>
-                <p className="text-sm font-bold">{e.judul}</p>
-                <p className="text-xs opacity-80">{rentangAgenda(e)}</p>
+              <li key={e.judul + e.mulai} className={`rounded-2 px-4 py-3 ${JENIS_AGENDA[e.jenis].soft}`}>
+                <p className="fs-sm fw-bold">{e.judul}</p>
+                <p className="fs-xs opacity-80">{rentangAgenda(e)}</p>
               </li>
             ))}
           </ul>
@@ -245,18 +251,18 @@ export default function KepsekDashboard() {
 
         <Card className="p-6">
           <JudulKartu judul="Pengumuman terbaru">
-            <Link to={`${BASE}/pengumuman`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to={`${BASE}/pengumuman`} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Kelola <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
-          <div className="divide-y divide-slate-100">
+          <div className="pembatas-y pembatas-abu">
             {pengumuman.map((p) => (
-              <div key={p.id} className="py-3 first:pt-0">
-                <div className="flex items-center gap-2">
+              <div key={p.id} className="py-3 pertama-pt-0">
+                <div className="d-flex align-items-center gap-2">
                   <KategoriBadge kategori={p.kategori} />
-                  <span className="text-xs text-slate-500">{formatTanggal(p.tanggal)}</span>
+                  <span className="fs-xs text-tinta-3">{formatTanggal(p.tanggal)}</span>
                 </div>
-                <p className="mt-1.5 font-semibold text-slate-800">{p.judul}</p>
+                <p className="mt-1-5 fw-semibold text-tinta">{p.judul}</p>
               </div>
             ))}
           </div>
@@ -265,26 +271,26 @@ export default function KepsekDashboard() {
 
       <Card className="mt-6 p-6">
         <JudulKartu icon={GraduationCap} judul="Tim sekolah & jabatan">
-          <Link to={`${BASE}/guru`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+          <Link to={`${BASE}/guru`} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
             Atur <ArrowRight className="h-4 w-4" />
           </Link>
         </JudulKartu>
-        <ul className="grid gap-x-8 gap-y-3 md:grid-cols-2">
+        <ul className="d-grid column-gap-8 row-gap-3 kolom-md-2">
           {Object.entries(PERAN).map(([kode, p]) => {
             const orang = data.guru.filter((g) => g.peran?.includes(kode))
             return (
-              <li key={kode} className="flex flex-wrap items-start gap-2 text-sm">
-                <span className="w-full shrink-0 font-semibold text-slate-700 sm:w-44">{p.label}</span>
-                <span className="flex flex-1 flex-wrap gap-1">
+              <li key={kode} className="d-flex flex-wrap align-items-start gap-2 fs-sm">
+                <span className="w-100 flex-shrink-0 fw-semibold text-tinta-2 w-sm-44">{p.label}</span>
+                <span className="d-flex flex-1 flex-wrap gap-1">
                   {orang.length ? (
                     orang.map((g) => (
-                      <Badge key={g.id} className="bg-slate-100 text-slate-700">
+                      <Badge key={g.id} className="bg-abu-100 text-tinta-2">
                         {g.nama.split(',')[0]}
                         {kode === 'wali_kelas' && ` (${g.kelas})`}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-slate-400">Belum ada</span>
+                    <span className="text-abu-400">Belum ada</span>
                   )}
                 </span>
               </li>

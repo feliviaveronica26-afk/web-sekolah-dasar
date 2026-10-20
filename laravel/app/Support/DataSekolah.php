@@ -8,6 +8,7 @@ use App\Models\Guru;
 use App\Models\Inventaris;
 use App\Models\IzinSiswa;
 use App\Models\IzinStaf;
+use App\Models\Kalender;
 use App\Models\Kerusakan;
 use App\Models\Konseling;
 use App\Models\Kunjungan;
@@ -29,7 +30,7 @@ use stdClass;
 /*
   Data sekolah untuk website, dalam bentuk yang sama dengan state di sd-app/src/context/DataContext.jsx.
   Setiap pengguna hanya menerima data yang boleh ia lihat:
-    - tamu: pengumuman, guru (tanpa NIP), katalog buku, dan ringkasan kuota PPDB/kunjungan tanpa data pribadi
+    - tamu: pengumuman, guru (tanpa NIP), katalog buku, jadwal & kalender, dan ringkasan kuota PPDB/kunjungan tanpa data pribadi
     - siswa & orang tua: data milik siswa itu sendiri (nilai, absensi, sikap, SPP, ...) + teman sekelas
     - guru & staf: data sekolah, kecuali yang khusus jabatan tertentu (konseling, SPP, PPDB, buku tamu)
     - Kepala Sekolah: semua data
@@ -65,6 +66,8 @@ final class DataSekolah
         'inventaris' => ['inventaris'],
         'kerusakan' => ['kerusakan'],
         'konseling' => ['konseling'],
+        'jadwal' => ['jadwal'],
+        'kalender' => ['kalender'],
     ];
 
     public function __construct(private readonly Akses $a) {}
@@ -221,6 +224,18 @@ final class DataSekolah
         }
 
         return $this->a->keluarga() && $this->a->nis ? $kueri->where('nis', $this->a->nis) : $kueri->whereRaw('1 = 0');
+    }
+
+    // Jadwal pelajaran semua kelas (terbuka: website menampilkan jadwal & menghitung presensi per pelajaran)
+    private function jadwal(): array
+    {
+        return ['jadwal' => self::peta(Referensi::jadwal())];
+    }
+
+    // Kalender akademik (terbuka: beranda publik menampilkan agenda terdekat)
+    private function kalender(): array
+    {
+        return ['kalender' => Kalender::orderBy('mulai')->get()->toArray()];
     }
 
     // Biodata pribadi guru hanya untuk Kepala Sekolah dan pemiliknya (lihat Guru::untukWebsite)

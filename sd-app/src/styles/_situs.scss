@@ -1,0 +1,954 @@
+// ============================================================================
+// Halaman publik (beranda, profil, PPDB, dst.): komponen khusus yang tidak ada di Bootstrap
+// ============================================================================
+
+// ---- Judul besar ----
+.judul-hero {
+  font-size: 2.9rem;
+  line-height: 1;
+  @include media-breakpoint-up(sm) {
+    font-size: 4.5rem;
+  }
+  @include media-breakpoint-up(lg) {
+    font-size: 5rem;
+  }
+}
+.judul-halaman {
+  font-size: 2.6rem;
+  line-height: 1.03;
+  @include media-breakpoint-up(sm) {
+    font-size: 3.75rem;
+  }
+  @include media-breakpoint-up(lg) {
+    font-size: 4.25rem;
+  }
+}
+.judul-bagian {
+  font-size: 2.15rem;
+  line-height: 1.08;
+  @include media-breakpoint-up(sm) {
+    font-size: 3rem;
+  }
+  @include media-breakpoint-up(lg) {
+    font-size: 3.25rem;
+  }
+}
+
+// ---- Navbar ----
+.tinggi-navbar {
+  height: 4.75rem;
+}
+.navbar-sekolah.tergulir {
+  box-shadow: 0 8px 30px -20px rgb(26 21 18 / 0.35);
+}
+// Menu aktif: pil merah dengan bayangan lembut
+.bayangan-aktif {
+  box-shadow: 0 10px 20px -12px rgb(217 26 40 / 0.9);
+}
+
+// ---- Tombol & panel kontak melayang (pojok kanan bawah) ----
+.kontak-melayang {
+  right: 1rem;
+  bottom: 1rem;
+  @include media-breakpoint-up(sm) {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+}
+.panel-kontak {
+  width: calc(100vw - 2rem);
+  max-width: 24rem;
+  box-shadow: 0 18px 50px -12px rgb(29 26 22 / 0.35);
+}
+.tombol-melayang {
+  box-shadow:
+    0 0 0 2px rgb(255 255 255 / 0.8),
+    0 10px 30px -10px rgb(68 6 11 / 0.7);
+}
+.tautan-bawah {
+  text-underline-offset: 4px;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.tanpa-garis-fokus:focus {
+  outline: 0;
+}
+
+// ---- Footer ----
+.judul-kaki {
+  font-size: 1.875rem;
+  @include media-breakpoint-up(sm) {
+    font-size: 2.6rem;
+  }
+}
+.tautan-kaki {
+  color: rgb(255 255 255 / 0.9);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
+  &:hover {
+    color: $white;
+    text-decoration-color: rgb(255 255 255 / 0.6);
+  }
+}
+
+// ---- Tautan ----
+// Tautan bergaris bawah di atas latar gelap
+.tautan-garis {
+  text-decoration: underline;
+  text-decoration-color: rgba($krem, 0.5);
+  text-underline-offset: 4px;
+  &:hover {
+    text-decoration-color: $white;
+  }
+}
+.hover-teks-putih:hover {
+  color: $white !important;
+}
+.hover-latar-garis:hover {
+  background-color: $garis !important;
+}
+.hover-teks-stabilo:hover {
+  color: $stabilo !important;
+}
+.hover-teks-merah-800:hover {
+  color: map-get($merah, 800) !important;
+}
+.jejak-tautan {
+  text-underline-offset: 4px;
+  &:hover {
+    color: $white;
+    text-decoration: underline;
+  }
+}
+// Tautan ke bagian halaman (di dalam pita merah)
+.btn-indeks {
+  @include button-variant(
+    rgba($white, 0.1),
+    rgba($white, 0.15),
+    $white,
+    $hover-background: $white,
+    $hover-border: $white,
+    $hover-color: map-get($merah, 700),
+    $active-background: $white,
+    $active-border: $white,
+    $active-color: map-get($merah, 700)
+  );
+}
+
+// ---- Pita merah pembuka halaman ----
+.pita-merah__cincin {
+  position: absolute;
+  right: -10rem;
+  top: -14rem;
+  z-index: -1;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 50%;
+  border: 3.5rem solid rgb(255 255 255 / 0.06);
+  pointer-events: none;
+}
+
+// ---- Foto berbingkai dengan kotak kuning ----
+.foto-bingkai__sudut {
+  position: absolute;
+  bottom: -1rem;
+  left: -1rem;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 1.75rem;
+  background: $stabilo;
+  @include media-breakpoint-up(sm) {
+    width: 9rem;
+    height: 9rem;
+  }
+}
+.foto-bingkai__foto {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
+}
+
+// ---- Slot foto pengganti (ikon besar di bidang warna) ----
+.foto-ikon {
+  position: absolute;
+  bottom: -8%;
+  right: 4%;
+  height: 70%;
+  width: auto;
+  transition:
+    rotate 0.7s ease,
+    scale 0.7s ease;
+}
+.foto-ikon--besar {
+  bottom: -6%;
+  right: 6%;
+  height: 72%;
+}
+.kartu-zoom:hover .foto-ikon {
+  rotate: -3deg;
+  scale: 1.05;
+}
+
+// ---- Pita teks berjalan ----
+.pita-berjalan {
+  width: max-content;
+}
+
+// ---- Latar & efek umum halaman publik ----
+.latar-kertas-lembut {
+  background-color: rgba($kertas-tua, 0.7);
+}
+.hover-terang:hover {
+  background-color: rgb(255 255 255 / 0.12) !important;
+}
+.hover-bayangan {
+  transition: box-shadow 0.3s ease;
+  &:hover {
+    box-shadow: 0 30px 60px -30px rgb(68 6 11 / 0.45);
+  }
+}
+.bayangan-marun {
+  box-shadow: 0 24px 40px -20px rgb(68 6 11 / 0.8);
+}
+// Ikon lucide berisi penuh (mis. tanda kutip)
+.isi-penuh {
+  fill: currentColor;
+}
+// Judul kartu berubah merah saat kartunya disorot
+:is(.kartu-zoom, .grup):hover .judul-sorot {
+  color: map-get($merah, 700);
+}
+.judul-sedang {
+  font-size: 2.15rem;
+  line-height: 1.08;
+  @include media-breakpoint-up(sm) {
+    font-size: 3rem;
+  }
+}
+// Gelap di bagian bawah foto agar teks di atasnya tetap terbaca
+.gradasi-foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.35) 50%, rgb(0 0 0 / 0));
+}
+.gradasi-foto--ringan {
+  background: linear-gradient(to top, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.25) 50%, rgb(0 0 0 / 0));
+}
+// Ikon di kartu bergoyang sedikit saat kartunya disorot
+.ikon-goyang {
+  transition:
+    rotate 0.3s ease,
+    scale 0.3s ease;
+}
+.kartu-ikon:hover .ikon-goyang {
+  rotate: -6deg;
+  scale: 1.1;
+}
+
+// ---- Beranda: hero ----
+.hero__cincin {
+  position: absolute;
+  left: -16rem;
+  top: 25%;
+  z-index: -1;
+  width: 44rem;
+  height: 44rem;
+  border-radius: 50%;
+  border: 4.5rem solid rgb(255 255 255 / 0.05);
+  pointer-events: none;
+}
+// Kolase 6×6: HP = kartu jam melebar di bawah (foto literasi disembunyikan); tablet ke atas = kartu jam tegak
+.kolase-hero {
+  display: grid;
+  height: 26rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+  @include media-breakpoint-up(sm) {
+    height: 34rem;
+    gap: 1rem;
+  }
+  @include media-breakpoint-up(lg) {
+    height: 37rem;
+  }
+}
+.kolase-hero__ceria {
+  grid-column: 1 / span 4;
+  grid-row: 1 / span 4;
+}
+.kolase-hero__siswi {
+  grid-column: 5 / span 2;
+  grid-row: 1 / span 4;
+  @include media-breakpoint-up(sm) {
+    grid-row: 1 / span 3;
+  }
+}
+.kolase-hero__jam {
+  container-type: inline-size;
+  grid-column: 3 / span 4;
+  grid-row: 5 / span 2;
+  @include media-breakpoint-up(sm) {
+    grid-column: 5 / span 2;
+    grid-row: 4 / span 3;
+  }
+}
+.kolase-hero__bendera {
+  grid-column: 1 / span 2;
+  grid-row: 5 / span 2;
+}
+.kolase-hero__literasi {
+  display: none;
+  @include media-breakpoint-up(sm) {
+    display: block;
+    grid-column: 3 / span 2;
+    grid-row: 5 / span 2;
+  }
+}
+// Ukuran jam mengikuti lebar kartu agar tidak keluar kartu di kolom yang sempit
+.jam-besar {
+  font-size: clamp(1.5rem, 34cqw, 3rem);
+}
+
+// ---- Beranda: bento keunggulan ----
+.bento {
+  @include media-breakpoint-up(lg) {
+    grid-template-rows: repeat(3, minmax(15rem, auto));
+  }
+}
+.judul-bento {
+  font-size: 1.5rem;
+  @include media-breakpoint-up(sm) {
+    font-size: 1.7rem;
+  }
+}
+
+// ---- Beranda: linimasa "Sehari di sekolah" ----
+.garis-linimasa {
+  position: absolute;
+  top: 2rem;
+  bottom: 2rem;
+  left: 2.4rem;
+  width: 1px;
+  background: rgb(255 255 255 / 0.15);
+  @include media-breakpoint-up(sm) {
+    left: 2.9rem;
+  }
+}
+.garis-linimasa--isi {
+  left: calc(2.4rem - 1px);
+  width: 3px;
+  border-radius: 50rem;
+  background: $stabilo;
+  @include media-breakpoint-up(sm) {
+    left: calc(2.9rem - 1px);
+  }
+}
+.linimasa-item {
+  display: grid;
+  grid-template-columns: 4.8rem 1fr;
+  gap: 1.25rem;
+  @include media-breakpoint-up(sm) {
+    grid-template-columns: 5.8rem 1fr;
+    gap: 1.75rem;
+  }
+}
+
+// ---- Beranda: prestasi ----
+.piala-latar {
+  position: absolute;
+  right: -2rem;
+  bottom: -2rem;
+  z-index: -1;
+  width: 16rem;
+  height: 16rem;
+  color: rgba($tinta, 0.1);
+}
+.prestasi-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  @include media-breakpoint-up(sm) {
+    grid-template-columns: auto 1fr auto;
+    gap: 1.25rem;
+  }
+}
+.prestasi-item__tingkat {
+  grid-column-start: 2;
+  @include media-breakpoint-up(sm) {
+    grid-column-start: auto;
+  }
+}
+
+// ---- Beranda: testimoni ----
+.testimoni-utama {
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+}
+
+// ---- Beranda: ponsel contoh Portal Orang Tua ----
+.ponsel {
+  border-radius: 2.75rem;
+  box-shadow: 0 40px 80px -30px rgb(68 6 11 / 0.6);
+}
+.ponsel__layar {
+  border-radius: 2.2rem;
+}
+
+// ---- Beranda: berita & agenda ----
+.berita-utama__foto {
+  @include media-breakpoint-up(md) {
+    aspect-ratio: auto !important;
+    min-height: 15rem;
+    flex: 1 1 0%;
+  }
+}
+
+// ---- Beranda: kisi momen sekolah ----
+.momen {
+  display: grid;
+  height: 34rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  @include media-breakpoint-up(sm) {
+    height: 30rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+.momen__utama {
+  grid-column: span 2 / span 2;
+  grid-row: span 1 / span 1;
+  @include media-breakpoint-up(sm) {
+    grid-row: span 2 / span 2;
+  }
+}
+
+// ---- Beranda: ajakan PPDB ----
+.ajakan {
+  border-radius: 2.5rem;
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+// Tombol "Hubungi kami": riak putih menyebar dari titik klik
+.tombol-riak--aktif {
+  scale: 1.05;
+  color: map-get($merah, 800) !important;
+  border-color: $white !important;
+}
+.panah-riak {
+  margin-left: -1.5rem;
+  translate: -0.5rem 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.tombol-riak:hover .panah-riak {
+  margin-left: 0;
+  translate: 0 0;
+  opacity: 1;
+}
+.panah-riak--aktif {
+  margin-left: 0;
+  translate: 0.25rem 0;
+  opacity: 1;
+}
+
+// ---- Profil ----
+.judul-profil {
+  font-size: 2.6rem;
+  line-height: 1.02;
+  @include media-breakpoint-up(sm) {
+    font-size: 3.75rem;
+  }
+  @include media-breakpoint-up(lg) {
+    font-size: 4.5rem;
+  }
+}
+.kartu-identitas {
+  box-shadow: 0 30px 60px -30px rgb(68 6 11 / 0.45);
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 17rem 1fr;
+    gap: 2.5rem !important;
+  }
+}
+// Kolase 5×5: gedung (3 kolom × 5 baris), upacara (2×3), kotak angka (2×2)
+.sejarah-foto {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  @include media-breakpoint-up(sm) {
+    height: 32rem;
+  }
+}
+.sejarah-foto__gedung {
+  grid-column: span 3 / span 3;
+  grid-row: span 5 / span 5;
+}
+.sejarah-foto__upacara {
+  grid-column: span 2 / span 2;
+  grid-row: span 3 / span 3;
+}
+.sejarah-foto__angka {
+  grid-column: span 2 / span 2;
+  grid-row: span 2 / span 2;
+}
+.perjalanan__garis {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  top: 1.5rem;
+  height: 2px;
+  background: map-get($merah, 100);
+}
+.cincin-kertas {
+  box-shadow: 0 0 0 4px $kertas;
+}
+.visi-teks {
+  font-size: 1.875rem;
+  line-height: 1.3;
+  @include media-breakpoint-up(sm) {
+    font-size: 3rem;
+    line-height: 1.2;
+  }
+}
+.sorot-visi {
+  padding: 0 0.375rem;
+  border-radius: 0.5rem;
+  background: $stabilo;
+  color: $tinta;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.garis-bagan-v {
+  width: 2px;
+  background: map-get($merah, 200);
+}
+.garis-bagan-v--atas {
+  top: -2rem;
+}
+.garis-bagan-h {
+  height: 2px;
+  background: map-get($merah, 200);
+}
+.piala-latar--kecil {
+  right: -1.5rem;
+  width: 14rem;
+  height: 14rem;
+}
+.prestasi-baris {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  @include media-breakpoint-up(sm) {
+    grid-template-columns: auto 1.4fr 1fr;
+  }
+}
+.prestasi-baris__oleh {
+  grid-column-start: 2;
+  @include media-breakpoint-up(sm) {
+    grid-column-start: auto;
+  }
+}
+
+// ---- Akademik ----
+.tabel-jenjang {
+  min-width: 40rem;
+}
+.baris-jam {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 1rem;
+  row-gap: 0.25rem;
+  @include media-breakpoint-up(sm) {
+    grid-template-columns: auto 1fr auto;
+  }
+}
+.baris-jam__ikon {
+  grid-row: span 2 / span 2;
+  @include media-breakpoint-up(sm) {
+    grid-row: span 1 / span 1;
+  }
+}
+.baris-program {
+  grid-template-columns: 7.5rem 1fr;
+}
+.info-ekskul {
+  grid-template-columns: 5.5rem 1fr;
+}
+
+// ---- Guru & fasilitas ----
+@media (min-width: 400px) {
+  .angka-guru {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 1.5rem !important;
+  }
+  .angka-guru__nilai {
+    width: 8rem;
+  }
+}
+@include media-breakpoint-up(sm) {
+  .angka-guru__nilai {
+    width: 10rem;
+  }
+}
+.info-kunjungan {
+  grid-template-columns: 6.5rem 1fr;
+}
+.gulir-mt-28 {
+  scroll-margin-top: 7rem;
+}
+
+// ---- Berita ----
+.berita-unggulan {
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 1.15fr 1fr;
+    gap: 2.5rem !important;
+  }
+}
+.judul-berita-utama {
+  font-size: 1.875rem;
+  line-height: 1.1;
+  @include media-breakpoint-up(sm) {
+    font-size: 2.75rem;
+  }
+}
+.judul-berita {
+  font-size: 2.5rem;
+  line-height: 1.06;
+  @include media-breakpoint-up(sm) {
+    font-size: 3.75rem;
+  }
+}
+// Sampul menumpang ke pita merah di atasnya
+.sampul-berita {
+  margin-top: -9rem;
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.5);
+  @include media-breakpoint-up(sm) {
+    margin-top: -12rem;
+  }
+}
+// Isi berita dengan huruf pertama besar berwarna merah
+.isi-berita {
+  white-space: pre-line;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  @include media-breakpoint-up(sm) {
+    font-size: 1.25rem;
+  }
+  &::first-letter {
+    float: left;
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+    font-size: 3.75rem;
+    font-weight: 800;
+    line-height: 0.85;
+    color: $primary;
+  }
+}
+
+// ---- Galeri ----
+.kisi-galeri {
+  grid-auto-rows: 15rem;
+  @include media-breakpoint-up(lg) {
+    grid-auto-rows: 17rem;
+  }
+}
+.gradasi-foto--galeri {
+  background: linear-gradient(to top, rgb(0 0 0 / 0.8), rgb(0 0 0 / 0.2) 50%, rgb(0 0 0 / 0));
+}
+.latar-galeri {
+  background: rgba($tinta, 0.95);
+}
+.tombol-tutup-galeri {
+  top: -3.5rem;
+  &:hover {
+    background: rgb(255 255 255 / 0.1) !important;
+    color: $white !important;
+  }
+}
+
+// ---- Kontak ----
+.penanda-peta {
+  left: 54%;
+  top: 38%;
+  translate: -50% -100%;
+}
+.sketsa-peta:hover .tombol-peta {
+  background-color: $black !important;
+}
+.info-kontak {
+  grid-template-columns: 8.5rem 1fr;
+}
+
+// ---- PPDB ----
+.tata-formulir {
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 1fr 360px;
+  }
+}
+
+.baris-ringkasan {
+  @include media-breakpoint-up(sm) {
+    grid-template-columns: 190px 1fr;
+  }
+}
+.langkah-lanjut {
+  grid-template-columns: 2rem 1fr;
+}
+.bukti-ppdb {
+  grid-template-columns: 140px 1fr;
+}
+// Label "Pilih file" yang membungkus input berkas tersembunyi: cincin fokus ikut tampil
+.pilih-berkas:focus-within {
+  border-color: $tinta;
+}
+
+// ---- Denah sekolah interaktif (ukuran teks & ikon mengikuti lebar denah: container query) ----
+.denah {
+  container-type: inline-size;
+  border: 1px solid #a7f3d0;
+  background: #ecfdf5;
+}
+.denah-zona {
+  border: 1px dashed #6ee7b7;
+  background: rgb(209 250 229 / 0.7);
+}
+.denah-zona__label {
+  display: none;
+  top: -1px;
+  left: 0.375rem;
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgb(4 120 87 / 0.7);
+}
+.denah-jalan {
+  background: #fef3c7;
+}
+.denah-pagar {
+  inset: 0.9%;
+  border: 3px solid rgb(168 162 158 / 0.8);
+}
+.denah-gerbang {
+  border-radius: 0.375rem 0 0 0.375rem;
+  background: #fde68a;
+  color: map-get($merah, 700);
+  box-shadow: 0 0 0 2px map-get($merah, 500);
+}
+.denah-gerbang__ikon {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+.denah-gerbang__label {
+  display: none;
+  translate: 0 -50%;
+  font-size: 8px;
+  font-weight: 700;
+  color: map-get($merah, 700);
+}
+.denah-tiang {
+  top: 8%;
+  height: 55%;
+  translate: -50% 0;
+}
+.denah-upacara {
+  border: 2px solid $gray-300;
+  background: $gray-100;
+  color: $gray-600;
+}
+.denah-upacara__label {
+  bottom: 10%;
+}
+.denah-area {
+  gap: 0.125rem;
+  padding: 0.125rem;
+}
+.denah-area--parkir {
+  border: 1px dashed $gray-400;
+  background: rgb(245 245 244 / 0.8);
+  color: $gray-500;
+}
+.denah-area--gedung {
+  background: $gray-200;
+  color: $gray-600;
+}
+.denah-fasilitas {
+  border: 2px solid $white;
+  background: $white;
+  color: $gray-700;
+  box-shadow: $box-shadow-sm;
+  transition:
+    translate 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+  &:hover {
+    z-index: 10;
+    translate: 0 -0.125rem;
+    border-color: map-get($merah, 400);
+    color: map-get($merah, 700);
+    box-shadow: $box-shadow;
+  }
+}
+.denah-fasilitas--lapangan {
+  border-color: #bef264;
+  background: #ecfccb;
+  color: #365314;
+}
+.denah-fasilitas--taman {
+  border-color: #6ee7b7;
+  background: rgb(167 243 208 / 0.7);
+  color: #064e3b;
+}
+.denah-fasilitas--aktif {
+  z-index: 10;
+  border-color: map-get($merah, 700);
+  background: $primary;
+  color: $white;
+  box-shadow: $box-shadow-lg;
+}
+.denah-ikon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+.denah-label {
+  display: none;
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+@container (min-width: 24rem) {
+  .denah-label {
+    display: block;
+    font-size: 8px;
+  }
+}
+@container (min-width: 28rem) {
+  .denah-zona__label,
+  .denah-gerbang__label {
+    display: block;
+  }
+}
+@container (min-width: 32rem) {
+  .denah-label {
+    font-size: 10px;
+  }
+  .denah-ikon {
+    width: 1rem;
+    height: 1rem;
+  }
+  .denah-area {
+    gap: 0.25rem;
+  }
+  .denah-gerbang__ikon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+@container (min-width: 42rem) {
+  .denah-label {
+    font-size: 0.75rem;
+  }
+  .denah-ikon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .denah-zona__label {
+    font-size: 9px;
+  }
+  .denah-gerbang__label {
+    font-size: 10px;
+  }
+}
+// Kotak kecil keterangan denah
+.legenda-denah {
+  display: inline-block;
+  width: 1rem;
+  height: 0.75rem;
+  border-radius: 0.25rem;
+}
+.legenda-denah--pagar {
+  border: 2px solid $gray-400;
+}
+.legenda-denah--jalan {
+  background: #fef3c7;
+  box-shadow: 0 0 0 1px #fde68a;
+}
+.legenda-denah--fasilitas {
+  border: 2px solid $white;
+  background: $white;
+  box-shadow:
+    0 0 0 1px $gray-200,
+    $box-shadow-sm;
+}
+.legenda-denah--gedung {
+  background: $gray-200;
+}
+
+// ---- Login ----
+.tata-login {
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+}
+.tirai-login {
+  background: rgba(map-get($merah, 800), 0.88);
+}
+.judul-login {
+  font-size: 2.75rem;
+  @include media-breakpoint-up(sm) {
+    font-size: 3rem;
+  }
+}
+
+.angka-404 {
+  font-size: 7rem;
+  @include media-breakpoint-up(sm) {
+    font-size: 10rem;
+  }
+}
+
+// ---- Tanya jawab (FAQ): buka-tutup halus ----
+.faq-aktif {
+  box-shadow: 0 18px 40px -28px rgb(68 6 11 / 0.5);
+}
+.faq-plus {
+  transition:
+    rotate 0.3s ease,
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+.faq-plus--buka {
+  rotate: 45deg;
+}
+// Panel lipat: tinggi beranimasi dari 0 ke isi (grid-template-rows 0fr → 1fr)
+.lipat {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.lipat--buka {
+  grid-template-rows: 1fr;
+}
+
+// Komponen portal (kalender, denah) di halaman publik: tanpa bayangan kecil
+.selaras-kertas .shadow-sm {
+  box-shadow: none !important;
+}

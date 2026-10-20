@@ -12,15 +12,15 @@ function StatusServer() {
   const { data, statusGuru, muatGuru } = useData()
   if (statusGuru === 'memuat') {
     return (
-      <p className="mb-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-        <LoaderCircle className="h-4 w-4 shrink-0 animate-spin" /> Menghubungkan ke database sekolah…
+      <p className="mb-4 d-flex align-items-center gap-2 rounded-2 border border-abu-200 bg-abu-50 px-4 py-3 fs-sm text-tinta-2">
+        <LoaderCircle className="h-4 w-4 flex-shrink-0 berputar" /> Menghubungkan ke database sekolah…
       </p>
     )
   }
   if (statusGuru === 'server') {
     return (
-      <p className="mb-4 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-        <Database className="mt-0.5 h-4 w-4 shrink-0" />
+      <p className="mb-4 d-flex align-items-start gap-2 rounded-2 border border-success-subtle bg-success-subtle px-4 py-3 fs-sm text-success-emphasis">
+        <Database className="mt-0-5 h-4 w-4 flex-shrink-0" />
         <span>
           <strong>Tersambung ke database MySQL</strong> · {data.guru.length} guru & staf. Perubahan di halaman ini langsung tersimpan di server dan
           terlihat di semua perangkat. Biodata pribadi hanya terlihat oleh Kepala Sekolah dan pemiliknya.
@@ -29,16 +29,16 @@ function StatusServer() {
     )
   }
   return (
-    <div className="mb-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:flex-row sm:items-center">
-      <p className="flex flex-1 items-start gap-2">
-        <CloudOff className="mt-0.5 h-4 w-4 shrink-0" />
+    <div className="mb-4 d-flex flex-column gap-3 rounded-2 border border-warning-subtle bg-warning-subtle px-4 py-3 fs-sm text-warning-emphasis flex-sm-row align-items-sm-center">
+      <p className="d-flex flex-1 align-items-start gap-2">
+        <CloudOff className="mt-0-5 h-4 w-4 flex-shrink-0" />
         <span>
           <strong>Server database tidak tersambung.</strong> Yang tampil adalah salinan terakhir di browser ini dan belum bisa diubah. Pastikan server
           Laravel berjalan.
         </span>
       </p>
-      <button onClick={muatGuru} className="flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-1.5 font-semibold text-amber-900 ring-1 ring-amber-200 hover:bg-amber-100">
-        <RefreshCw className="h-3.5 w-3.5" /> Coba lagi
+      <button onClick={muatGuru} className="d-flex flex-shrink-0 align-items-center justify-content-center gap-1-5 rounded-1 bg-white px-3 py-1-5 fw-semibold text-warning-emphasis border border-warning-subtle hover-redup">
+        <RefreshCw className="h-3-5 w-3-5" /> Coba lagi
       </button>
     </div>
   )
@@ -120,15 +120,15 @@ export default function DataGuru() {
             key: 'nama',
             label: 'Nama',
             render: (g) => (
-              <span className="flex items-center gap-3">
+              <span className="d-flex align-items-center gap-3">
                 <Avatar nama={g.nama} size="sm" />
                 <span>
-                  <span className="block font-semibold text-slate-800">{g.nama}</span>
-                  <span className="block text-xs text-slate-500">
+                  <span className="d-block fw-semibold text-tinta">{g.nama}</span>
+                  <span className="d-block fs-xs text-tinta-3">
                     {g.jabatan}
                     {g.statusPegawai && ` · ${g.statusPegawai}`}
                   </span>
-                  {g.nip && <span className="block font-mono text-[11px] text-slate-400">NIP {g.nip}</span>}
+                  {g.nip && <span className="d-block font-monospace fs-2xs text-abu-400">NIP {g.nip}</span>}
                 </span>
               </span>
             ),
@@ -138,16 +138,16 @@ export default function DataGuru() {
             label: 'Hak Akses Portal',
             render: (g) =>
               kepsek(g) ? (
-                <Badge className="bg-primary-100 text-primary-700">Kepala Sekolah (akses penuh)</Badge>
+                <Badge className="bg-merah-100 text-merah-700">Kepala Sekolah (akses penuh)</Badge>
               ) : (
-                <span className="flex flex-wrap gap-1">
+                <span className="d-flex flex-wrap gap-1">
                   {(g.peran ?? []).map((p) => (
-                    <Badge key={p} className="bg-sky-50 text-sky-700">
+                    <Badge key={p} className="bg-info-subtle text-info">
                       {PERAN[p]?.label}
                       {p === 'wali_kelas' && g.kelas && ` ${g.kelas}`}
                     </Badge>
                   ))}
-                  {!g.peran?.length && <span className="text-slate-400">–</span>}
+                  {!g.peran?.length && <span className="text-abu-400">–</span>}
                 </span>
               ),
           },
@@ -157,9 +157,9 @@ export default function DataGuru() {
             render: (g) => {
               const diampu = g.peran?.includes('guru_mapel') ? (g.mapelDiampu ?? []) : []
               return diampu.length ? (
-                <span className="flex flex-wrap gap-1">
+                <span className="d-flex flex-wrap gap-1">
                   {diampu.map((m) => (
-                    <span key={m} className={`rounded-md px-2 py-0.5 text-xs font-bold ${MAPEL[m]?.warna}`}>
+                    <span key={m} className={`rounded-1 px-2 py-0-5 fs-xs fw-bold ${MAPEL[m]?.warna}`}>
                       {MAPEL[m]?.nama ?? m}
                     </span>
                   ))}
@@ -171,11 +171,11 @@ export default function DataGuru() {
               )
             },
           },
-          { key: 'whatsapp', label: 'WhatsApp', render: (g) => <span className="whitespace-nowrap">{g.whatsapp || '–'}</span> },
+          { key: 'whatsapp', label: 'WhatsApp', render: (g) => <span className="text-nowrap">{g.whatsapp || '–'}</span> },
           {
             key: 'akun',
             label: 'Akun Login',
-            render: (g) => (kepsek(g) ? <span className="text-xs text-slate-500">Akun Kepala Sekolah</span> : <StatusAkun akun={g.akun} />),
+            render: (g) => (kepsek(g) ? <span className="fs-xs text-tinta-3">Akun Kepala Sekolah</span> : <StatusAkun akun={g.akun} />),
           },
         ]}
         aksiBaris={(g) => !kepsek(g) && <TombolAkun akun={g.akun} nama={g.nama} onClick={() => setAkunUntuk(g.id)} />}

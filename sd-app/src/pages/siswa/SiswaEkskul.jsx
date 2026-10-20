@@ -38,18 +38,18 @@ export default function SiswaEkskul() {
       <DashHeader title="Ekstrakurikuler" desc="Ikuti ekskul sebanyak yang kamu mau, asal jadwalnya tidak bentrok. Pramuka wajib untuk kelas 3 – 6." />
 
       <Card className="mb-6 p-5">
-        <p className="mb-3 text-sm font-bold text-slate-700">Jadwal ekskulku minggu ini · {diikuti.length} ekskul</p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <p className="mb-3 fs-sm fw-bold text-tinta-2">Jadwal ekskulku minggu ini · {diikuti.length} ekskul</p>
+        <div className="d-grid kolom-2 gap-2 kolom-sm-5">
           {perHari.map(({ hari, daftar }) => (
-            <div key={hari} className="rounded-xl bg-slate-50 p-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{hari}</p>
+            <div key={hari} className="rounded-2 bg-abu-50 p-3">
+              <p className="fs-xs fw-bold text-uppercase ls-wider text-tinta-3">{hari}</p>
               {daftar.length === 0 ? (
-                <p className="mt-1 text-sm text-slate-400">–</p>
+                <p className="mt-1 fs-sm text-abu-400">–</p>
               ) : (
                 daftar.map((e) => (
-                  <p key={e.id} className={`mt-1.5 rounded-lg px-2 py-1 text-xs font-bold ${e.warna}`}>
+                  <p key={e.id} className={`mt-1-5 rounded-1 px-2 py-1 fs-xs fw-bold ${e.warna}`}>
                     {e.nama}
-                    <span className="block font-medium opacity-80">{e.jam}</span>
+                    <span className="d-block fw-medium opacity-80">{e.jam}</span>
                   </p>
                 ))
               )}
@@ -58,50 +58,50 @@ export default function SiswaEkskul() {
         </div>
       </Card>
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="d-grid gap-5 kolom-sm-2 kolom-xl-3">
         {EKSKUL.map((e) => {
           const boleh = bolehIkutEkskul(e, siswa.kelas)
           const ikut = (e.wajib && boleh) || pilihan.includes(e.id)
           const bentrok = !ikut && boleh && !e.wajib ? ekskulBentrok(e, diikuti) : null
           return (
-            <Card key={e.id} className={`flex flex-col p-5 transition ${ikut ? 'ring-2 ring-emerald-400' : ''} ${boleh ? '' : 'opacity-60'}`}>
-              <div className="flex items-start justify-between gap-3">
-                <span className={`grid h-14 w-14 place-items-center rounded-2xl ${e.warna}`}>
+            <Card key={e.id} className={`d-flex flex-column p-5 transisi ${ikut ? 'border border-2 border-success' : ''} ${boleh ? '' : 'opacity-60'}`}>
+              <div className="d-flex align-items-start justify-content-between gap-3">
+                <span className={`d-flex h-14 w-14 align-items-center justify-content-center rounded-3 ${e.warna}`}>
                   <Ikon nama={e.ikon} className="h-7 w-7" />
                 </span>
-                {ikut && <Badge className="bg-emerald-100 text-emerald-700">✓ Diikuti</Badge>}
-                {e.wajib && boleh && <Badge className="bg-primary-100 text-primary-700">Wajib</Badge>}
+                {ikut && <Badge className="bg-success-subtle text-success">✓ Diikuti</Badge>}
+                {e.wajib && boleh && <Badge className="bg-merah-100 text-merah-700">Wajib</Badge>}
               </div>
-              <h2 className="mt-4 text-xl font-bold text-slate-900">{e.nama}</h2>
-              <p className="mt-1 flex-1 text-sm text-slate-600">{e.desc}</p>
-              <div className="mt-4 space-y-1 text-sm text-slate-600">
-                <p className="flex items-center gap-2">
-                  <Clock3 className="h-4 w-4 text-slate-400" /> {e.hari}, {e.jam}
+              <h2 className="mt-4 fs-xl fw-bold text-tinta">{e.nama}</h2>
+              <p className="mt-1 flex-1 fs-sm text-tinta-2">{e.desc}</p>
+              <div className="mt-4 antara-y-1 fs-sm text-tinta-2">
+                <p className="d-flex align-items-center gap-2">
+                  <Clock3 className="h-4 w-4 text-abu-400" /> {e.hari}, {e.jam}
                 </p>
-                <p className="flex items-center gap-2">
-                  <UserRound className="h-4 w-4 text-slate-400" /> {e.pembina}
+                <p className="d-flex align-items-center gap-2">
+                  <UserRound className="h-4 w-4 text-abu-400" /> {e.pembina}
                 </p>
               </div>
               {!boleh ? (
-                <p className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-slate-100 py-2.5 text-sm font-semibold text-slate-500">
+                <p className="mt-4 d-flex align-items-center justify-content-center gap-2 rounded-2 bg-abu-100 py-2-5 fs-sm fw-semibold text-tinta-3">
                   <Lock className="h-4 w-4" /> Untuk {e.untuk.toLowerCase()}
                 </p>
               ) : e.wajib ? (
-                <p className="mt-4 rounded-xl bg-primary-50 py-2.5 text-center text-sm font-semibold text-primary-700">Diikuti semua siswa kelas {e.minKelas} – 6</p>
+                <p className="mt-4 rounded-2 bg-merah-50 py-2-5 text-center fs-sm fw-semibold text-merah-700">Diikuti semua siswa kelas {e.minKelas} – 6</p>
               ) : bentrok ? (
-                <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2.5 text-center text-sm text-amber-800">
-                  <span className="block font-semibold">
-                    <CalendarX2 className="mr-1.5 inline h-4 w-4 align-[-3px]" />
+                <p className="mt-4 rounded-2 bg-warning-subtle px-3 py-2-5 text-center fs-sm text-warning-emphasis">
+                  <span className="d-block fw-semibold">
+                    <CalendarX2 className="me-1-5 d-inline h-4 w-4 turun-3px" />
                     Jadwal bentrok dengan {bentrok.nama}
                   </span>
-                  <span className="mt-0.5 block text-xs">Keluar dari {bentrok.nama} dulu jika ingin ikut ekskul ini.</span>
+                  <span className="mt-0-5 d-block fs-xs">Keluar dari {bentrok.nama} dulu jika ingin ikut ekskul ini.</span>
                 </p>
               ) : (
                 <button
                   onClick={() => ubah(e)}
                   disabled={!!sibuk}
-                  className={`mt-4 inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition ${
-                    ikut ? 'bg-slate-100 text-slate-700 hover:bg-rose-50 hover:text-rose-700' : 'bg-primary-600 text-white hover:bg-primary-700'
+                  className={`mt-4 d-inline-flex align-items-center justify-content-center gap-2 rounded-2 py-2-5 fs-sm fw-bold transisi ${
+                    ikut ? 'bg-abu-100 text-tinta-2 hover-latar-merah hover-teks-merah' : 'bg-primary text-white hover-latar-merah-tua'
                   }`}
                 >
                   {ikut ? (
@@ -117,7 +117,7 @@ export default function SiswaEkskul() {
               )}
               <p
                 aria-live="polite"
-                className={pesan?.id === e.id ? `mt-2 text-center text-sm font-semibold ${pesan.galat ? 'text-rose-600' : pesan.gabung ? 'text-emerald-700' : 'text-slate-600'}` : 'sr-only'}
+                className={pesan?.id === e.id ? `mt-2 text-center fs-sm fw-semibold ${pesan.galat ? 'text-danger' : pesan.gabung ? 'text-success' : 'text-tinta-2'}` : 'visually-hidden'}
               >
                 {pesan?.id === e.id ? pesan.teks : ''}
               </p>

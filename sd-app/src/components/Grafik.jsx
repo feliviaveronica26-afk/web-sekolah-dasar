@@ -16,7 +16,7 @@ export function GrafikBatang({ data, maks = 100, acuan, satuan = '', judul }) {
 
   return (
     <figure aria-label={judul}>
-      <div className="relative space-y-2.5">
+      <div className="position-relative antara-y-2-5">
         {data.map((d, i) => {
           const kurang = acuan && d.nilai !== null && d.nilai < acuan.nilai
           return (
@@ -27,35 +27,35 @@ export function GrafikBatang({ data, maks = 100, acuan, satuan = '', judul }) {
               onPointerLeave={() => setAktif(null)}
               onFocus={() => setAktif(i)}
               onBlur={() => setAktif(null)}
-              className="relative flex items-center gap-3 rounded-lg py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+              className="position-relative d-flex align-items-center gap-3 rounded-1 py-0-5"
             >
-              <span className="w-[6.75rem] shrink-0 truncate text-sm text-slate-600 sm:w-[9.25rem]" title={d.label}>
+              <span className="label-grafik flex-shrink-0 text-truncate fs-sm text-tinta-2" title={d.label}>
                 {d.label}
               </span>
-              <span className="relative h-5 flex-1">
+              <span className="position-relative h-5 flex-1">
                 <span
-                  className="absolute inset-y-0 left-0 rounded-r-[4px] transition-all duration-700"
-                  style={{ width: d.nilai === null ? 0 : persen(d.nilai), background: WARNA_DATA, opacity: aktif === null || aktif === i ? 1 : 0.55 }}
+                  className="batang-tumbuh position-absolute top-0 bottom-0 start-0 ujung-batang transisi-lebar"
+                  style={{ width: d.nilai === null ? 0 : persen(d.nilai), background: WARNA_DATA, opacity: aktif === null || aktif === i ? 1 : 0.55, '--urut': i }}
                 />
                 {/* Garis acuan digambar per baris agar selalu sejajar dengan lintasan batang */}
-                {acuan && <span className="absolute -inset-y-1.5 w-px bg-slate-400" style={{ left: persen(acuan.nilai) }} aria-hidden="true" />}
+                {acuan && <span className="position-absolute top-n1-5 bottom-n1-5 lebar-1px bg-abu-400" style={{ left: persen(acuan.nilai) }} aria-hidden="true" />}
               </span>
-              <span className="flex w-9 shrink-0 items-center justify-end gap-1 text-sm font-semibold tabular-nums text-slate-800">
+              <span className="d-flex w-9 flex-shrink-0 align-items-center justify-content-end gap-1 fs-sm fw-semibold angka text-tinta">
                 {d.nilai ?? '–'}
                 {satuan}
               </span>
               {acuan && (
-                <span className="-ml-1.5 w-4 shrink-0">{kurang && <TriangleAlert className="h-4 w-4 text-amber-500" aria-label="di bawah batas" />}</span>
+                <span className="ms-n1-5 w-4 flex-shrink-0">{kurang && <TriangleAlert className="h-4 w-4 teks-terang-amber" aria-label="di bawah batas" />}</span>
               )}
               {aktif === i && (
-                <span role="tooltip" className="absolute -top-9 left-28 z-10 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg sm:left-40">
-                  <span className="font-bold">
+                <span role="tooltip" className="position-absolute top-n9 kiri-tooltip-grafik z-10 text-nowrap rounded-1 bg-tinta px-2-5 py-1-5 fs-xs text-white shadow-lg">
+                  <span className="fw-bold">
                     {d.nilai ?? '–'}
                     {satuan}
                   </span>{' '}
-                  <span className="text-slate-300">· {d.label}</span>
-                  {d.ket && <span className="text-slate-300"> · {d.ket}</span>}
-                  {kurang && <span className="text-amber-300"> · di bawah {acuan.label}</span>}
+                  <span className="text-abu-300">· {d.label}</span>
+                  {d.ket && <span className="text-abu-300"> · {d.ket}</span>}
+                  {kurang && <span className="teks-terang-amber"> · di bawah {acuan.label}</span>}
                 </span>
               )}
             </div>
@@ -63,11 +63,11 @@ export function GrafikBatang({ data, maks = 100, acuan, satuan = '', judul }) {
         })}
       </div>
       {acuan && (
-        <figcaption className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-          <span className="h-3 w-px bg-slate-400" /> Garis = {acuan.label} ({acuan.nilai}
+        <figcaption className="mt-3 d-flex align-items-center gap-2 fs-xs text-tinta-3">
+          <span className="h-3 lebar-1px bg-abu-400" /> Garis = {acuan.label} ({acuan.nilai}
           {satuan})
-          <span className="ml-2 inline-flex items-center gap-1">
-            <TriangleAlert className="h-3.5 w-3.5 text-amber-500" /> di bawah batas
+          <span className="ms-2 d-inline-flex align-items-center gap-1">
+            <TriangleAlert className="h-3-5 w-3-5 teks-terang-amber" /> di bawah batas
           </span>
         </figcaption>
       )}
@@ -120,19 +120,19 @@ export function GrafikKolomGanda({ data, seri, format = String, formatSingkat = 
   }
 
   const d = aktif === null ? null : data[aktif]
-  const posisiTooltip = aktif === 0 ? 'translate-x-0' : aktif === data.length - 1 ? '-translate-x-full' : '-translate-x-1/2'
+  const posisiTooltip = aktif === 0 ? 'translate-x-0' : aktif === data.length - 1 ? '-translate-x-full' : 'translate-middle-x'
   const kiriTooltip = aktif === null ? 0 : aktif === 0 ? xPita(0) : aktif === data.length - 1 ? xPita(aktif) + pita : xPita(aktif) + pita / 2
 
   return (
-    <figure ref={wadahRef} aria-label={judul} className="relative">
-      <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
+    <figure ref={wadahRef} aria-label={judul} className="position-relative">
+      <div className="mb-3 d-flex flex-wrap column-gap-4 row-gap-1 fs-xs text-tinta-2">
         {seri.map((s) => (
-          <span key={s.kunci} className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm" style={{ background: s.warna }} /> {s.label}
+          <span key={s.kunci} className="d-flex align-items-center gap-1-5">
+            <span className="h-2-5 w-2-5 rounded-1" style={{ background: s.warna }} /> {s.label}
           </span>
         ))}
       </div>
-      <svg viewBox={`0 0 ${L} ${tinggi}`} className="w-full" role="img" aria-describedby={`${id}-ket`}>
+      <svg viewBox={`0 0 ${L} ${tinggi}`} className="w-100" role="img" aria-describedby={`${id}-ket`}>
         {ticks.map((t) => (
           <g key={t}>
             <line x1={pad.kiri} x2={L - pad.kanan} y1={y(t)} y2={y(t)} stroke={t ? '#e2e8f0' : '#94a3b8'} strokeWidth="1" />
@@ -150,7 +150,15 @@ export function GrafikKolomGanda({ data, seri, format = String, formatSingkat = 
                 const nilai = p.nilai[s.kunci] ?? 0
                 return (
                   <g key={s.kunci}>
-                    {nilai > 0 && <path d={batang(xBatang(i, j), nilai)} fill={s.warna} opacity={aktif === null || aktif === i ? 1 : 0.55} />}
+                    {nilai > 0 && (
+                      <path
+                        d={batang(xBatang(i, j), nilai)}
+                        fill={s.warna}
+                        opacity={aktif === null || aktif === i ? 1 : 0.55}
+                        className="kolom-tumbuh"
+                        style={{ '--urut': i }}
+                      />
+                    )}
                     {/* Label kiri rata kanan & label kanan rata kiri, agar tidak saling menimpa */}
                     {dipilih && (
                       <text
@@ -181,7 +189,7 @@ export function GrafikKolomGanda({ data, seri, format = String, formatSingkat = 
                 role="button"
                 aria-label={`${p.labelPanjang ?? p.label}: ${seri.map((s) => `${s.label} ${format(p.nilai[s.kunci] ?? 0)}`).join(', ')}`}
                 aria-pressed={dipilih}
-                className="cursor-pointer outline-none focus-visible:stroke-sky-400"
+                className="cursor-pointer"
                 strokeWidth="2"
                 onPointerEnter={() => setAktif(i)}
                 onPointerLeave={() => setAktif(null)}
@@ -202,20 +210,20 @@ export function GrafikKolomGanda({ data, seri, format = String, formatSingkat = 
       {d && (
         <div
           role="tooltip"
-          className={`pointer-events-none absolute top-6 z-10 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs text-white shadow-lg ${posisiTooltip}`}
+          className={`pe-none position-absolute top-6 z-10 text-nowrap rounded-1 bg-tinta px-3 py-2 fs-xs text-white shadow-lg ${posisiTooltip}`}
           style={{ left: `${(kiriTooltip / L) * 100}%` }}
         >
-          <p className="mb-1 font-bold">{d.labelPanjang ?? d.label}</p>
+          <p className="mb-1 fw-bold">{d.labelPanjang ?? d.label}</p>
           {seri.map((s) => (
-            <p key={s.kunci} className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-sm" style={{ background: s.warna }} />
-              <span className="text-slate-300">{s.label}</span>
-              <span className="ml-auto pl-3 font-semibold">{format(d.nilai[s.kunci] ?? 0)}</span>
+            <p key={s.kunci} className="d-flex align-items-center gap-1-5">
+              <span className="h-2 w-2 rounded-1" style={{ background: s.warna }} />
+              <span className="text-abu-300">{s.label}</span>
+              <span className="ms-auto ps-3 fw-semibold">{format(d.nilai[s.kunci] ?? 0)}</span>
             </p>
           ))}
         </div>
       )}
-      <figcaption id={`${id}-ket`} className="sr-only">
+      <figcaption id={`${id}-ket`} className="visually-hidden">
         {judul}: {data.map((p) => `${p.labelPanjang ?? p.label} ${seri.map((s) => `${s.label} ${format(p.nilai[s.kunci] ?? 0)}`).join(', ')}`).join('; ')}
       </figcaption>
     </figure>
@@ -262,11 +270,11 @@ export function GrafikGaris({ data, min = 0, maks = 100, satuan = '', judul, tin
   }
 
   return (
-    <figure ref={wadahRef} aria-label={judul} className="relative">
+    <figure ref={wadahRef} aria-label={judul} className="position-relative">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${L} ${tinggi}`}
-        className="w-full touch-none outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+        className="w-100 sentuh-none"
         tabIndex={0}
         role="img"
         aria-describedby={`${id}-ket`}
@@ -278,13 +286,14 @@ export function GrafikGaris({ data, min = 0, maks = 100, satuan = '', judul, tin
         {ticks.map((t) => (
           <g key={t}>
             <line x1={pad.kiri} x2={L - pad.kanan} y1={y(t)} y2={y(t)} stroke="#e2e8f0" strokeWidth="1" />
-            <text x={pad.kiri - 8} y={y(t) + 4} textAnchor="end" fontSize="11" fill="#64748b" className="tabular-nums">
+            <text x={pad.kiri - 8} y={y(t) + 4} textAnchor="end" fontSize="11" fill="#64748b" className="angka">
               {t}
             </text>
           </g>
         ))}
-        <path d={area} fill={WARNA_DATA} opacity="0.1" />
-        <path d={garis} fill="none" stroke={WARNA_DATA} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={area} fill={WARNA_DATA} opacity="0.1" className="area-tumbuh" />
+        {/* pathLength 1: garis bisa "digambar" dari kiri ke kanan berapa pun panjang aslinya (lihat .garis-tumbuh) */}
+        <path d={garis} pathLength="1" fill="none" stroke={WARNA_DATA} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" className="garis-tumbuh" />
         {/* Label sumbu X: awal, tengah, akhir */}
         {[0, Math.floor(terakhir / 2), terakhir].map((i) => (
           <text key={i} x={x(i)} y={tinggi - 6} textAnchor={i === 0 ? 'start' : i === terakhir ? 'end' : 'middle'} fontSize="11" fill="#64748b">
@@ -292,8 +301,8 @@ export function GrafikGaris({ data, min = 0, maks = 100, satuan = '', judul, tin
           </text>
         ))}
         {/* Titik & nilai akhir */}
-        <circle cx={x(terakhir)} cy={y(data[terakhir].nilai)} r="4.5" fill={WARNA_DATA} stroke="#fff" strokeWidth="2" />
-        <text x={x(terakhir) + 9} y={y(data[terakhir].nilai) + 4} fontSize="12" fontWeight="700" fill="#0f172a">
+        <circle cx={x(terakhir)} cy={y(data[terakhir].nilai)} r="4.5" fill={WARNA_DATA} stroke="#fff" strokeWidth="2" className="titik-tumbuh" />
+        <text x={x(terakhir) + 9} y={y(data[terakhir].nilai) + 4} fontSize="12" fontWeight="700" fill="#0f172a" className="titik-tumbuh">
           {data[terakhir].nilai}
           {satuan}
         </text>
@@ -307,17 +316,17 @@ export function GrafikGaris({ data, min = 0, maks = 100, satuan = '', judul, tin
       {aktif !== null && (
         <div
           role="tooltip"
-          className="pointer-events-none absolute top-0 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg"
+          className="pe-none position-absolute top-0 z-10 translate-middle-x text-nowrap rounded-1 bg-tinta px-2-5 py-1-5 fs-xs text-white shadow-lg"
           style={{ left: `${(x(aktif) / L) * 100}%` }}
         >
-          <span className="font-bold">
+          <span className="fw-bold">
             {data[aktif].nilai}
             {satuan}
           </span>{' '}
-          <span className="text-slate-300">· {data[aktif].label}</span>
+          <span className="text-abu-300">· {data[aktif].label}</span>
         </div>
       )}
-      <figcaption id={`${id}-ket`} className="sr-only">
+      <figcaption id={`${id}-ket`} className="visually-hidden">
         {judul}: {data.map((d) => `${d.label} ${d.nilai}${satuan}`).join(', ')}
       </figcaption>
     </figure>

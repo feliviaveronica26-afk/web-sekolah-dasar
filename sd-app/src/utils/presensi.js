@@ -15,13 +15,13 @@ export const dariMenit = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}.
 export const jamKerja = (guru) => (guru?.peran?.includes('satpam') ? JAM_KERJA.satpam : JAM_KERJA.umum)
 
 export const STATUS_PRESENSI = {
-  H: { label: 'Hadir', cls: 'bg-emerald-100 text-emerald-700', sel: 'bg-emerald-500 text-white' },
-  T: { label: 'Terlambat', cls: 'bg-amber-100 text-amber-800', sel: 'bg-amber-400 text-amber-950' },
-  D: { label: 'Dinas Luar', cls: 'bg-indigo-100 text-indigo-700', sel: 'bg-indigo-500 text-white' },
-  I: { label: 'Izin', cls: 'bg-sky-100 text-sky-700', sel: 'bg-sky-500 text-white' },
-  S: { label: 'Sakit', cls: 'bg-pink-100 text-pink-700', sel: 'bg-pink-500 text-white' },
-  C: { label: 'Cuti', cls: 'bg-teal-100 text-teal-700', sel: 'bg-teal-500 text-white' },
-  A: { label: 'Alpa', cls: 'bg-rose-100 text-rose-700', sel: 'bg-rose-600 text-white' },
+  H: { label: 'Hadir', cls: 'warna-emerald', sel: 'titik-emerald text-white' },
+  T: { label: 'Terlambat', cls: 'warna-amber', sel: 'titik-amber text-tinta' },
+  D: { label: 'Dinas Luar', cls: 'warna-indigo', sel: 'titik-indigo text-white' },
+  I: { label: 'Izin', cls: 'warna-sky', sel: 'titik-sky text-white' },
+  S: { label: 'Sakit', cls: 'warna-pink', sel: 'titik-pink text-white' },
+  C: { label: 'Cuti', cls: 'warna-teal', sel: 'titik-teal text-white' },
+  A: { label: 'Alpa', cls: 'warna-rose', sel: 'titik-rose text-white' },
 }
 
 export const KODE_IZIN_STAF = { Sakit: 'S', Izin: 'I', Cuti: 'C', 'Dinas Luar': 'D' }

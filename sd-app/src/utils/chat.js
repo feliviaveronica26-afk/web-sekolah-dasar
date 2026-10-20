@@ -1,4 +1,4 @@
-import { HARI_SEKOLAH, JADWAL, MAPEL } from '../data/dummy'
+import { HARI_SEKOLAH, MAPEL } from '../data/dummy'
 import { guruPelajaran } from './jadwal'
 
 /*
@@ -30,12 +30,16 @@ export function idChatDari(user, akses) {
   return akses?.guruId ? idGuru(akses.guruId) : null
 }
 
-// ===== Indeks data (dihitung sekali per versi data siswa & guru) =====
+// ===== Indeks data (dihitung sekali per versi data siswa, guru & jadwal) =====
 const cache = new WeakMap()
+const JADWAL_KOSONG = {}
 function indeks(data) {
+  const jadwal = data.jadwal ?? JADWAL_KOSONG
   let perGuru = cache.get(data.guru)
   if (!perGuru) cache.set(data.guru, (perGuru = new WeakMap()))
-  let i = perGuru.get(data.siswa)
+  let perSiswa = perGuru.get(data.siswa)
+  if (!perSiswa) perGuru.set(data.siswa, (perSiswa = new WeakMap()))
+  let i = perSiswa.get(jadwal)
   if (i) return i
 
   const siswa = new Map(data.siswa.map((s) => [s.nis, s]))
@@ -48,8 +52,8 @@ function indeks(data) {
     const wali = data.guru.find((g) => g.peran?.includes('wali_kelas') && g.kelas === kelas) ?? null
     const ids = new Set(wali ? [wali.id] : [])
     for (const h of HARI_SEKOLAH) {
-      for (const m of JADWAL[kelas]?.[h] ?? []) {
-        if (MAPEL[m]?.absensi === false) continue
+      for (const m of jadwal[kelas]?.[h] ?? []) {
+        if (!m || MAPEL[m]?.absensi === false) continue
         const g = guruPelajaran(data.guru, kelas, m)
         if (g) ids.add(g.id)
       }
@@ -60,7 +64,7 @@ function indeks(data) {
   const kepsek = data.guru.find((g) => g.jabatan === 'Kepala Sekolah') ?? null
   const tu = data.guru.filter((g) => g.peran?.includes('tata_usaha'))
   i = { siswa, guru, kelasList, siswaKelas, guruKelas, kelasGuru, kepsek, tu, kontak: new Map() }
-  perGuru.set(data.siswa, i)
+  perSiswa.set(jadwal, i)
   return i
 }
 

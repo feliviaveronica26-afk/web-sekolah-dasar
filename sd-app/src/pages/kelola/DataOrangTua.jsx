@@ -1,9 +1,11 @@
-import { useState } from 'react'
-import { HouseHeart, KeyRound, PhoneOff, ShieldAlert } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { HouseHeart, KeyRound, PhoneOff, Plus, ShieldAlert, UserRoundPlus } from 'lucide-react'
 import CrudPage from '../../components/CrudPage'
 import ModalAkun, { StatusAkun, TombolAkun } from '../../components/ModalAkun'
 import { Badge, StatCard } from '../../components/ui'
 import { useData } from '../../context/DataContext'
+import { siswaTanpaKeluarga } from '../../utils/ringkasan'
 
 // Nama keluarga untuk ditampilkan: ibu, ayah, atau wali (sama dengan OrangTua::namaKontak di Laravel)
 export const namaKeluarga = (k) => k.namaIbu || k.namaAyah || k.namaWali || 'Keluarga'
@@ -23,6 +25,15 @@ export default function DataOrangTua() {
   const belumGanti = keluarga.filter((k) => k.akun?.wajibGanti).length
   const tanpaWa = keluarga.filter((k) => !k.whatsapp).length
   const dipilih = keluarga.find((k) => k.id === akunUntuk)
+  // Siswa yang belum punya data keluarga, mis. siswa baru dari menu Data Siswa (Wakasek Kesiswaan/Tata Usaha)
+  const tanpaKeluarga = siswaTanpaKeluarga(data)
+  // Tombol "Lengkapi" di beranda membuka halaman ini dengan ?anak=NIS: formulir langsung terbuka berisi NIS itu
+  const [params, setParams] = useSearchParams()
+  const [tambahAwal, setTambahAwal] = useState(() => (params.get('anak') ? { anak: params.get('anak') } : null))
+
+  useEffect(() => {
+    if (params.has('anak')) setParams({}, { replace: true })
+  }, [params, setParams])
 
   return (
     <>
@@ -31,13 +42,42 @@ export default function DataOrangTua() {
         desc="Data ayah, ibu, atau wali setiap keluarga beserta kontaknya. Kakak-adik cukup satu data keluarga. Orang tua bisa memperbarui kontaknya sendiri dari Portal Orang Tua."
         koleksi="orangTua"
         itemLabel="Data Keluarga"
+        tambahAwal={tambahAwal}
         ringkasan={
-          <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard icon={HouseHeart} label="Keluarga" value={keluarga.length} hint={`${data.siswa.length} siswa`} tone="sky" />
-            <StatCard icon={KeyRound} label="Punya akun login" value={punyaAkun} hint={`${keluarga.length - punyaAkun} belum`} tone="emerald" />
-            <StatCard icon={ShieldAlert} label="Belum ganti password awal" value={belumGanti} tone="amber" />
-            <StatCard icon={PhoneOff} label="Tanpa nomor WhatsApp" value={tanpaWa} tone="primary" />
-          </div>
+          <>
+            <div className="mb-6 d-grid kolom-2 gap-4 kolom-lg-4">
+              <StatCard icon={HouseHeart} label="Keluarga" value={keluarga.length} hint={`${data.siswa.length} siswa`} tone="sky" />
+              <StatCard icon={KeyRound} label="Punya akun login" value={punyaAkun} hint={`${keluarga.length - punyaAkun} belum`} tone="emerald" />
+              <StatCard icon={ShieldAlert} label="Belum ganti password awal" value={belumGanti} tone="amber" />
+              <StatCard icon={PhoneOff} label="Tanpa nomor WhatsApp" value={tanpaWa} tone="primary" />
+            </div>
+            {tanpaKeluarga.length > 0 && (
+              <div className="mb-6 rounded-3 border border-warning-subtle bg-warning-subtle px-5 py-4 text-warning-emphasis">
+                <p className="d-flex align-items-center gap-2 fw-bold">
+                  <UserRoundPlus className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                  {tanpaKeluarga.length} siswa belum terhubung dengan data keluarga
+                </p>
+                <p className="mt-1 fs-sm">
+                  Biasanya siswa baru dari menu Data Siswa. Buat data keluarganya agar kontak orang tua tampil untuk wali kelas dan akun Portal Orang Tua
+                  bisa dibuat. Jika kakak/adiknya sudah bersekolah di sini, cukup ubah data keluarga itu dan tambahkan NIS-nya.
+                </p>
+                <div className="mt-3 d-flex flex-wrap gap-2">
+                  {tanpaKeluarga.slice(0, 8).map((s) => (
+                    <button
+                      key={s.nis}
+                      type="button"
+                      onClick={() => setTambahAwal({ anak: s.nis })}
+                      className="d-inline-flex align-items-center gap-1-5 rounded-pill border border-warning-subtle bg-white px-3 py-1-5 fs-sm fw-semibold text-tinta transisi hover-garis-merah"
+                    >
+                      <Plus className="h-4 w-4 text-primary" aria-hidden="true" />
+                      {s.nama} <span className="fw-normal text-tinta-3">· {s.kelas}</span>
+                    </button>
+                  ))}
+                  {tanpaKeluarga.length > 8 && <span className="align-self-center fs-sm">dan {tanpaKeluarga.length - 8} siswa lainnya</span>}
+                </div>
+              </div>
+            )}
+          </>
         }
         searchKeys={['namaAyah', 'namaIbu', 'namaWali', 'whatsapp', 'alamat']}
         cariTambahan={(k) => [...anakDari(k).map((s) => `${s.nama} ${s.nis} ${s.kelas}`), k.akun?.username ?? ''].join(' ')}
@@ -85,12 +125,12 @@ export default function DataOrangTua() {
             key: 'keluarga',
             label: 'Orang Tua / Wali',
             render: (k) => (
-              <span className="block min-w-44">
-                {k.namaAyah && <span className="block font-semibold text-slate-800">{k.namaAyah}</span>}
-                {k.namaIbu && <span className="block font-semibold text-slate-800">{k.namaIbu}</span>}
+              <span className="d-block min-w-44">
+                {k.namaAyah && <span className="d-block fw-semibold text-tinta">{k.namaAyah}</span>}
+                {k.namaIbu && <span className="d-block fw-semibold text-tinta">{k.namaIbu}</span>}
                 {k.namaWali && (
-                  <span className="block font-semibold text-slate-800">
-                    {k.namaWali} <span className="text-xs font-normal text-slate-500">({k.hubunganWali || 'wali'})</span>
+                  <span className="d-block fw-semibold text-tinta">
+                    {k.namaWali} <span className="fs-xs fw-normal text-tinta-3">({k.hubunganWali || 'wali'})</span>
                   </span>
                 )}
               </span>
@@ -100,19 +140,19 @@ export default function DataOrangTua() {
             key: 'anak',
             label: 'Anak',
             render: (k) => (
-              <span className="block space-y-1">
+              <span className="d-block antara-y-1">
                 {anakDari(k).map((s) => (
-                  <span key={s.nis} className="flex items-center gap-2">
-                    <Badge className="bg-primary-50 text-primary-700">{s.kelas}</Badge>
-                    <span className="text-slate-700">{s.nama}</span>
+                  <span key={s.nis} className="d-flex align-items-center gap-2">
+                    <Badge className="bg-merah-50 text-merah-700">{s.kelas}</Badge>
+                    <span className="text-tinta-2">{s.nama}</span>
                   </span>
                 ))}
-                {!anakDari(k).length && <span className="text-slate-400">Belum terhubung</span>}
+                {!anakDari(k).length && <span className="text-abu-400">Belum terhubung</span>}
               </span>
             ),
           },
-          { key: 'whatsapp', label: 'WhatsApp', render: (k) => <span className="whitespace-nowrap">{k.whatsapp || '–'}</span> },
-          { key: 'alamat', label: 'Alamat', render: (k) => <span className="line-clamp-2 block max-w-56 text-slate-600">{k.alamat || '–'}</span> },
+          { key: 'whatsapp', label: 'WhatsApp', render: (k) => <span className="text-nowrap">{k.whatsapp || '–'}</span> },
+          { key: 'alamat', label: 'Alamat', render: (k) => <span className="clamp-2 d-block mw-56 text-tinta-2">{k.alamat || '–'}</span> },
           { key: 'akun', label: 'Akun Login', render: (k) => <StatusAkun akun={k.akun} /> },
         ]}
         aksiBaris={(k) => anakDari(k).length > 0 && <TombolAkun akun={k.akun} nama={`orang tua ${pertama(k).nama}`} onClick={() => setAkunUntuk(k.id)} />}

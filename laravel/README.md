@@ -16,10 +16,12 @@ API, login, dan hak akses untuk website di folder [`../sd-app`](../sd-app). Cara
 | `app/Http/Middleware/`     | Cek jabatan (`peran:`), batas sesi, dan wajib ganti password sebelum mengubah data     |
 | `database/migrations/`     | Struktur tabel MySQL                                                                   |
 | `database/seeders/`        | Data contoh: guru & biodata staf, akun demo, siswa & biodatanya, orang tua, nilai, absensi, SPP, ... |
-| `resources/data/referensi.json` | Data acuan (mapel, jadwal, ekskul, SPP), diekspor dari `sd-app` dengan `npm run ekspor-laravel` |
+| `resources/data/referensi.json` | Data acuan (kelas, sesi, mapel, ekskul, SPP), diekspor dari `sd-app` dengan `npm run ekspor-laravel` |
+| `app/Http/Controllers/JadwalController.php` | Jadwal pelajaran per kelas (Wakasek Kurikulum), dengan pemeriksaan bentrok guru mapel |
+| `app/Support/Waktu.php`    | Hari sekolah = Senin–Jumat yang bukan agenda libur di tabel `kalender`              |
 | `app/Support/PembayaranSpp.php` | SPP online: lunas hanya dari notifikasi gateway bertanda tangan (`POST /api/gateway/spp`) |
 | `app/Support/KuitansiSpp.php` | Kuitansi SPP dalam PDF (dompdf, template `resources/views/kuitansi-spp.blade.php`)   |
-| `tests/Feature/`           | Tes login, data per pengguna, data staf, data siswa, data orang tua, dan pembayaran SPP |
+| `tests/Feature/`           | Tes login, data per pengguna, data staf, data siswa, data orang tua, pembayaran SPP, jadwal & kalender |
 
 ## Perintah khusus
 

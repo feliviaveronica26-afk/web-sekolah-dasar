@@ -1,0 +1,454 @@
+// ============================================================================
+// Portal (siswa, orang tua, guru & staf, kepala sekolah): kerangka & komponen khusus
+// ============================================================================
+
+// ---- Kerangka portal: sidebar 18rem di layar lebar, header menempel ----
+.isi-portal {
+  @include media-breakpoint-up(xl) {
+    padding-left: 18rem;
+  }
+}
+.latar-header {
+  background-color: rgba($kertas, 0.9);
+}
+.latar-gelap {
+  background-color: rgb(15 23 42 / 0.5);
+}
+.kartu-pengguna__cincin {
+  position: absolute;
+  right: -4rem;
+  top: -5rem;
+  z-index: -1;
+  width: 12rem;
+  height: 12rem;
+  border-radius: 50%;
+  border: 2.25rem solid rgb(255 255 255 / 0.07);
+  pointer-events: none;
+}
+// Cincin hiasan transparan di pojok kartu teman & spanduk sapaan staf
+.kartu-teman__cincin,
+.spanduk-staf__cincin {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  border-style: solid;
+  pointer-events: none;
+}
+.kartu-teman__cincin {
+  right: -3.5rem;
+  top: -4rem;
+  width: 11rem;
+  height: 11rem;
+  border-width: 2rem;
+  border-color: rgb(255 255 255 / 0.07);
+}
+.spanduk-staf__cincin {
+  right: -9rem;
+  top: -11rem;
+  width: 32rem;
+  height: 32rem;
+  border-width: 4.5rem;
+  border-color: rgb(255 255 255 / 0.06);
+}
+// Kotak isian nilai: tanpa tombol panah angka, cincin fokus tipis
+.kotak-nilai {
+  appearance: textfield;
+  -moz-appearance: textfield;
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 2px map-get($merah, 200);
+  }
+}
+.cincin-putih-40 {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.4);
+}
+// Ikon menu samping ikut menyala saat menunya disorot
+.menu-portal:not(.aktif):hover .menu-portal__ikon {
+  background-color: $white !important;
+  color: $primary !important;
+  box-shadow: $box-shadow-sm;
+}
+.angka-notif {
+  right: 0.25rem;
+  top: 0.25rem;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  font-size: 10px;
+  box-shadow: 0 0 0 2px $white;
+}
+.panel-notif {
+  width: 20rem;
+  max-width: calc(100vw - 2rem);
+  border-radius: 1.5rem;
+}
+
+// Penanda gaya situs pada elemen portal: tautan "lihat semua", ubin info, ikon utama kartu presensi
+.ui-tautan {
+  font-weight: 700 !important;
+  color: map-get($merah, 700) !important;
+}
+.ui-ubin {
+  border-radius: 1.25rem !important;
+}
+.ui-ikon-utama {
+  background-color: $primary !important;
+  color: $white !important;
+}
+
+// Notifikasi singkat (toast): selebar layar di HP, di tengah bawah mulai sm (tanpa translate agar animasinya utuh)
+.posisi-toast {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  margin-inline: auto;
+  @include media-breakpoint-up(sm) {
+    left: 0;
+    right: 0;
+    width: fit-content;
+  }
+}
+
+// Kartu data diri teman sekelas
+.mh-kartu-teman {
+  max-height: min(88dvh, 46rem);
+}
+
+// Grafik batang: ujung kanan batang membulat 4px, kolom label melebar di sm
+.ujung-batang {
+  border-radius: 0 4px 4px 0;
+}
+.label-grafik {
+  width: 6.75rem;
+  @include media-breakpoint-up(sm) {
+    width: 9.25rem;
+  }
+}
+// Tooltip batang mulai tepat setelah kolom label
+.kiri-tooltip-grafik {
+  left: 7rem;
+  @include media-breakpoint-up(sm) {
+    left: 10rem;
+  }
+}
+// Judul sapaan beranda staf (membesar ke fs-sm-5xl di layar sm)
+.judul-sapaan {
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+// Bintang hiasan di spanduk sapaan siswa
+.kanan-38 {
+  right: 38%;
+}
+
+// Tabel jadwal: kolom sama lebar, sel berjarak seperti ubin
+.tabel-jadwal {
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0.5rem;
+}
+
+// Ubin ringkasan beranda staf: berbaris di HP sempit, bertumpuk & lebih besar mulai 400px
+@media (min-width: 400px) {
+  .kisi-ringkas {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem !important;
+  }
+  .ubin-ringkas {
+    min-height: 9rem;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 1.25rem !important;
+  }
+  .ubin-ringkas__nilai {
+    font-size: 3rem !important;
+  }
+  .ubin-ringkas-kecil {
+    display: block !important;
+    padding: 1rem !important;
+  }
+}
+
+// ---- Chat: tinggi mengisi layar di bawah header, kartu bergaris di layar lebar ----
+.tata-chat {
+  height: calc(100dvh - 65px);
+  min-height: 28rem;
+  @include media-breakpoint-up(lg) {
+    height: calc(100dvh - 65px - 4rem);
+  }
+}
+.kisi-chat {
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 340px minmax(0, 1fr) !important;
+    border-radius: 1.5rem;
+    box-shadow:
+      0 0 0 1px $gray-200,
+      0 1px 2px rgb(0 0 0 / 0.05);
+  }
+}
+.garis-kanan-lg {
+  @include media-breakpoint-up(lg) {
+    border-right-width: 1px !important;
+    border-right-style: solid !important;
+  }
+}
+.lebar-gelembung {
+  max-width: 85%;
+  @include media-breakpoint-up(sm) {
+    max-width: 70%;
+  }
+}
+.sudut-bawah-kanan-kecil {
+  border-bottom-right-radius: 0.375rem !important;
+}
+.sudut-bawah-kiri-kecil {
+  border-bottom-left-radius: 0.375rem !important;
+}
+
+// ---- Logo portal ----
+.logo-portal__gambar {
+  transition: rotate 0.15s ease;
+}
+.logo-portal:hover .logo-portal__gambar {
+  rotate: -6deg;
+}
+.bayangan-logo {
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));
+}
+.bayangan-logo-terang {
+  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+}
+
+// ---- Bilah muat & pemberitahuan jaringan ----
+.bilah-kotak {
+  border-radius: 1.4rem;
+  background: rgb(255 255 255 / 0.95);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.05),
+    0 18px 40px -14px rgb(68 6 11 / 0.5);
+}
+.bilah-jalur {
+  box-shadow: inset 0 0 0 1px map-get($merah, 100);
+}
+.bilah-lencana {
+  box-shadow:
+    0 0 0 2px $primary,
+    0 4px 12px -2px rgb(68 6 11 / 0.55);
+}
+.tutup-pemberitahuan:hover {
+  background: rgb(255 255 255 / 0.15);
+  opacity: 1 !important;
+}
+
+// ---- Kartu angka (StatCard): tata letak mengikuti lebar kartu sendiri (container query) ----
+.kartu-angka {
+  container-type: inline-size;
+}
+.kartu-angka__isi {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 0.5rem;
+  @include media-breakpoint-up(sm) {
+    gap: 0.75rem;
+  }
+}
+.kartu-angka__teks {
+  container-type: inline-size;
+  width: 100%;
+  min-width: 0;
+}
+.kartu-angka__ikon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  @include media-breakpoint-up(sm) {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.75rem;
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+@container (min-width: 10rem) {
+  .kartu-angka__isi {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .kartu-angka__teks {
+    width: auto;
+    flex: 1 1 0%;
+  }
+}
+// Nilai panjang (mis. Rp172.200.000) mengecil mengikuti lebar kartu
+.kartu-angka__nilai-panjang {
+  font-size: clamp(0.875rem, 12cqw, 1.5rem);
+  overflow-wrap: anywhere;
+}
+// Panah di pojok kartu tautan
+.panah-kartu {
+  right: 0.75rem;
+  bottom: 0.75rem;
+  color: $gray-300;
+  transition:
+    translate 0.2s ease,
+    color 0.2s ease;
+}
+.card-tautan:hover .panah-kartu {
+  translate: 0.125rem 0;
+  color: map-get($merah, 500);
+}
+
+// ---- Lencana siswa: gradien per jenis lencana (lihat utils/prestasi.js) ----
+$gradasi-lencana: (
+  "hadir": (#6ee7b7, #10b981),
+  "streak": (#fdba74, #f43f5e),
+  "tugas": (#7dd3fc, #0ea5e9),
+  "nilai": (#fde68a, #f59e0b),
+  "bintang": (#fef08a, #fb923c),
+  "penolong": (#f9a8d4, #f43f5e),
+  "buku": (#c4b5fd, #8b5cf6),
+  "ekskul": (#5eead4, #14b8a6),
+);
+@each $nama, $w in $gradasi-lencana {
+  .gradasi-#{$nama} {
+    background-image: linear-gradient(to bottom right, nth($w, 1), nth($w, 2));
+  }
+}
+
+// ---- Denah 18 ruang kelas (Gedung Utama) ----
+.tata-denah-kelas {
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 1fr 300px;
+  }
+}
+.denah-kelas {
+  container-type: inline-size;
+}
+.lantai-kisi {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+.koridor {
+  background: rgb(254 243 199 / 0.8);
+  color: rgb(146 64 14 / 0.7);
+  letter-spacing: 0.25em;
+}
+.ruang-lain {
+  background: rgba($gray-200, 0.8);
+}
+.label-ruang {
+  display: none;
+  font-size: 10px;
+}
+@container (min-width: 36rem) {
+  .label-ruang {
+    display: block;
+  }
+  .nama-ruang {
+    font-size: 1.5rem !important;
+  }
+}
+.ruang {
+  border: 2px solid transparent;
+  transition:
+    background-color 0.15s ease,
+    scale 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.ruang--dipilih {
+  z-index: 10;
+  scale: 1.05;
+  box-shadow: $box-shadow-lg;
+}
+.titik-belajar {
+  right: 0.375rem;
+  top: 0.375rem;
+  box-shadow: 0 0 0 2px $white;
+}
+.titik-belajar--legenda {
+  box-shadow: 0 0 0 2px #d1fae5;
+}
+.lencana-kelasmu {
+  top: -0.625rem;
+  translate: -50% 0;
+  font-size: 9px;
+}
+.cincin-hijau {
+  box-shadow: 0 0 0 2px #34d399;
+}
+// Warna ruang per tingkat: latar 50, garis 200, teks 800, sorot 100; terpilih = latar 500 garis 600
+$warna-ruang: (
+  "sky": (#f0f9ff, #e0f2fe, #bae6fd, #075985, #0ea5e9, #0284c7, $white),
+  "emerald": (#ecfdf5, #d1fae5, #a7f3d0, #065f46, #10b981, #059669, $white),
+  "amber": (#fffbeb, #fef3c7, #fde68a, #92400e, #fbbf24, #f59e0b, #451a03),
+  "violet": (#f5f3ff, #ede9fe, #ddd6fe, #5b21b6, #8b5cf6, #7c3aed, $white),
+  "orange": (#fff7ed, #ffedd5, #fed7aa, #9a3412, #f97316, #ea580c, $white),
+  "rose": (#fff1f2, #ffe4e6, #fecdd3, #9f1239, #f43f5e, #e11d48, $white),
+);
+@each $nama, $w in $warna-ruang {
+  .ruang-#{$nama} {
+    border-color: nth($w, 3);
+    background-color: nth($w, 1);
+    color: nth($w, 4);
+    &:hover {
+      background-color: nth($w, 2);
+    }
+  }
+  .ruang-#{$nama}--pilih {
+    border-color: nth($w, 6);
+    background-color: nth($w, 5);
+    color: nth($w, 7);
+  }
+}
+
+// ---- Kalender akademik ----
+.tata-kalender {
+  @include media-breakpoint-up(xl) {
+    grid-template-columns: 1fr 340px;
+  }
+}
+.sel-kalender--hari-ini {
+  box-shadow: 0 0 0 2px map-get($merah, 500);
+}
+.sel-kalender--kelola:hover {
+  box-shadow: 0 0 0 2px map-get($merah, 200);
+}
+
+// ---- Pita merah judul halaman (DashHeader portal satpam) ----
+.pita-portal__cincin {
+  position: absolute;
+  right: -7rem;
+  top: -9rem;
+  z-index: -1;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  border: 4rem solid rgb(255 255 255 / 0.06);
+  pointer-events: none;
+}
+.pita-portal__judul {
+  font-size: 2rem;
+  @include media-breakpoint-up(sm) {
+    font-size: 2.6rem;
+  }
+}
+// Di atas pita merah: tombol utama putih & tombol kedua bergaris putih, seperti kepala halaman situs
+.pita-portal .btn-primary {
+  @include button-variant($white, $white, map-get($merah, 700), $hover-background: map-get($merah, 50), $hover-border: map-get($merah, 50), $hover-color: map-get($merah, 800));
+}
+.pita-portal .btn-kedua {
+  @include button-variant(transparent, rgba($white, 0.6), $white, $hover-background: rgba($white, 0.1), $hover-border: $white, $hover-color: $white);
+}

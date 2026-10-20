@@ -74,7 +74,7 @@ import { useAkses } from './context/akses'
 // Halaman chat dimuat terpisah saat dibuka, agar halaman lain tidak ikut membesar
 const Chat = lazy(() => lacak(import('./pages/Chat')))
 const halamanChat = (
-  <Suspense fallback={<p className="py-20 text-center text-sm text-slate-500">Memuat chat...</p>}>
+  <Suspense fallback={<p className="py-20 text-center fs-sm text-tinta-3">Memuat chat...</p>}>
     <Chat />
   </Suspense>
 )
@@ -130,7 +130,7 @@ const HALAMAN_KELOLA = {
   inventaris: <Inventaris />,
   kerusakan: <LaporanKerusakan />,
   jadwal: <JadwalKelas />,
-  kalender: <KalenderAkademik />,
+  kalender: <KalenderAkademik kelola />,
 }
 
 const ruteKelola = [

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Database\Seeders\BiodataStafSeeder;
 use Database\Seeders\DataContohSeeder;
 use Database\Seeders\GuruSeeder;
@@ -69,8 +70,15 @@ class DataSekolahTest extends TestCase
         $this->sebagai($this->wali())->postJson('/api/konseling', ['nis' => '230401'])->assertForbidden();
     }
 
+    // Presensi hanya dibuka pada hari sekolah: uji pada hari Kamis, apa pun hari tes dijalankan
+    private function hariSekolah(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-10-15 08:00', 'Asia/Jakarta'));
+    }
+
     public function test_kode_otp_dibuat_server_dan_tidak_dikirim_ke_siswa(): void
     {
+        $this->hariSekolah();
         $kode = $this->sebagai($this->wali())->postJson('/api/presensi-sesi', ['kelas' => '4A'])->assertCreated()->json('data.sesiPresensi.0.kode');
         $this->assertMatchesRegularExpression('/^\d{6}$/', $kode);
 
@@ -85,6 +93,7 @@ class DataSekolahTest extends TestCase
 
     public function test_salah_kode_lima_kali_mengunci_siswa(): void
     {
+        $this->hariSekolah();
         $kode = $this->sebagai($this->wali())->postJson('/api/presensi-sesi', ['kelas' => '4A'])->json('data.sesiPresensi.0.kode');
         $siswa = $this->siswa();
         $salah = $kode === '000000' ? '111111' : '000000';

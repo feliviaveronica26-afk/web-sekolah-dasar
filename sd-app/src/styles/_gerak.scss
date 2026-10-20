@@ -1,0 +1,868 @@
+// ============================================================================
+// Gerak: semua animasi situs (CSS murni di atas Bootstrap, tanpa pustaka animasi).
+// Aturan: hanya transform/opacity/clip-path, masuk melambat & keluar lebih cepat, dan semuanya
+// hanya aktif bila pengguna TIDAK memilih "kurangi gerakan".
+// ============================================================================
+
+@keyframes melayang {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes goyang {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes putar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes berdenyut {
+  50% {
+    opacity: 0.5;
+  }
+}
+@keyframes memancar {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+// Animasi dekoratif berulang
+.melayang {
+  animation: melayang 6s ease-in-out infinite;
+}
+.goyang {
+  animation: goyang 2.5s ease-in-out infinite;
+}
+.putar-lambat {
+  animation: putar 40s linear infinite;
+}
+.berputar {
+  animation: putar 1s linear infinite;
+}
+.berdenyut {
+  animation: berdenyut 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .memancar {
+    animation: memancar 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+/* Efek riak saat tombol diklik (TombolHubungi di Beranda) */
+@keyframes riak {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.animasi-riak {
+  animation: riak 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Pita teks berjalan (komponen PitaBerjalan). Isi digandakan, jadi geser -50% = satu putaran mulus. */
+@keyframes berjalan {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.pita-berjalan {
+  animation: berjalan 45s linear infinite;
+}
+.pita-berjalan:hover,
+.pita-diam .pita-berjalan {
+  animation-play-state: paused;
+}
+
+/* Bilah muat berlogo saat jaringan lambat (komponen BilahMuat) */
+.bilah-isi {
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bilah-logo {
+  transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Garis miring merah putih yang terus mengalir */
+@keyframes bilah-garis {
+  from {
+    background-position: 1.5rem 0;
+  }
+}
+.bilah-garis {
+  background-image: linear-gradient(
+    45deg,
+    rgb(255 255 255 / 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgb(255 255 255 / 0.2) 50%,
+    rgb(255 255 255 / 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1.5rem 1.5rem;
+  animation: bilah-garis 0.8s linear infinite;
+}
+/* Kilau yang menyapu isian */
+@keyframes bilah-kilau {
+  to {
+    transform: translateX(300%);
+  }
+}
+.bilah-kilau {
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.45), transparent);
+  animation: bilah-kilau 1.8s ease-in-out infinite;
+}
+/* Logo berayun pelan, dikelilingi cincin yang berdenyut */
+@keyframes logo-ayun {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+  50% {
+    transform: rotate(9deg) translateY(-1px);
+  }
+}
+.logo-ayun {
+  animation: logo-ayun 1.5s ease-in-out infinite;
+}
+@keyframes denyut {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+.cincin-denyut {
+  animation: denyut 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes bilah-keluar {
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+}
+.bilah-keluar {
+  animation: bilah-keluar 0.45s ease 0.3s forwards;
+}
+
+/* Panel yang berganti isi tampil lembut */
+@keyframes tampil-lembut {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.tampil-lembut {
+  animation: tampil-lembut 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+  Animasi halus seluruh situs (publik & portal). Aturan: hanya transform & opacity (tata letak dan
+  ukuran komponen tidak berubah), durasi pendek, masuk melambat & keluar lebih cepat, dan semuanya
+  hanya aktif bila pengguna TIDAK memilih "kurangi gerakan".
+*/
+:root {
+  --gerak-cepat: 160ms;
+  --gerak-sedang: 260ms;
+  --gerak-lambat: 420ms;
+  --ease-masuk: cubic-bezier(0.22, 1, 0.36, 1); /* melambat saat tiba */
+  --ease-keluar: cubic-bezier(0.4, 0, 1, 1); /* mempercepat saat pergi */
+}
+@keyframes pudar-masuk {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pudar-keluar {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes naik-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes laci-masuk {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes laci-keluar {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes lembar-masuk {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes lembar-keluar {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes panel-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+@keyframes panel-keluar {
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+@keyframes menu-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+@keyframes menu-keluar {
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+/* Elemen yang sedang menjalankan animasi keluar tidak lagi menangkap klik */
+[data-keluar] {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* Pindah halaman portal: bagian-bagian halaman muncul naik berurutan (jeda 40 ms, maks. 200 ms) */
+  .masuk-halaman > :not(.fixed) {
+    animation: naik-masuk var(--gerak-sedang) var(--ease-masuk) backwards;
+  }
+  .masuk-halaman > :nth-child(2) {
+    animation-delay: 40ms;
+  }
+  .masuk-halaman > :nth-child(3) {
+    animation-delay: 80ms;
+  }
+  .masuk-halaman > :nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .masuk-halaman > :nth-child(5) {
+    animation-delay: 160ms;
+  }
+  .masuk-halaman > :nth-child(n + 6) {
+    animation-delay: 200ms;
+  }
+  /* Pindah halaman publik: cukup memudar (bagian-bagiannya sudah punya animasi muncul saat di-scroll) */
+  .masuk-situs {
+    animation: pudar-masuk var(--gerak-sedang) ease-out;
+  }
+
+  /* Modal: lembar naik dari bawah di HP, membesar lembut di layar lebar; keluar lebih cepat */
+  .latar-modal {
+    animation: pudar-masuk var(--gerak-cepat) ease-out;
+  }
+  .panel-modal {
+    animation: lembar-masuk var(--gerak-sedang) var(--ease-masuk);
+  }
+  [data-keluar] .latar-modal {
+    animation: pudar-keluar var(--gerak-cepat) ease-in forwards;
+  }
+  [data-keluar] .panel-modal {
+    animation: lembar-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+  }
+  @media (min-width: 40rem) {
+    .panel-modal {
+      animation: panel-masuk var(--gerak-sedang) var(--ease-masuk);
+    }
+    [data-keluar] .panel-modal {
+      animation: panel-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+    }
+  }
+
+  /* Laci menu di HP meluncur dari kiri */
+  .laci {
+    animation: laci-masuk var(--gerak-sedang) var(--ease-masuk);
+  }
+  [data-keluar] .laci {
+    animation: laci-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+  }
+
+  /* Panel notifikasi turun dari ikon lonceng */
+  .menu-turun {
+    transform-origin: top right;
+    animation: menu-masuk var(--gerak-cepat) var(--ease-masuk);
+  }
+  .menu-turun[data-keluar] {
+    animation: menu-keluar 120ms var(--ease-keluar) forwards;
+  }
+
+  /* Tombol portal sedikit mengecil hanya selama ditekan (umpan balik sentuhan) */
+  .tekan:active,
+  .btn:active:not(:disabled) {
+    scale: 0.97;
+  }
+
+  /* Isi kartu teman muncul berurutan setelah kartunya tiba di tengah */
+  .isi-bertahap > * {
+    animation: naik-masuk var(--gerak-sedang) var(--ease-masuk) backwards;
+  }
+  .isi-bertahap > :nth-child(1) {
+    animation-delay: 160ms;
+  }
+  .isi-bertahap > :nth-child(2) {
+    animation-delay: 210ms;
+  }
+  .isi-bertahap > :nth-child(3) {
+    animation-delay: 260ms;
+  }
+  .isi-bertahap > :nth-child(n + 4) {
+    animation-delay: 310ms;
+  }
+}
+
+/*
+  Lapisan animasi kedua (2026-10-17): judul berkata-kata, foto bertirai, angka menghitung, grafik
+  tumbuh, efek gulir. Aturan tetap sama: transform/opacity/clip-path saja (ukuran & tata letak tidak
+  berubah), sekali jalan kecuali dekorasi kecil, dan semuanya mati untuk "kurangi gerakan".
+*/
+:root {
+  --ease-pegas: cubic-bezier(0.34, 1.56, 0.64, 1); /* sedikit memantul, untuk ikon & lencana kecil */
+}
+@keyframes naik-jauh {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes turun-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+@keyframes kata-naik {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em) rotate(2deg);
+  }
+}
+@keyframes pop-masuk {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+@keyframes pop-ikon {
+  0% {
+    transform: scale(0.75);
+  }
+  55% {
+    transform: scale(1.12);
+  }
+}
+/* --tirai-luar: ruang di luar bingkai yang ikut terbuka (untuk bingkai berbayangan, agar bayangannya
+   tidak terpotong lalu muncul tiba-tiba di akhir) */
+@keyframes tirai-buka {
+  from {
+    clip-path: inset(
+      calc(100% + var(--tirai-luar, 0px)) calc(-1 * var(--tirai-luar, 0px)) calc(-1 * var(--tirai-luar, 0px)) round var(--sudut-tirai, 1.75rem)
+    );
+  }
+  to {
+    clip-path: inset(calc(-1 * var(--tirai-luar, 0px)) round var(--sudut-tirai, 1.75rem));
+  }
+}
+@keyframes foto-mantap {
+  from {
+    transform: scale(1.18);
+  }
+}
+@keyframes geser-sudut {
+  from {
+    opacity: 0;
+    transform: translate(18px, -18px) scale(0.8);
+  }
+}
+@keyframes tumbuh-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes tumbuh-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes buka-kanan {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes gambar-garis {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes isi-cincin {
+  from {
+    stroke-dashoffset: var(--keliling);
+  }
+}
+@keyframes notif-masuk {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.96);
+  }
+}
+@keyframes lambai {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0);
+  }
+  10%,
+  30% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+@keyframes lonceng {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  15% {
+    transform: rotate(14deg);
+  }
+  30% {
+    transform: rotate(-12deg);
+  }
+  45% {
+    transform: rotate(8deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes goyang-galat {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+@keyframes ayun-kecil {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes pilih-tab {
+  from {
+    transform: scale(0.94);
+  }
+}
+@keyframes ikon-putar {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+}
+@keyframes progres-baca {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes paralaks {
+  from {
+    translate: 0 -4%;
+  }
+  to {
+    translate: 0 4%;
+  }
+}
+@keyframes isi-garis {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Tata letak sama di semua mode (dengan atau tanpa animasi) */
+.kata-naik,
+.lambai {
+  display: inline-block;
+}
+.progres-baca,
+.isi-linimasa {
+  display: none;
+}
+
+/* Bilah tipis di puncak halaman publik yang terisi sesuai seberapa jauh halaman sudah dibaca.
+   Digerakkan langsung oleh gulir pengguna, jadi tetap tampil untuk "kurangi gerakan". */
+@supports (animation-timeline: scroll()) {
+  .progres-baca {
+    display: block;
+    transform-origin: 0 50%;
+    animation: progres-baca linear both;
+    animation-duration: auto;
+    animation-timeline: scroll(root);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── <Muncul>: elemen muncul saat di-scroll ── */
+  .muncul {
+    opacity: 0;
+    transform: translateY(24px);
+    /* bayangan, geser & skala milik efek hover tetap beranimasi tanpa jeda */
+    transition-property: opacity, transform, box-shadow, translate, scale, background-color;
+    transition-duration: 0.6s, 0.8s, 0.3s, 0.3s, 0.3s, 0.2s;
+    transition-timing-function: ease-out, var(--ease-masuk), ease, ease, ease, ease;
+    transition-delay: var(--jeda, 0ms), var(--jeda, 0ms), 0s, 0s, 0s, 0s;
+  }
+  .muncul[data-gaya='kiri'] {
+    transform: translateX(-32px);
+  }
+  .muncul[data-gaya='kanan'] {
+    transform: translateX(32px);
+  }
+  .muncul[data-gaya='skala'] {
+    transform: translateY(20px) scale(0.95);
+  }
+  .muncul[data-gaya='tirai'] {
+    transform: none;
+  }
+  .muncul[data-gaya='bertahap'] {
+    opacity: 1;
+    transform: none;
+  }
+  .muncul.muncul-aktif {
+    opacity: 1;
+    transform: none;
+  }
+  /* Tirai: bingkai foto terbuka dari bawah ke atas, fotonya mengecil pelan ke ukuran asli */
+  .muncul-aktif[data-gaya='tirai'] {
+    animation: tirai-buka 0.95s var(--ease-masuk) backwards;
+    animation-delay: var(--jeda, 0ms);
+  }
+  .muncul-aktif[data-gaya='tirai'] img {
+    animation: foto-mantap 1.4s var(--ease-masuk) backwards;
+    animation-delay: var(--jeda, 0ms);
+  }
+  /* Bertahap: anak-anak langsungnya muncul satu per satu (efek hover anak tetap tanpa jeda) */
+  .muncul[data-gaya='bertahap'] > * {
+    opacity: 0;
+    transform: translateY(18px);
+    transition-property: opacity, transform, translate, box-shadow, background-color;
+    transition-duration: 0.5s, 0.7s, 0.3s, 0.3s, 0.2s;
+    transition-timing-function: ease-out, var(--ease-masuk), ease, ease, ease;
+    transition-delay: calc(var(--jeda, 0ms) + var(--jeda-anak, 0ms)), calc(var(--jeda, 0ms) + var(--jeda-anak, 0ms)), 0s, 0s, 0s;
+  }
+  .muncul-aktif[data-gaya='bertahap'] > * {
+    opacity: 1;
+    transform: none;
+  }
+  .muncul[data-gaya='bertahap'] > :nth-child(2) {
+    --jeda-anak: 80ms;
+  }
+  .muncul[data-gaya='bertahap'] > :nth-child(3) {
+    --jeda-anak: 160ms;
+  }
+  .muncul[data-gaya='bertahap'] > :nth-child(4) {
+    --jeda-anak: 240ms;
+  }
+  .muncul[data-gaya='bertahap'] > :nth-child(5) {
+    --jeda-anak: 320ms;
+  }
+  .muncul[data-gaya='bertahap'] > :nth-child(6) {
+    --jeda-anak: 400ms;
+  }
+  .muncul[data-gaya='bertahap'] > :nth-child(n + 7) {
+    --jeda-anak: 480ms;
+  }
+
+  /* ── Bagian atas halaman: berjalan sekali saat halaman dibuka, berurutan lewat --tunda ── */
+  .masuk-awal {
+    animation: naik-jauh 0.7s var(--ease-masuk) backwards;
+    animation-delay: var(--tunda, 0ms);
+  }
+  .turun-awal {
+    animation: turun-masuk 0.6s var(--ease-masuk) backwards;
+    animation-delay: var(--tunda, 0ms);
+  }
+  .pop-awal {
+    animation: pop-masuk 0.7s ease-out backwards;
+    animation-delay: var(--tunda, 0ms);
+  }
+  .tirai-awal {
+    animation: tirai-buka 1s var(--ease-masuk) backwards;
+    animation-delay: var(--tunda, 0ms);
+  }
+  .tirai-awal img {
+    animation: foto-mantap 1.5s var(--ease-masuk) backwards;
+    animation-delay: var(--tunda, 0ms);
+  }
+  /* Kotak kuning di belakang foto kepala halaman keluar dari balik foto */
+  .sudut-awal {
+    animation: geser-sudut 0.8s var(--ease-masuk) backwards;
+    animation-delay: var(--tunda, 0ms);
+  }
+  /* Kata-kata judul (komponen TeksNaik) */
+  .kata-naik {
+    animation: kata-naik 0.8s var(--ease-masuk) backwards;
+    animation-delay: calc(var(--tunda-teks, 0ms) + var(--urut, 0) * 55ms);
+  }
+  /* Foto latar halaman masuk yang perlahan mendekat */
+  .foto-pelan {
+    animation: foto-mantap 2.4s var(--ease-masuk) backwards;
+  }
+
+  /* ── Efek gulir (hanya peramban yang mendukung animasi berbasis gulir; lainnya diam) ── */
+  @supports (animation-timeline: view()) {
+    /* Foto di dalam bingkai bergerak sedikit lebih lambat dari halaman: kesan kedalaman.
+       Fotonya diperbesar 10% agar tepinya tidak pernah terlihat; bingkainya tetap. */
+    .paralaks {
+      transform: scale(1.1);
+      animation: paralaks linear both;
+      animation-duration: auto;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+    /* Linimasa "Sehari di sekolah": garis kuning terisi mengikuti posisi tengah layar */
+    .isi-linimasa {
+      display: block;
+      transform-origin: top;
+      animation: isi-garis linear both;
+      animation-duration: auto;
+      animation-timeline: view();
+      animation-range: cover 50vh cover calc(100% - 50vh);
+    }
+  }
+
+  /* Notifikasi contoh di ponsel beranda masuk satu per satu setelah ponselnya terlihat */
+  .muncul .notif-masuk {
+    opacity: 0;
+  }
+  .muncul-aktif .notif-masuk {
+    opacity: 1;
+    animation: notif-masuk 0.55s var(--ease-masuk) backwards;
+    animation-delay: calc(0.45s + var(--urut, 0) * 0.4s);
+  }
+
+  /* ── Portal ── */
+  /* Kartu angka naik berurutan */
+  .ui-stat {
+    animation: naik-jauh var(--gerak-lambat) var(--ease-masuk) backwards;
+  }
+  .ui-stat:nth-child(2) {
+    animation-delay: 60ms;
+  }
+  .ui-stat:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .ui-stat:nth-child(4) {
+    animation-delay: 180ms;
+  }
+  .ui-stat:nth-child(n + 5) {
+    animation-delay: 240ms;
+  }
+  /* Daftar yang isinya muncul berurutan (mis. jadwal & tugas di beranda portal) */
+  .bertahap > * {
+    animation: naik-masuk var(--gerak-sedang) var(--ease-masuk) backwards;
+  }
+  .bertahap > :nth-child(1) {
+    animation-delay: 120ms;
+  }
+  .bertahap > :nth-child(2) {
+    animation-delay: 165ms;
+  }
+  .bertahap > :nth-child(3) {
+    animation-delay: 210ms;
+  }
+  .bertahap > :nth-child(4) {
+    animation-delay: 255ms;
+  }
+  .bertahap > :nth-child(5) {
+    animation-delay: 300ms;
+  }
+  .bertahap > :nth-child(6) {
+    animation-delay: 345ms;
+  }
+  .bertahap > :nth-child(n + 7) {
+    animation-delay: 390ms;
+  }
+  /* Batang progres & cincin terisi dari nol saat tampil */
+  .isi-progres {
+    transform-origin: left;
+    animation: tumbuh-x 0.9s var(--ease-masuk) 0.15s backwards;
+  }
+  .isi-cincin {
+    animation: isi-cincin 1.1s var(--ease-masuk) 0.15s backwards;
+  }
+  /* Grafik: batang tumbuh dari kiri, kolom dari garis nol, garis tren tergambar */
+  .batang-tumbuh {
+    animation: buka-kanan 0.8s var(--ease-masuk) backwards;
+    animation-delay: calc(0.1s + var(--urut, 0) * 50ms);
+  }
+  .kolom-tumbuh {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: tumbuh-y 0.7s var(--ease-masuk) backwards;
+    animation-delay: calc(0.1s + var(--urut, 0) * 40ms);
+  }
+  .garis-tumbuh {
+    stroke-dasharray: 1;
+    animation: gambar-garis 1.2s var(--ease-masuk) 0.1s backwards;
+  }
+  .area-tumbuh {
+    animation: pudar-masuk 0.8s ease-out 0.6s backwards;
+  }
+  .titik-tumbuh {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pop-masuk 0.5s ease-out 1.1s backwards;
+  }
+  /* Ikon menu yang baru aktif & lencana angka yang berubah sedikit memantul */
+  .ikon-aktif {
+    animation: pop-ikon 0.45s var(--ease-pegas);
+  }
+  .lencana-pop {
+    animation: pop-masuk 0.45s ease-out backwards;
+  }
+  /* Lonceng bergoyang saat jumlah notifikasi berubah */
+  .lonceng-goyang {
+    transform-origin: 50% 2px;
+    animation: lonceng 0.9s ease-in-out 0.3s;
+  }
+  /* Lambaian tangan di sapaan beranda portal */
+  .lambai {
+    transform-origin: 70% 80%;
+    animation: lambai 1.8s ease-in-out 0.6s;
+  }
+  /* Pesan galat bergetar singkat (mis. password salah) */
+  .goyang-galat {
+    animation: goyang-galat 0.45s ease-in-out;
+  }
+  /* Tab & pil penyaring yang baru dipilih */
+  .tab-pil .nav-link.active,
+  .ui-saring[aria-pressed='true'] {
+    animation: pilih-tab 0.28s var(--ease-pegas);
+  }
+  /* Ikon keadaan kosong mengambang pelan */
+  .ui-ikon-kosong {
+    animation: ayun-kecil 3.2s ease-in-out infinite;
+  }
+  /* Pemberitahuan (toast) naik dari bawah */
+  .toast-masuk {
+    animation: naik-jauh var(--gerak-sedang) var(--ease-masuk);
+  }
+  /* Ikon yang berganti (mis. Menu ↔ Tutup) berputar masuk */
+  .ikon-putar {
+    animation: ikon-putar var(--gerak-sedang) var(--ease-masuk);
+  }
+
+  /* ── Situs publik: menu HP & tombol kontak melayang ── */
+  .menu-hp {
+    transform-origin: top;
+    animation: menu-masuk var(--gerak-sedang) var(--ease-masuk);
+  }
+  .menu-hp[data-keluar] {
+    animation: menu-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+  }
+  .panel-kontak {
+    transform-origin: bottom right;
+    animation: panel-masuk var(--gerak-sedang) var(--ease-masuk);
+  }
+  .panel-kontak[data-keluar] {
+    animation: panel-keluar var(--gerak-cepat) var(--ease-keluar) forwards;
+  }
+  .melayang-awal {
+    animation: pop-masuk 0.6s ease-out 1s backwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .tampil-lembut {
+    animation: none;
+  }
+  .pita-berjalan,
+  .bilah-garis,
+  .logo-ayun,
+  .cincin-denyut {
+    animation: none;
+  }
+  .bilah-kilau {
+    display: none;
+  }
+  .melayang,
+  .goyang,
+  .putar-lambat,
+  .berdenyut {
+    animation: none;
+  }
+}
+

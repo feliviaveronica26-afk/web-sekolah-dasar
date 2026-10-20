@@ -60,18 +60,18 @@ export function useKasSekolah() {
 export function StatusKas({ galat, muat }) {
   if (!galat) {
     return (
-      <p className="flex items-center gap-2 py-6 text-sm text-slate-500">
-        <LoaderCircle className="h-4 w-4 animate-spin" /> Memuat data keuangan…
+      <p className="d-flex align-items-center gap-2 py-6 fs-sm text-tinta-3">
+        <LoaderCircle className="h-4 w-4 berputar" /> Memuat data keuangan…
       </p>
     )
   }
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:flex-row sm:items-center">
-      <p className="flex flex-1 items-start gap-2">
-        <CloudOff className="mt-0.5 h-4 w-4 shrink-0" /> {galat}
+    <div className="d-flex flex-column gap-3 rounded-2 border border-warning-subtle bg-warning-subtle px-4 py-3 fs-sm text-warning-emphasis flex-sm-row align-items-sm-center">
+      <p className="d-flex flex-1 align-items-start gap-2">
+        <CloudOff className="mt-0-5 h-4 w-4 flex-shrink-0" /> {galat}
       </p>
-      <button onClick={muat} className="flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-1.5 font-semibold ring-1 ring-amber-200 hover:bg-amber-100">
-        <RefreshCw className="h-3.5 w-3.5" /> Coba lagi
+      <button onClick={muat} className="d-flex flex-shrink-0 align-items-center justify-content-center gap-1-5 rounded-1 bg-white px-3 py-1-5 fw-semibold border border-warning-subtle hover-redup">
+        <RefreshCw className="h-3-5 w-3-5" /> Coba lagi
       </button>
     </div>
   )
@@ -87,7 +87,7 @@ export function KartuKas({ ke }) {
   return (
     <Card className="p-6">
       <JudulKartu icon={Landmark} judul="Kas sekolah">
-        <Link to={ke} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+        <Link to={ke} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
           Detail <ArrowRight className="h-4 w-4" />
         </Link>
       </JudulKartu>
@@ -95,16 +95,16 @@ export function KartuKas({ ke }) {
         <StatusKas galat={galat} muat={muat} />
       ) : (
         <>
-          <p className="text-sm text-slate-500">Saldo kas saat ini</p>
-          <p className="text-3xl font-extrabold text-slate-900">{rupiahTanda(r.saldoAkhir)}</p>
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <p className="fs-sm text-tinta-3">Saldo kas saat ini</p>
+          <p className="fs-3xl fw-extrabold text-tinta">{rupiahTanda(r.saldoAkhir)}</p>
+          <div className="mt-4 d-grid kolom-2 gap-3">
             {['masuk', 'keluar'].map((j) => (
-              <div key={j} className="rounded-xl bg-slate-50 p-4">
-                <p className="flex items-center gap-1.5 text-xs text-slate-600">
-                  <span className="h-2 w-2 rounded-sm" style={{ background: JENIS_KAS[j].warna }} />
+              <div key={j} className="rounded-2 bg-abu-50 p-4">
+                <p className="d-flex align-items-center gap-1-5 fs-xs text-tinta-2">
+                  <span className="h-2 w-2 rounded-1" style={{ background: JENIS_KAS[j].warna }} />
                   {JENIS_KAS[j].label} {namaB}
                 </p>
-                <p className="mt-0.5 text-lg font-extrabold text-slate-900">{rupiahRingkas(r[j])}</p>
+                <p className="mt-0-5 fs-lg fw-extrabold text-tinta">{rupiahRingkas(r[j])}</p>
               </div>
             ))}
           </div>

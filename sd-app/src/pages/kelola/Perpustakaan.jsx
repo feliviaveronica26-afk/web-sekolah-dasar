@@ -49,14 +49,14 @@ export default function Perpustakaan() {
     return (
       <>
         <td className="px-5 py-3">
-          <p className="font-semibold text-slate-800">{buku(p.bukuId)?.judul ?? '(buku dihapus)'}</p>
-          <p className="text-xs text-slate-500">{buku(p.bukuId)?.penulis}</p>
+          <p className="fw-semibold text-tinta">{buku(p.bukuId)?.judul ?? '(buku dihapus)'}</p>
+          <p className="fs-xs text-tinta-3">{buku(p.bukuId)?.penulis}</p>
         </td>
         <td className="px-5 py-3">
-          <p className="font-medium text-slate-800">{s?.nama ?? p.nis}</p>
-          <p className="text-xs text-slate-500">Kelas {s?.kelas}</p>
+          <p className="fw-medium text-tinta">{s?.nama ?? p.nis}</p>
+          <p className="fs-xs text-tinta-3">Kelas {s?.kelas}</p>
         </td>
-        <td className="px-5 py-3 text-slate-600">{formatTanggal(p.tanggalPinjam, { year: undefined })}</td>
+        <td className="px-5 py-3 text-tinta-2">{formatTanggal(p.tanggalPinjam, { year: undefined })}</td>
       </>
     )
   }
@@ -79,7 +79,7 @@ export default function Perpustakaan() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="d-grid kolom-2 gap-4 kolom-lg-4">
         <StatCard icon={Library} label="Judul Buku" value={data.buku.length} tone="sky" />
         <StatCard icon={BookCopy} label="Total Eksemplar" value={totalEksemplar} tone="emerald" />
         <StatCard icon={BookOpen} label="Sedang Dipinjam" value={aktif.length} tone="amber" />
@@ -87,21 +87,21 @@ export default function Perpustakaan() {
       </div>
 
       {reservasi.length > 0 && (
-        <Card className="mt-5 border-sky-200 bg-sky-50/60 p-5">
-          <p className="font-bold text-sky-900">Pesanan buku dari siswa ({reservasi.length})</p>
-          <p className="text-sm text-sky-800">Siswa memesan lewat Portal Siswa. Serahkan buku saat siswa datang ke perpustakaan.</p>
-          {error && !form && <p className="mt-2 text-sm font-semibold text-rose-700">{error}</p>}
-          <ul className="mt-3 space-y-2">
+        <Card className="mt-5 border-info-subtle bg-info-subtle p-5">
+          <p className="fw-bold text-info-emphasis">Pesanan buku dari siswa ({reservasi.length})</p>
+          <p className="fs-sm text-info-emphasis">Siswa memesan lewat Portal Siswa. Serahkan buku saat siswa datang ke perpustakaan.</p>
+          {error && !form && <p className="mt-2 fs-sm fw-semibold text-danger">{error}</p>}
+          <ul className="mt-3 antara-y-2">
             {reservasi.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-sky-100">
+              <li key={r.id} className="d-flex flex-wrap align-items-center gap-3 rounded-2 bg-white px-4 py-3 border border-info-subtle">
                 {/* Lebar dasar 13rem: tombol turun ke baris bawah bila keterangan buku tidak muat */}
-                <div className="min-w-0 grow basis-52">
-                  <p className="font-semibold text-slate-800">{buku(r.bukuId)?.judul ?? '(buku dihapus)'}</p>
-                  <p className="text-xs text-slate-500">
+                <div className="min-w-0 flex-grow-1 basis-52">
+                  <p className="fw-semibold text-tinta">{buku(r.bukuId)?.judul ?? '(buku dihapus)'}</p>
+                  <p className="fs-xs text-tinta-3">
                     {siswa(r.nis)?.nama ?? r.nis} · Kelas {siswa(r.nis)?.kelas} · dipesan {formatTanggal(r.tanggal, { year: undefined })}
                   </p>
                 </div>
-                <button onClick={() => prosesPesanan(r.id, 'Ditolak')} className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-100">
+                <button onClick={() => prosesPesanan(r.id, 'Ditolak')} className="rounded-1 px-3 py-1-5 fs-sm fw-semibold text-tinta-3 hover-latar-abu">
                   Tolak
                 </button>
                 <button onClick={() => serahkan(r)} className={btn.primary}>
@@ -113,7 +113,7 @@ export default function Perpustakaan() {
         </Card>
       )}
 
-      <div className="my-5 inline-flex flex-wrap rounded-xl bg-slate-100 p-1">
+      <div className="my-5 d-inline-flex flex-wrap rounded-2 bg-abu-100 p-1">
         {[
           ['aktif', `Sedang Dipinjam (${aktif.length})`],
           ['riwayat', 'Riwayat'],
@@ -122,7 +122,7 @@ export default function Perpustakaan() {
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+            className={`rounded-1 px-4 py-2 fs-sm fw-semibold transisi ${tab === k ? 'bg-white text-tinta shadow-sm' : 'text-tinta-3'}`}
           >
             {l}
           </button>
@@ -135,17 +135,17 @@ export default function Perpustakaan() {
             <EmptyState icon={BookOpen} title="Tidak ada buku yang sedang dipinjam" />
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+              <table className="w-100 min-w-700 text-start fs-sm">
+                <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                   <tr>
                     <th className="px-5 py-3">Buku</th>
                     <th className="px-5 py-3">Peminjam</th>
                     <th className="px-5 py-3">Dipinjam</th>
                     <th className="px-5 py-3">Batas Kembali</th>
-                    <th className="px-5 py-3 text-right">Aksi</th>
+                    <th className="px-5 py-3 text-end">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="pembatas-y pembatas-abu">
                   {[...aktif]
                     .sort((a, b) => a.tenggat.localeCompare(b.tenggat))
                     .map((p) => {
@@ -154,17 +154,17 @@ export default function Perpustakaan() {
                         <tr key={p.id}>
                           {kolomPinjam(p)}
                           <td className="px-5 py-3">
-                            <p className="text-slate-700">{formatTanggal(p.tenggat, { year: undefined })}</p>
+                            <p className="text-tinta-2">{formatTanggal(p.tenggat, { year: undefined })}</p>
                             {sisa < 0 ? (
-                              <Badge className="mt-1 bg-rose-100 text-rose-700">Terlambat {-sisa} hari</Badge>
+                              <Badge className="mt-1 bg-danger-subtle text-danger">Terlambat {-sisa} hari</Badge>
                             ) : (
-                              <Badge className="mt-1 bg-slate-100 text-slate-600">{sisa === 0 ? 'Hari ini' : `${sisa} hari lagi`}</Badge>
+                              <Badge className="mt-1 bg-abu-100 text-tinta-2">{sisa === 0 ? 'Hari ini' : `${sisa} hari lagi`}</Badge>
                             )}
                           </td>
-                          <td className="px-5 py-3 text-right">
+                          <td className="px-5 py-3 text-end">
                             <button
                               onClick={() => kembalikanBuku(p.id)}
-                              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-primary-600 hover:bg-primary-50"
+                              className="d-inline-flex align-items-center gap-1-5 rounded-1 px-3 py-1-5 fs-sm fw-semibold text-primary hover-latar-merah"
                             >
                               <Undo2 className="h-4 w-4" /> Dikembalikan
                             </button>
@@ -185,8 +185,8 @@ export default function Perpustakaan() {
             <EmptyState icon={BookOpen} title="Belum ada riwayat pengembalian" />
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+              <table className="w-100 min-w-640 text-start fs-sm">
+                <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                   <tr>
                     <th className="px-5 py-3">Buku</th>
                     <th className="px-5 py-3">Peminjam</th>
@@ -194,11 +194,11 @@ export default function Perpustakaan() {
                     <th className="px-5 py-3">Dikembalikan</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="pembatas-y pembatas-abu">
                   {riwayat.map((p) => (
                     <tr key={p.id}>
                       {kolomPinjam(p)}
-                      <td className="px-5 py-3 text-slate-600">{formatTanggal(p.tanggalKembali, { year: undefined })}</td>
+                      <td className="px-5 py-3 text-tinta-2">{formatTanggal(p.tanggalKembali, { year: undefined })}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -223,14 +223,14 @@ export default function Perpustakaan() {
             { name: 'stok', label: 'Jumlah Eksemplar', type: 'number', required: true },
           ]}
           columns={[
-            { key: 'judul', label: 'Judul', render: (b) => <span className="font-semibold text-slate-800">{b.judul}</span> },
+            { key: 'judul', label: 'Judul', render: (b) => <span className="fw-semibold text-tinta">{b.judul}</span> },
             { key: 'penulis', label: 'Penulis' },
-            { key: 'kategori', label: 'Kategori', render: (b) => <Badge className="bg-sky-50 text-sky-700">{b.kategori}</Badge> },
+            { key: 'kategori', label: 'Kategori', render: (b) => <Badge className="bg-info-subtle text-info">{b.kategori}</Badge> },
             {
               key: 'stok',
               label: 'Tersedia',
               render: (b) => (
-                <span className={tersedia(b) > 0 ? 'font-semibold text-emerald-600' : 'font-semibold text-rose-600'}>
+                <span className={tersedia(b) > 0 ? 'fw-semibold text-success' : 'fw-semibold text-danger'}>
                   {tersedia(b)} / {b.stok}
                 </span>
               ),
@@ -241,7 +241,7 @@ export default function Perpustakaan() {
 
       <Modal open={!!form} onClose={() => setForm(null)} title="Catat Peminjaman">
         {form && (
-          <form onSubmit={simpanPinjam} className="space-y-4">
+          <form onSubmit={simpanPinjam} className="antara-y-4">
             {error && <Alert tone="error">{error}</Alert>}
             <div>
               <label htmlFor="pinjam-siswa" className={labelCls}>Siswa</label>
@@ -267,10 +267,10 @@ export default function Perpustakaan() {
                 ))}
               </select>
             </div>
-            <p className="text-sm text-slate-500">
-              Batas pengembalian: <b className="text-slate-700">{formatTanggal(tambahHari(hariIni, LAMA_PINJAM))}</b>
+            <p className="fs-sm text-tinta-3">
+              Batas pengembalian: <b className="text-tinta-2">{formatTanggal(tambahHari(hariIni, LAMA_PINJAM))}</b>
             </p>
-            <div className="flex flex-wrap justify-end gap-2 pt-2">
+            <div className="d-flex flex-wrap justify-content-end gap-2 pt-2">
               <button type="button" onClick={() => setForm(null)} className={btn.secondary}>
                 Batal
               </button>

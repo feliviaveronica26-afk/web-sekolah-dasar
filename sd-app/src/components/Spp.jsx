@@ -5,28 +5,28 @@ import { Alert, btn } from './ui'
 import { useData } from '../context/DataContext'
 import { SEKOLAH, SPP } from '../data/dummy'
 import { formatTanggal } from '../utils/format'
-import { STATUS_SPP, bulanBisaDibayar, jatuhTempo, namaBulan, rupiah, statusSpp } from '../utils/spp'
+import { STATUS_SPP, bulanBisaDibayar, jatuhTempoSiswa, namaBulan, rupiah, statusSpp } from '../utils/spp'
 
 // Status 12 bulan SPP dalam satu baris. `kecil` untuk tabel.
 export function StripBulan({ data, nis, kecil = false }) {
   if (kecil) {
     return (
-      <div className="flex gap-0.5">
+      <div className="d-flex gap-0-5">
         {SPP.bulan.map((b) => {
           const s = statusSpp(data, nis, b)
-          return <span key={b} title={`${namaBulan(b)}: ${STATUS_SPP[s].label}`} className={`h-4 w-2.5 rounded-sm ${STATUS_SPP[s].chip}`} />
+          return <span key={b} title={`${namaBulan(b)}: ${STATUS_SPP[s].label}`} className={`h-4 w-2-5 rounded-1 ${STATUS_SPP[s].chip}`} />
         })}
       </div>
     )
   }
   return (
-    <div className="grid grid-cols-3 gap-2 min-[400px]:grid-cols-4 sm:grid-cols-6 lg:grid-cols-12">
+    <div className="d-grid kolom-3 gap-2 kolom-400-4 kolom-sm-6 kolom-lg-12">
       {SPP.bulan.map((b) => {
         const s = statusSpp(data, nis, b)
         return (
-          <div key={b} className={`rounded-xl px-2 py-2.5 text-center ${STATUS_SPP[s].cls}`}>
-            <p className="text-xs font-bold">{namaBulan(b, { month: 'short' })}</p>
-            <p className="mt-0.5 text-[10px] font-medium leading-tight">{STATUS_SPP[s].label}</p>
+          <div key={b} className={`rounded-2 px-2 py-2-5 text-center ${STATUS_SPP[s].cls}`}>
+            <p className="fs-xs fw-bold">{namaBulan(b, { month: 'short' })}</p>
+            <p className="mt-0-5 fs-10 fw-medium lh-tight">{STATUS_SPP[s].label}</p>
           </div>
         )
       })}
@@ -34,14 +34,17 @@ export function StripBulan({ data, nis, kecil = false }) {
   )
 }
 
-export function LegendaSpp() {
+// `sebelumMasuk` = tampilkan juga keterangan bulan sebelum siswa baru/pindahan masuk
+export function LegendaSpp({ sebelumMasuk = false }) {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-600">
-      {Object.values(STATUS_SPP).map((s) => (
-        <span key={s.label} className="flex items-center gap-1.5">
-          <span className={`h-2.5 w-2.5 rounded-full ${s.chip}`} /> {s.label}
-        </span>
-      ))}
+    <div className="d-flex flex-wrap column-gap-4 row-gap-2 fs-xs text-tinta-2">
+      {Object.entries(STATUS_SPP)
+        .filter(([k]) => sebelumMasuk || k !== 'sebelumMasuk')
+        .map(([, s]) => (
+          <span key={s.label} className="d-flex align-items-center gap-1-5">
+            <span className={`h-2-5 w-2-5 rounded-pill ${s.chip}`} /> {s.label}
+          </span>
+        ))}
     </div>
   )
 }
@@ -60,8 +63,8 @@ export function PilihBulan({ data, nis, terpilih, onChange }) {
 
   return (
     <div>
-      <p className="mb-3 text-sm text-slate-500">Bulan dibayar berurutan, mulai dari yang paling lama.</p>
-      <ul className="space-y-2">
+      <p className="mb-3 fs-sm text-tinta-3">Bulan dibayar berurutan, mulai dari yang paling lama.</p>
+      <ul className="antara-y-2">
         {tampil.map((b, i) => {
           const dipilih = i < terpilih.length
           const s = statusSpp(data, nis, b)
@@ -70,24 +73,24 @@ export function PilihBulan({ data, nis, terpilih, onChange }) {
               <button
                 type="button"
                 onClick={() => klik(i)}
-                className={`flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition ${
-                  dipilih ? 'border-primary-500 bg-primary-50' : 'border-slate-200 hover:border-slate-300'
+                className={`d-flex w-100 align-items-center gap-3 rounded-3 border border-2 px-4 py-3 text-start transisi ${
+                  dipilih ? 'border-merah-500 bg-merah-50' : 'border-abu-200 hover-garis-abu'
                 }`}
               >
                 <span
-                  className={`grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 ${
-                    dipilih ? 'border-primary-600 bg-primary-600 text-white' : 'border-slate-300 bg-white'
+                  className={`d-flex h-6 w-6 flex-shrink-0 align-items-center justify-content-center rounded-1 border border-2 ${
+                    dipilih ? 'border-primary bg-primary text-white' : 'border-abu-300 bg-white'
                   }`}
                 >
                   {dipilih && <Check className="h-4 w-4" />}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-bold text-slate-900">{namaBulan(b)}</span>
-                  <span className="block text-xs text-slate-500">Jatuh tempo {formatTanggal(jatuhTempo(b))}</span>
+                  <span className="d-block fw-bold text-tinta">{namaBulan(b)}</span>
+                  <span className="d-block fs-xs text-tinta-3">Jatuh tempo {formatTanggal(jatuhTempoSiswa(data, nis, b))}</span>
                 </span>
-                <span className="text-right">
-                  <span className="block font-bold text-slate-900">{rupiah(SPP.nominal)}</span>
-                  <span className={`mt-0.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_SPP[s].cls}`}>
+                <span className="text-end">
+                  <span className="d-block fw-bold text-tinta">{rupiah(SPP.nominal)}</span>
+                  <span className={`mt-0-5 d-inline-block rounded-pill px-2 py-0-5 fs-10 fw-semibold ${STATUS_SPP[s].cls}`}>
                     {STATUS_SPP[s].label}
                   </span>
                 </span>
@@ -97,7 +100,7 @@ export function PilihBulan({ data, nis, terpilih, onChange }) {
         })}
       </ul>
       {tampil.length < daftar.length && (
-        <button type="button" onClick={() => setSemua(true)} className="mt-3 w-full rounded-xl py-2 text-sm font-semibold text-primary-600 hover:bg-primary-50">
+        <button type="button" onClick={() => setSemua(true)} className="mt-3 w-100 rounded-2 py-2 fs-sm fw-semibold text-primary hover-latar-merah">
           + Bayar di muka untuk bulan berikutnya ({daftar.length - tampil.length} bulan lagi)
         </button>
       )}
@@ -120,8 +123,8 @@ export function TombolSalin({ teks, label = 'Salin' }) {
     <button
       type="button"
       onClick={salin}
-      className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-        tersalin ? 'bg-emerald-100 text-emerald-700' : 'bg-primary-50 text-primary-700 hover:bg-primary-100'
+      className={`d-inline-flex align-items-center gap-1-5 rounded-1 px-3 py-1-5 fs-sm fw-semibold transisi ${
+        tersalin ? 'bg-success-subtle text-success' : 'bg-merah-50 text-merah-700 hover-latar-merah'
       }`}
     >
       {tersalin ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -163,7 +166,7 @@ export function QrPembayaran({ isi }) {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="d-flex flex-column align-items-center">
       <svg
         ref={ref}
         xmlns="http://www.w3.org/2000/svg"
@@ -171,12 +174,12 @@ export function QrPembayaran({ isi }) {
         shapeRendering="crispEdges"
         role="img"
         aria-label="Kode QR pembayaran"
-        className="h-56 w-56 rounded-xl bg-white"
+        className="h-56 w-56 rounded-2 bg-white"
       >
         <rect width={n + tepi * 2} height={n + tepi * 2} fill="#ffffff" />
         <path d={jalur} fill="#0f172a" />
       </svg>
-      <button type="button" onClick={unduh} className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700">
+      <button type="button" onClick={unduh} className="mt-2 d-inline-flex align-items-center gap-1-5 fs-sm fw-semibold text-primary hover-teks-merah">
         <Download className="h-4 w-4" /> Simpan gambar QR
       </button>
     </div>
@@ -202,73 +205,73 @@ export function Kuitansi({ siswa, pembayaran }) {
   }
   return (
     <>
-      <div className="area-cetak relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6">
-        <div className="flex items-center gap-3 border-b-2 border-primary-600 pb-4">
-          <img src="/logo.png" alt="" className="h-12 w-12 object-contain" />
+      <div className="area-cetak position-relative overflow-hidden rounded-3 border border-abu-200 bg-white p-6">
+        <div className="d-flex align-items-center gap-3 border-bottom border border-2 border-primary pb-4">
+          <img src="/logo.png" alt="" className="h-12 w-12 object-fit-contain" />
           <div>
-            <p className="font-extrabold text-slate-900">{SEKOLAH.nama}</p>
-            <p className="text-xs text-slate-500">{SEKOLAH.alamat}</p>
-            <p className="text-xs text-slate-500">
+            <p className="fw-extrabold text-tinta">{SEKOLAH.nama}</p>
+            <p className="fs-xs text-tinta-3">{SEKOLAH.alamat}</p>
+            <p className="fs-xs text-tinta-3">
               {SEKOLAH.telepon} · {SEKOLAH.email}
             </p>
           </div>
         </div>
 
-        <p className="mt-5 text-center text-sm font-extrabold tracking-widest text-slate-800">KUITANSI PEMBAYARAN SPP</p>
-        <p className="text-center text-xs text-slate-500">No. {pembayaran.noTransaksi}</p>
+        <p className="mt-5 text-center fs-sm fw-extrabold ls-widest text-tinta">KUITANSI PEMBAYARAN SPP</p>
+        <p className="text-center fs-xs text-tinta-3">No. {pembayaran.noTransaksi}</p>
 
-        <dl className="mt-5 grid grid-cols-[110px_1fr] gap-y-1.5 text-sm">
-          <dt className="text-slate-500">Tanggal</dt>
-          <dd className="font-semibold text-slate-800">{formatTanggal(pembayaran.tanggal)}</dd>
-          <dt className="text-slate-500">Nama Siswa</dt>
-          <dd className="font-semibold text-slate-800">{siswa.nama}</dd>
-          <dt className="text-slate-500">NIS / Kelas</dt>
-          <dd className="font-semibold text-slate-800">
+        <dl className="mt-5 d-grid kolom-110-isi row-gap-1-5 fs-sm">
+          <dt className="text-tinta-3">Tanggal</dt>
+          <dd className="fw-semibold text-tinta">{formatTanggal(pembayaran.tanggal)}</dd>
+          <dt className="text-tinta-3">Nama Siswa</dt>
+          <dd className="fw-semibold text-tinta">{siswa.nama}</dd>
+          <dt className="text-tinta-3">NIS / Kelas</dt>
+          <dd className="fw-semibold text-tinta">
             {siswa.nis} / {siswa.kelas}
           </dd>
-          <dt className="text-slate-500">Metode</dt>
-          <dd className="font-semibold text-slate-800">{pembayaran.metode}</dd>
+          <dt className="text-tinta-3">Metode</dt>
+          <dd className="fw-semibold text-tinta">{pembayaran.metode}</dd>
         </dl>
 
-        <table className="mt-5 w-full text-sm">
+        <table className="mt-5 w-100 fs-sm">
           <thead>
-            <tr className="border-y border-slate-200 text-left text-xs uppercase text-slate-500">
+            <tr className="border-top border-bottom border-abu-200 text-start fs-xs text-uppercase text-tinta-3">
               <th className="py-2">Keterangan</th>
-              <th className="py-2 text-right">Jumlah</th>
+              <th className="py-2 text-end">Jumlah</th>
             </tr>
           </thead>
           <tbody>
             {pembayaran.bulan.map((b) => (
-              <tr key={b} className="border-b border-slate-100">
-                <td className="py-2 text-slate-700">SPP {namaBulan(b)}</td>
-                <td className="py-2 text-right text-slate-700">{rupiah(SPP.nominal)}</td>
+              <tr key={b} className="border-bottom border-abu-100">
+                <td className="py-2 text-tinta-2">SPP {namaBulan(b)}</td>
+                <td className="py-2 text-end text-tinta-2">{rupiah(SPP.nominal)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr>
-              <td className="pt-3 font-bold text-slate-900">Total</td>
-              <td className="pt-3 text-right text-lg font-extrabold text-slate-900">{rupiah(total)}</td>
+              <td className="pt-3 fw-bold text-tinta">Total</td>
+              <td className="pt-3 text-end fs-lg fw-extrabold text-tinta">{rupiah(total)}</td>
             </tr>
           </tfoot>
         </table>
 
-        <div className="pointer-events-none absolute right-6 top-32 rotate-[-12deg] rounded-lg border-4 border-emerald-500 px-3 py-1 text-xl font-extrabold tracking-widest text-emerald-500 opacity-80">
+        <div className="pe-none position-absolute end-6 top-32 miring-n12 rounded-1 border border-4 border-success px-3 py-1 fs-xl fw-extrabold ls-widest teks-terang-emerald opacity-80">
           LUNAS
         </div>
-        <p className="mt-6 text-center text-[11px] text-slate-400">Kuitansi ini diterbitkan otomatis oleh sistem dan sah tanpa tanda tangan.</p>
+        <p className="mt-6 text-center fs-2xs text-abu-400">Kuitansi ini diterbitkan otomatis oleh sistem dan sah tanpa tanda tangan.</p>
       </div>
       {galat && (
         <div className="mt-4">
           <Alert tone="error">{galat}</Alert>
         </div>
       )}
-      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+      <div className="mt-4 d-grid gap-2 kolom-sm-2">
         <button type="button" onClick={() => window.print()} className={btn.secondary}>
           <Printer className="h-4 w-4" /> Cetak Struk
         </button>
-        <button type="button" onClick={unduh} disabled={mengunduh} className={`${btn.primary} disabled:opacity-60`}>
-          {mengunduh ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />} {mengunduh ? 'Menyiapkan PDF…' : 'Unduh PDF'}
+        <button type="button" onClick={unduh} disabled={mengunduh} className={`${btn.primary}`}>
+          {mengunduh ? <Loader2 className="h-4 w-4 berputar" /> : <FileDown className="h-4 w-4" />} {mengunduh ? 'Menyiapkan PDF…' : 'Unduh PDF'}
         </button>
       </div>
     </>

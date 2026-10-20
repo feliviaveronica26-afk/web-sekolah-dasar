@@ -10,6 +10,7 @@ use App\Support\KuitansiSpp;
 use App\Support\PembayaranSpp;
 use App\Support\Referensi;
 use App\Support\Waktu;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -49,11 +50,26 @@ class SppController extends Controller
             'bukti.uploaded' => 'Foto bukti gagal diunggah. Mungkin ukurannya melebihi batas server.',
         ]);
 
+        self::tolakSebelumMasuk($isian['nis'], $isian['bulan']);
+
         $bukti = $request->hasFile('bukti') ? $this->simpanBukti($request->file('bukti')) : null;
         $noTransaksi = PembayaranSpp::nomorTransaksi();
         $baris = PembayaranSpp::catatLunas($isian['nis'], $isian['bulan'], 'Tunai', $noTransaksi, $bukti);
 
         return $this->tambalan(DataSekolah::petaSpp($baris), lain: ['noTransaksi' => $noTransaksi, 'tanggal' => Waktu::hariIni(), 'bukti' => $bukti]);
+    }
+
+    /*
+      Siswa baru/pindahan baru ditagih mulai bulan masuknya, jadi bulan sebelumnya tidak bisa dibayar
+      (sama dengan statusSpp di sd-app/src/utils/spp.js).
+    */
+    private static function tolakSebelumMasuk(?string $nis, array $bulan): void
+    {
+        $masuk = Siswa::where('nis', $nis)->first(['tanggal_masuk'])?->tanggal_masuk;
+        if ($masuk && collect($bulan)->contains(fn ($b) => $b < $masuk->format('Y-m'))) {
+            $nama = Carbon::parse($masuk)->locale('id')->translatedFormat('F Y');
+            throw ValidationException::withMessages(['bulan' => "Siswa ini masuk {$nama}; SPP bulan sebelumnya tidak ditagih."]);
+        }
     }
 
     // Orang tua membuat transaksi pembayaran online untuk anaknya
@@ -70,6 +86,7 @@ class SppController extends Controller
         ], ['bulan.required' => 'Pilih bulan yang akan dibayar.', 'bank.required_if' => 'Pilih bank untuk virtual account.']);
 
         $nis = $a->nis;
+        self::tolakSebelumMasuk($nis, $isian['bulan']);
         if (TransaksiSpp::where('nis', $nis)->where('status', 'menunggu')->where('kadaluarsa', '>', now())->exists()) {
             throw ValidationException::withMessages(['bulan' => 'Masih ada pembayaran yang menunggu. Selesaikan atau ganti cara bayar dulu.']);
         }

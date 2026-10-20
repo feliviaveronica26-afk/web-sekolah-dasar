@@ -3,14 +3,15 @@
 namespace App\Support;
 
 use App\Models\Guru;
+use App\Models\JadwalPelajaran;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /*
-  Data acuan sekolah yang sama dengan website: kelas, jadwal pelajaran, mapel, ekskul, kategori sikap,
-  pengaturan SPP, dan pilihan formulir. Berkasnya (resources/data/referensi.json) dibuat dari
+  Data acuan sekolah yang sama dengan website: kelas, sesi, mapel, ekskul, kategori sikap, pengaturan
+  SPP, dan pilihan formulir. Berkasnya (resources/data/referensi.json) dibuat dari
   sd-app/src/data/dummy.js dengan `npm run ekspor-laravel`, jadi website & server selalu memakai aturan
-  yang sama.
+  yang sama. Jadwal pelajaran tersimpan di database (tabel jadwal_pelajaran), lihat jadwal().
 */
 final class Referensi
 {
@@ -53,12 +54,45 @@ final class Referensi
         return self::NAMA_HARI[Carbon::parse($tanggal)->dayOfWeek];
     }
 
+    // Jadwal pelajaran dari tabel jadwal_pelajaran: { kelas: { hari: [mapel|null per sesi] } }. Disimpan selama permintaan.
+    private static ?array $jadwal = null;
+
+    public static function jadwal(): array
+    {
+        if (self::$jadwal !== null) {
+            return self::$jadwal;
+        }
+        $kosong = array_fill(0, count(self::get('sesi')), null);
+        $hasil = [];
+        foreach (JadwalPelajaran::orderBy('kelas')->orderBy('jam')->get() as $j) {
+            $hasil[$j->kelas] ??= array_fill_keys(self::get('hariSekolah'), $kosong);
+            $hasil[$j->kelas][$j->hari][$j->jam] = $j->mapel;
+        }
+
+        return self::$jadwal = $hasil;
+    }
+
+    // Dipanggil setiap kali jadwal berubah dan di awal setiap tes
+    public static function lupakanJadwal(): void
+    {
+        self::$jadwal = null;
+    }
+
+    // Mapel yang boleh masuk jadwal kelas ini: semua mapel, kecuali IPAS & Informatika untuk kelas 1–2
+    public static function mapelJadwal(string $kelas): array
+    {
+        return array_values(array_filter(
+            array_keys(self::get('mapel')),
+            fn ($m) => self::angkaKelas($kelas) >= 3 || ! in_array($m, ['ipas', 'info'], true),
+        ));
+    }
+
     // Pelajaran yang diabsen pada hari itu (sama dengan pelajaranHari di src/utils/jadwal.js)
     public static function pelajaranHari(string $kelas, string $tanggal): array
     {
         $hasil = [];
-        foreach (self::get("jadwal.{$kelas}.".self::namaHari($tanggal), []) as $jam => $mapel) {
-            $info = self::get("mapel.{$mapel}");
+        foreach (self::jadwal()[$kelas][self::namaHari($tanggal)] ?? [] as $jam => $mapel) {
+            $info = $mapel ? self::get("mapel.{$mapel}") : null;
             if ($info && $info['absensi']) {
                 $hasil[] = ['jam' => $jam, 'mapel' => $mapel, 'kunci' => "{$jam}-{$mapel}"] + self::get("sesi.{$jam}");
             }

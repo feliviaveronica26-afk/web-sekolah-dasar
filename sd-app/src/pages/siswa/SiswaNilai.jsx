@@ -36,31 +36,31 @@ export function HalamanNilai({ siswa, untukOrtu = false }) {
       />
 
       {tab === 'rincian' ? (
-        <div className="space-y-6">
+        <div className="antara-y-6">
           <RingkasanNilai siswa={siswa} />
-          <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+          <div className="d-grid gap-6 kolom-xl-isi-320">
             <RincianNilai siswa={siswa} />
-            <Card className="h-fit p-6">
-              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-amber-100 text-amber-600">
+            <Card className="h-auto p-6">
+              <span className="d-flex h-11 w-11 align-items-center justify-content-center rounded-3 bg-warning-subtle text-warning-emphasis">
                 <Lightbulb className="h-5 w-5" />
               </span>
-              <h2 className="mt-4 text-lg font-bold text-slate-900">{untukOrtu ? 'Saran pendampingan' : 'Tips belajar untukmu'}</h2>
+              <h2 className="mt-4 fs-lg fw-bold text-tinta">{untukOrtu ? 'Saran pendampingan' : 'Tips belajar untukmu'}</h2>
               {terendah.length === 0 ? (
-                <p className="mt-2 text-sm text-slate-600">Belum ada nilai.</p>
+                <p className="mt-2 fs-sm text-tinta-2">Belum ada nilai.</p>
               ) : (
                 <>
-                  <p className="mt-2 text-sm text-slate-600">
+                  <p className="mt-2 fs-sm text-tinta-2">
                     {untukOrtu ? `Mapel yang bisa didampingi lebih di rumah bersama ${panggilan}:` : 'Mapel yang bisa kamu latih lagi:'}
                   </p>
-                  <ul className="mt-3 space-y-2">
+                  <ul className="mt-3 antara-y-2">
                     {terendah.map((d) => (
-                      <li key={d.kode} className="flex items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2.5">
-                        <span className={`rounded-lg px-2 py-1 text-xs font-bold ${d.warna}`}>{d.nama}</span>
-                        <span className="text-sm font-bold text-slate-800">{d.akhir}</span>
+                      <li key={d.kode} className="d-flex align-items-center justify-content-between gap-2 rounded-2 bg-abu-50 px-3 py-2-5">
+                        <span className={`rounded-1 px-2 py-1 fs-xs fw-bold ${d.warna}`}>{d.nama}</span>
+                        <span className="fs-sm fw-bold text-tinta">{d.akhir}</span>
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-4 text-sm text-slate-600">
+                  <p className="mt-4 fs-sm text-tinta-2">
                     {terendah.some((d) => d.akhir < KKTP)
                       ? `Ada nilai di bawah KKTP ${KKTP}. ${untukOrtu ? 'Wali kelas akan memberikan program remedial; Bapak/Ibu dapat bertanya lewat menu Pesan.' : 'Jangan sedih, ikuti remedial dan tanya guru kalau bingung ya!'}`
                       : untukOrtu

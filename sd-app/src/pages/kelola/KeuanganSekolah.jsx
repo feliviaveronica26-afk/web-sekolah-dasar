@@ -39,24 +39,24 @@ function banding(sekarang, lalu, bulanLalu, berjalan) {
 }
 
 const WARNA_KARTU = {
-  primary: 'bg-primary-50 text-primary-600',
-  sky: 'bg-sky-50 text-sky-600',
-  amber: 'bg-amber-50 text-amber-600',
-  slate: 'bg-slate-100 text-slate-600',
+  primary: 'bg-merah-50 text-primary',
+  sky: 'bg-info-subtle text-info',
+  amber: 'bg-warning-subtle text-warning-emphasis',
+  slate: 'bg-abu-100 text-tinta-2',
 }
 
 // Kartu angka dengan ikon di samping label, agar angka mendapat lebar penuh di HP
 function KartuAngka({ icon: Icon, label, value, hint, tone }) {
   return (
-    <Card className="p-4 sm:p-5">
-      <p className="flex items-start gap-2 text-sm font-medium text-slate-500">
-        <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg ${WARNA_KARTU[tone]}`}>
+    <Card className="p-4 p-sm-5">
+      <p className="d-flex align-items-start gap-2 fs-sm fw-medium text-tinta-3">
+        <span className={`d-flex h-7 w-7 flex-shrink-0 align-items-center justify-content-center rounded-1 ${WARNA_KARTU[tone]}`}>
           <Icon className="h-4 w-4" />
         </span>
-        <span className="pt-1 leading-tight">{label}</span>
+        <span className="pt-1 lh-tight">{label}</span>
       </p>
-      <p className="mt-2 whitespace-nowrap text-xl font-extrabold text-slate-900 sm:text-2xl">{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{hint}</p>
+      <p className="mt-2 text-nowrap fs-xl fw-extrabold text-tinta fs-sm-2xl">{value}</p>
+      <p className="mt-1 fs-xs text-tinta-3">{hint}</p>
     </Card>
   )
 }
@@ -81,13 +81,13 @@ function FormKas({ awal, onSimpan, onBatal }) {
   }
 
   return (
-    <form id="form-kas" onSubmit={kirim} className="grid gap-4 sm:grid-cols-2">
+    <form id="form-kas" onSubmit={kirim} className="d-grid gap-4 kolom-sm-2">
       {galat && (
-        <div key={galat} ref={(el) => el?.scrollIntoView({ block: 'nearest' })} className="sm:col-span-2">
+        <div key={galat} ref={(el) => el?.scrollIntoView({ block: 'nearest' })} className="rentang-sm-2">
           <Alert tone="error">{galat}</Alert>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-1.5 rounded-xl bg-slate-100 p-1.5 sm:col-span-2" role="radiogroup" aria-label="Jenis transaksi">
+      <div className="d-grid kolom-2 gap-1-5 rounded-2 bg-abu-100 p-1-5 rentang-sm-2" role="radiogroup" aria-label="Jenis transaksi">
         {Object.entries(JENIS_KAS).map(([j, { label }]) => (
           <button
             key={j}
@@ -95,7 +95,7 @@ function FormKas({ awal, onSimpan, onBatal }) {
             role="radio"
             aria-checked={form.jenis === j}
             onClick={() => gantiJenis(j)}
-            className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold transition ${form.jenis === j ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`d-flex align-items-center justify-content-center gap-1-5 rounded-1 py-2 fs-sm fw-semibold transisi ${form.jenis === j ? 'bg-white text-tinta shadow-sm' : 'text-tinta-3 hover-teks-tinta'}`}
           >
             {j === 'masuk' ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />} {label}
           </button>
@@ -119,13 +119,13 @@ function FormKas({ awal, onSimpan, onBatal }) {
         </select>
       </div>
       {form.jenis === 'masuk' && (
-        <p className="-mt-2 rounded-lg bg-sky-50 px-3 py-2 text-xs text-sky-800 sm:col-span-2">
+        <p className="mt-n2 rounded-1 bg-info-subtle px-3 py-2 fs-xs text-info-emphasis rentang-sm-2">
           {form.kategori === SALDO_AWAL
             ? 'Saldo awal dipakai sekali saat mulai mencatat, untuk sisa kas sebelumnya. Tidak dihitung sebagai pemasukan bulanan.'
             : 'Pembayaran SPP tidak perlu dicatat di sini karena sudah masuk otomatis dari menu Keuangan SPP.'}
         </p>
       )}
-      <div className="sm:col-span-2">
+      <div className="rentang-sm-2">
         <label htmlFor="kas-uraian" className={labelCls}>
           Uraian
         </label>
@@ -135,8 +135,8 @@ function FormKas({ awal, onSimpan, onBatal }) {
         <label htmlFor="kas-jumlah" className={labelCls}>
           Jumlah
         </label>
-        <div className="relative">
-          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500">Rp</span>
+        <div className="position-relative">
+          <span className="pe-none position-absolute start-3-5 top-50 translate-middle-y fs-sm fw-semibold text-tinta-3">Rp</span>
           <input
             id="kas-jumlah"
             inputMode="numeric"
@@ -145,7 +145,7 @@ function FormKas({ awal, onSimpan, onBatal }) {
             value={teksDariAngka(form.jumlah)}
             onChange={(e) => ubah('jumlah', angkaDariTeks(e.target.value))}
             placeholder="0"
-            className={`${inputCls} pl-10 font-semibold tabular-nums`}
+            className={`${inputCls} ps-10 fw-semibold angka`}
           />
         </div>
       </div>
@@ -159,14 +159,14 @@ function FormKas({ awal, onSimpan, onBatal }) {
           ))}
         </select>
       </div>
-      <div className="sm:col-span-2">
+      <div className="rentang-sm-2">
         <label htmlFor="kas-bukti" className={labelCls}>
-          No. bukti <span className="font-normal text-slate-400">(opsional)</span>
+          No. bukti <span className="fw-normal text-abu-400">(opsional)</span>
         </label>
         <input id="kas-bukti" maxLength={40} value={form.bukti} onChange={(e) => ubah('bukti', e.target.value)} placeholder="Contoh: BKK-2026-10-004" className={inputCls} />
-        <p className="mt-1.5 text-xs text-slate-500">Nomor kuitansi atau bukti transfer, agar mudah dicocokkan saat pemeriksaan.</p>
+        <p className="mt-1-5 fs-xs text-tinta-3">Nomor kuitansi atau bukti transfer, agar mudah dicocokkan saat pemeriksaan.</p>
       </div>
-      <div className="flex flex-wrap justify-end gap-2 sm:col-span-2">
+      <div className="d-flex flex-wrap justify-content-end gap-2 rentang-sm-2">
         <button type="button" onClick={onBatal} className={btn.secondary}>
           Batal
         </button>
@@ -185,22 +185,22 @@ function Rincian({ judul, jenis, perKategori, total }) {
     <Card className="p-6">
       <JudulKartu icon={jenis === 'masuk' ? ArrowDownLeft : ArrowUpRight} judul={judul} />
       {daftar.length === 0 ? (
-        <p className="rounded-xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">Belum ada {JENIS_KAS[jenis].label.toLowerCase()} di bulan ini.</p>
+        <p className="rounded-2 bg-abu-50 px-4 py-6 text-center fs-sm text-tinta-3">Belum ada {JENIS_KAS[jenis].label.toLowerCase()} di bulan ini.</p>
       ) : (
-        <ul className="space-y-3.5">
+        <ul className="antara-y-3-5">
           {daftar.map(([kategori, jumlah]) => (
             <li key={kategori}>
-              <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="min-w-0 text-slate-700">
+              <div className="d-flex align-items-baseline justify-content-between gap-3 fs-sm">
+                <span className="min-w-0 text-tinta-2">
                   {kategori}
-                  {kategori === KATEGORI_SPP && <span className="ml-1.5 text-xs text-slate-400">otomatis</span>}
+                  {kategori === KATEGORI_SPP && <span className="ms-1-5 fs-xs text-abu-400">otomatis</span>}
                 </span>
-                <span className="shrink-0 font-semibold tabular-nums text-slate-900">
-                  {rupiah(jumlah)} <span className="ml-1 text-xs font-normal text-slate-500">{Math.round((jumlah / total) * 100)}%</span>
+                <span className="flex-shrink-0 fw-semibold angka text-tinta">
+                  {rupiah(jumlah)} <span className="ms-1 fs-xs fw-normal text-tinta-3">{Math.round((jumlah / total) * 100)}%</span>
                 </span>
               </div>
-              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                <div className="h-full rounded-full" style={{ width: `${(jumlah / total) * 100}%`, background: JENIS_KAS[jenis].warna }} />
+              <div className="mt-1-5 h-1-5 overflow-hidden rounded-pill bg-abu-100">
+                <div className="h-100 rounded-pill" style={{ width: `${(jumlah / total) * 100}%`, background: JENIS_KAS[jenis].warna }} />
               </div>
             </li>
           ))}
@@ -227,17 +227,17 @@ export default function KeuanganSekolah() {
       title="Keuangan Sekolah"
       desc="Catat uang yang masuk dan keluar, lalu pantau saldo kas setiap bulan. Pembayaran SPP tercatat otomatis dari menu Keuangan SPP."
       action={
-        <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex">
-          <button onClick={() => bukaForm('masuk')} disabled={!kas} className={`${btn.primary} whitespace-nowrap px-3 sm:px-4`}>
+        <div className="d-grid flex-shrink-0 kolom-2 gap-2 d-sm-flex">
+          <button onClick={() => bukaForm('masuk')} disabled={!kas} className={`${btn.primary} text-nowrap px-3 px-sm-4`}>
             <Plus className="h-4 w-4" />
             <span>
-              <span className="hidden sm:inline">Catat </span>Pemasukan
+              <span className="d-none d-sm-inline">Catat </span>Pemasukan
             </span>
           </button>
-          <button onClick={() => bukaForm('keluar')} disabled={!kas} className={`${btn.secondary} whitespace-nowrap px-3 sm:px-4`}>
+          <button onClick={() => bukaForm('keluar')} disabled={!kas} className={`${btn.secondary} text-nowrap px-3 px-sm-4`}>
             <Minus className="h-4 w-4" />
             <span>
-              <span className="hidden sm:inline">Catat </span>Pengeluaran
+              <span className="d-none d-sm-inline">Catat </span>Pengeluaran
             </span>
           </button>
         </div>
@@ -325,23 +325,23 @@ export default function KeuanganSekolah() {
     <>
       {header}
 
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <label htmlFor="kas-bulan" className="text-sm font-medium text-slate-600">
+      <div className="mb-4 d-flex flex-wrap align-items-center gap-2">
+        <label htmlFor="kas-bulan" className="fs-sm fw-medium text-tinta-2">
           Bulan
         </label>
-        <select id="kas-bulan" value={bulan} onChange={(e) => setBulan(e.target.value)} className={`${inputCls} w-auto! py-2 font-semibold`}>
+        <select id="kas-bulan" value={bulan} onChange={(e) => setBulan(e.target.value)} className={`${inputCls} w-auto py-2 fw-semibold`}>
           {daftarBulan.map((b) => (
             <option key={b} value={b}>
               {namaBulan(b)}
             </option>
           ))}
         </select>
-        <button onClick={unduhCsv} className={`${btn.secondary} ml-auto py-2`}>
+        <button onClick={unduhCsv} className={`${btn.secondary} ms-auto py-2`}>
           <Download className="h-4 w-4" /> Unduh laporan (CSV)
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="d-grid kolom-2 gap-4 kolom-lg-4">
         <KartuAngka icon={Landmark} label="Saldo kas" value={rupiahRingkas(r.saldoAkhir)} hint={berjalan ? 'per hari ini' : `per akhir ${namaPendek}`} tone="primary" />
         <KartuAngka icon={ArrowDownLeft} label={`Pemasukan ${namaPendek}`} value={rupiahRingkas(r.masuk)} hint={banding(r.masuk, rLalu.masuk, bulanLalu, berjalan)} tone="sky" />
         <KartuAngka icon={ArrowUpRight} label={`Pengeluaran ${namaPendek}`} value={rupiahRingkas(r.keluar)} hint={banding(r.keluar, rLalu.keluar, bulanLalu, berjalan)} tone="amber" />
@@ -356,7 +356,7 @@ export default function KeuanganSekolah() {
 
       <Card className="mt-6 p-6">
         <JudulKartu icon={BarChart3} judul="Arus kas per bulan" />
-        <p className="-mt-2 mb-4 text-sm text-slate-500">Klik salah satu bulan untuk melihat rinciannya.</p>
+        <p className="mt-n2 mb-4 fs-sm text-tinta-3">Klik salah satu bulan untuk melihat rinciannya.</p>
         <GrafikKolomGanda
           judul="Pemasukan dan pengeluaran per bulan"
           data={grafik}
@@ -368,14 +368,14 @@ export default function KeuanganSekolah() {
         />
       </Card>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 d-grid gap-6 kolom-lg-2">
         <Rincian judul="Dari mana uang masuk" jenis="masuk" perKategori={r.perKategori.masuk} total={r.masuk} />
         <Rincian judul="Ke mana uang keluar" jenis="keluar" perKategori={r.perKategori.keluar} total={r.keluar} />
       </div>
 
       <Card className="mt-6 overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:p-5 lg:flex-row lg:items-center">
-          <h2 className="font-bold text-slate-900 lg:mr-auto">Buku kas · {namaB}</h2>
+        <div className="d-flex flex-column gap-3 border-bottom border-abu-100 p-4 p-sm-5 flex-lg-row align-items-lg-center">
+          <h2 className="fw-bold text-tinta me-lg-auto">Buku kas · {namaB}</h2>
           <Tabs
             value={saring}
             onChange={setSaring}
@@ -385,50 +385,50 @@ export default function KeuanganSekolah() {
               ['keluar', 'Keluar', milikBulan.filter((t) => t.jenis === 'keluar').length],
             ]}
           />
-          <div className="relative lg:w-64">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari uraian atau no. bukti…" aria-label="Cari transaksi" className={`${inputCls} pl-10`} />
+          <div className="position-relative w-lg-64">
+            <Search className="pe-none position-absolute start-3-5 top-50 h-4 w-4 translate-middle-y text-abu-400" />
+            <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari uraian atau no. bukti…" aria-label="Cari transaksi" className={`${inputCls} ps-10`} />
           </div>
         </div>
 
         {tampil.length === 0 ? (
           <EmptyState icon={Inbox} title="Belum ada transaksi" desc={q ? 'Coba kata kunci lain.' : `Belum ada catatan kas di bulan ${namaB}.`} />
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="pembatas-y pembatas-abu">
             {tampil.map((t) => {
               const masuk = t.jenis === 'masuk'
               const [, bln, tgl] = t.tanggal.split('-')
               return (
-                <li key={t.id} className="flex items-start gap-3 px-4 py-3.5 sm:px-5">
-                  <div className="w-11 shrink-0 rounded-xl bg-slate-50 py-1.5 text-center" title={formatTanggal(t.tanggal)}>
-                    <p className="text-base font-bold leading-tight text-slate-800">{Number(tgl)}</p>
-                    <p className="text-[10px] font-semibold uppercase text-slate-500">{namaBulan(`2000-${bln}`, { month: 'short' })}</p>
+                <li key={t.id} className="d-flex align-items-start gap-3 px-4 py-3-5 px-sm-5">
+                  <div className="w-11 flex-shrink-0 rounded-2 bg-abu-50 py-1-5 text-center" title={formatTanggal(t.tanggal)}>
+                    <p className="fs-base fw-bold lh-tight text-tinta">{Number(tgl)}</p>
+                    <p className="fs-10 fw-semibold text-uppercase text-tinta-3">{namaBulan(`2000-${bln}`, { month: 'short' })}</p>
                   </div>
                   <div className="min-w-0 flex-1">
                     {/* HP sempit: nominal di bawah uraian agar uraian tidak terjepit */}
-                    <div className="flex flex-col items-start gap-0.5 min-[480px]:flex-row min-[480px]:justify-between min-[480px]:gap-3">
-                      <p className="min-w-0 font-semibold text-slate-800">{t.uraian}</p>
-                      <p className={`shrink-0 whitespace-nowrap text-sm font-bold tabular-nums sm:text-base ${masuk ? 'text-emerald-700' : 'text-rose-700'}`}>
+                    <div className="d-flex flex-column align-items-start gap-0-5 baris-480">
+                      <p className="min-w-0 fw-semibold text-tinta">{t.uraian}</p>
+                      <p className={`flex-shrink-0 text-nowrap fs-sm fw-bold angka fs-sm-base ${masuk ? 'text-success' : 'text-danger'}`}>
                         {masuk ? '+' : '−'}
                         {rupiah(t.jumlah)}
                       </p>
                     </div>
-                    <div className="mt-0.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-slate-500">
-                      <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="flex items-center gap-1.5">
-                          <span className="h-2 w-2 rounded-sm" style={{ background: JENIS_KAS[t.jenis].warna }} /> {t.kategori}
+                    <div className="mt-0-5 d-flex flex-wrap align-items-center justify-content-between column-gap-3 row-gap-1 fs-xs text-tinta-3">
+                      <p className="d-flex flex-wrap align-items-center column-gap-2 row-gap-1">
+                        <span className="d-flex align-items-center gap-1-5">
+                          <span className="h-2 w-2 rounded-1" style={{ background: JENIS_KAS[t.jenis].warna }} /> {t.kategori}
                         </span>
                         {t.metode && <span>· {t.metode}</span>}
                         {t.bukti && <span>· {t.bukti}</span>}
-                        {t.otomatis && <Badge className="bg-sky-50 text-sky-700">Otomatis dari SPP</Badge>}
+                        {t.otomatis && <Badge className="bg-info-subtle text-info">Otomatis dari SPP</Badge>}
                       </p>
-                      <p className="ml-auto whitespace-nowrap tabular-nums">Saldo {rupiahTanda(saldo[t.id])}</p>
+                      <p className="ms-auto text-nowrap angka">Saldo {rupiahTanda(saldo[t.id])}</p>
                     </div>
                   </div>
-                  <div className="flex w-8 shrink-0 flex-col items-end gap-0.5 sm:w-16 sm:flex-row sm:justify-end">
+                  <div className="d-flex w-8 flex-shrink-0 flex-column align-items-end gap-0-5 w-sm-16 flex-sm-row justify-content-sm-end">
                     {!t.otomatis && (
                       <>
-                        <button onClick={() => bukaForm(t.jenis, t)} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label={`Ubah ${t.uraian}`}>
+                        <button onClick={() => bukaForm(t.jenis, t)} className="rounded-1 p-1-5 text-tinta-3 hover-latar-abu hover-teks-tinta" aria-label={`Ubah ${t.uraian}`}>
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
@@ -436,7 +436,7 @@ export default function KeuanganSekolah() {
                             setHapusItem(t)
                             setGalatHapus('')
                           }}
-                          className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+                          className="rounded-1 p-1-5 text-tinta-3 hover-latar-merah hover-teks-merah"
                           aria-label={`Hapus ${t.uraian}`}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -449,12 +449,12 @@ export default function KeuanganSekolah() {
             })}
           </ul>
         )}
-        <div className="flex flex-wrap justify-between gap-2 border-t border-slate-100 px-5 py-3 text-sm">
-          <span className="text-slate-500">
+        <div className="d-flex flex-wrap justify-content-between gap-2 border-top border-abu-100 px-5 py-3 fs-sm">
+          <span className="text-tinta-3">
             {tampil.length} dari {milikBulan.length} transaksi
           </span>
-          <span className="text-slate-600">
-            Saldo akhir {namaPendek}: <span className="font-bold tabular-nums text-slate-900">{rupiahTanda(r.saldoAkhir)}</span>
+          <span className="text-tinta-2">
+            Saldo akhir {namaPendek}: <span className="fw-bold angka text-tinta">{rupiahTanda(r.saldoAkhir)}</span>
           </span>
         </div>
       </Card>
@@ -473,7 +473,7 @@ export default function KeuanganSekolah() {
             <button onClick={() => setHapusItem(null)} className={btn.secondary}>
               Batal
             </button>
-            <button onClick={konfirmasiHapus} disabled={menghapus} className={`${btn.primary} bg-rose-600 hover:bg-rose-700`}>
+            <button onClick={konfirmasiHapus} disabled={menghapus} className="btn btn-danger">
               <Trash2 className="h-4 w-4" /> {menghapus ? 'Menghapus…' : 'Hapus'}
             </button>
           </>
@@ -485,8 +485,8 @@ export default function KeuanganSekolah() {
           </div>
         )}
         {hapusItem && (
-          <p className="text-slate-600">
-            <span className="font-semibold text-slate-900">{hapusItem.uraian}</span> sebesar {rupiah(hapusItem.jumlah)} pada {formatTanggal(hapusItem.tanggal)} akan dihapus
+          <p className="text-tinta-2">
+            <span className="fw-semibold text-tinta">{hapusItem.uraian}</span> sebesar {rupiah(hapusItem.jumlah)} pada {formatTanggal(hapusItem.tanggal)} akan dihapus
             dari buku kas.
           </p>
         )}

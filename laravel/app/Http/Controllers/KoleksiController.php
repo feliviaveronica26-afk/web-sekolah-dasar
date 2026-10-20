@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Buku;
 use App\Models\BukuTamu;
 use App\Models\Inventaris;
+use App\Models\Kalender;
 use App\Models\Kerusakan;
 use App\Models\Konseling;
 use App\Models\ModelSekolah;
@@ -19,7 +20,7 @@ use Illuminate\Validation\Rule;
 
 /*
   Koleksi sederhana yang dikelola lewat formulir tambah/ubah/hapus di website: pengumuman, inventaris,
-  laporan kerusakan, catatan konseling, katalog buku, dan buku tamu. Masing-masing dijaga menu
+  laporan kerusakan, catatan konseling, katalog buku, buku tamu, dan agenda kalender akademik. Masing-masing dijaga menu
   jabatannya (lihat Akses::PERAN). Perubahan sebagian (mis. hanya jam keluar tamu) digabung dengan
   data lama lalu diperiksa ulang seluruhnya.
 */
@@ -33,9 +34,10 @@ class KoleksiController extends Controller
         'konseling' => [Konseling::class, 'konseling', 'konseling'],
         'buku' => [Buku::class, 'buku', 'perpustakaan'],
         'buku-tamu' => [BukuTamu::class, 'bukuTamu', 'bukutamu'],
+        'kalender' => [Kalender::class, 'kalender', 'kalender'],
     ];
 
-    public const NAMA = ['pengumuman', 'inventaris', 'kerusakan', 'konseling', 'buku', 'buku-tamu'];
+    public const NAMA = ['pengumuman', 'inventaris', 'kerusakan', 'konseling', 'buku', 'buku-tamu', 'kalender'];
 
     public function store(Request $request, string $koleksi): JsonResponse
     {
@@ -136,6 +138,15 @@ class KoleksiController extends Controller
                 'keluar' => ['nullable', 'regex:/^([01][0-9]|2[0-3])\.[0-5][0-9]$/'],
                 'kodeKunjungan' => ['nullable', 'string', Rule::exists('kunjungan', 'kode')],
             ],
+            // Agenda berjenis libur menghentikan presensi pada tanggal-tanggalnya (Waktu::hariSekolah)
+            'kalender' => [
+                'judul' => ['required', 'string', 'max:150'],
+                'jenis' => ['required', Rule::in(Kalender::JENIS)],
+                'mulai' => $tanggal,
+                'selesai' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:mulai'],
+                'perkiraan' => ['nullable', 'boolean'],
+                'keterangan' => $keterangan,
+            ],
         };
 
         $data = validator($isian, $aturan, [
@@ -147,6 +158,8 @@ class KoleksiController extends Controller
             'date_format' => 'Tanggal tidak valid.',
             'exists' => 'Siswa tidak ditemukan.',
             'regex' => 'Format :attribute tidak valid.',
+            'after_or_equal' => 'Tanggal selesai tidak boleh sebelum tanggal mulai.',
+            'boolean' => 'Isian :attribute tidak valid.',
         ], [
             'tindakLanjut' => 'tindak lanjut',
             'whatsapp' => 'WhatsApp',
@@ -158,6 +171,11 @@ class KoleksiController extends Controller
             if (array_key_exists($k, $data)) {
                 $data[$k] ??= '';
             }
+        }
+        if ($koleksi === 'kalender') {
+            $data['perkiraan'] = (bool) ($data['perkiraan'] ?? false);
+            // Agenda satu hari disimpan tanpa tanggal selesai
+            $data['selesai'] = ($data['selesai'] ?? null) === $data['mulai'] ? null : ($data['selesai'] ?? null);
         }
         if ($koleksi === 'konseling') {
             $siswa = Siswa::where('nis', $data['nis'])->first();

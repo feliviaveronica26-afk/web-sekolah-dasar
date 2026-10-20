@@ -7,8 +7,11 @@ import {
   BUKU_AWAL,
   EKSKUL,
   GURU_AWAL,
+  HARI_SEKOLAH,
   INVENTARIS_AWAL,
+  KELAS,
   PENGUMUMAN_AWAL,
+  SESI,
   SIKAP,
   SISWA_AWAL,
   SPP,
@@ -19,8 +22,96 @@ import { ekskulBentrok } from '../src/utils/ekskul'
 import { hariSekolahSebelum, isHariSekolah, jamSekarang, parseKey, rentangHariSekolah, tambahHari, todayKey, uid } from '../src/utils/format'
 import { KODE_IZIN_STAF, dariMenit, jamKerja, keMenit } from '../src/utils/presensi'
 import { pelajaranHari } from '../src/utils/jadwal'
+import { sinkronkanAcuan } from '../src/utils/acuan'
 import { bulanIni } from '../src/utils/spp'
 import { ID_GRUP_STAF, anggota, idGrupKelas, idGrupOrtu, idGuru, idOrtu, idPribadi, idSiswa } from '../src/utils/chat'
+
+// Jadwal kelas 4A disusun manual; kelas lain dibuat dengan pola yang sama oleh buatJadwal().
+const JADWAL_4A = {
+  Senin: ['upacara', 'mtk', 'bindo', 'ipas'],
+  Selasa: ['agama', 'mtk', 'bing', 'senbud'],
+  Rabu: ['pjok', 'bindo', 'ipas', 'pancasila'],
+  Kamis: ['mtk', 'info', 'bindo', 'mulok'],
+  Jumat: ['senam', 'agama', 'ipas', 'pramuka'],
+}
+
+/*
+  Jadwal semua kelas: upacara (Senin) & senam (Jumat) di sesi pertama, pramuka di sesi terakhir
+  Jumat untuk kelas 3–6. Jam guru mapel khusus digeser antarkelas agar sebisa mungkin tidak bentrok;
+  sisanya diisi mapel wali kelas. Kelas 1–2 belum belajar IPAS & Informatika.
+*/
+function buatJadwal() {
+  const jadwal = { '4A': JADWAL_4A }
+  const slot = HARI_SEKOLAH.flatMap((h) => SESI.map((_, i) => [h, i])).filter(
+    ([h, i]) => !(h === 'Senin' && i === 0) && !(h === 'Jumat' && (i === 0 || i === SESI.length - 1)),
+  )
+  const sibuk = {} // { mapel: Set('Hari-sesi') } — jam yang sudah dipakai guru mapel tersebut
+  const tandai = (m, h, i) => (sibuk[m] ??= new Set()).add(`${h}-${i}`)
+  for (const [h, isi] of Object.entries(JADWAL_4A)) isi.forEach((m, i) => tandai(m, h, i))
+
+  KELAS.filter((k) => k !== '4A').forEach((kelas, n) => {
+    const atas = Number(kelas[0]) >= 3
+    const hari = Object.fromEntries(HARI_SEKOLAH.map((h) => [h, SESI.map(() => null)]))
+    hari.Senin[0] = 'upacara'
+    hari.Jumat[0] = 'senam'
+    if (atas) hari.Jumat[SESI.length - 1] = 'pramuka'
+
+    const khusus = ['agama', 'bing', 'pjok', 'agama', ...(atas ? ['info'] : [])]
+    khusus.forEach((m, j) => {
+      const urut = slot.map((_, x) => slot[(x + n * 3 + j * 4) % slot.length])
+      const kosong = ([h, i]) => !hari[h][i] && !hari[h].includes(m)
+      const [h, i] = urut.find((sl) => kosong(sl) && !sibuk[m]?.has(sl.join('-'))) ?? urut.find(kosong)
+      hari[h][i] = m
+      tandai(m, h, i)
+    })
+
+    const umum = atas
+      ? ['mtk', 'bindo', 'ipas', 'pancasila', 'mtk', 'bindo', 'ipas', 'senbud', 'mtk', 'bindo', 'ipas', 'mulok']
+      : ['mtk', 'bindo', 'pancasila', 'senbud', 'mtk', 'bindo', 'mulok', 'bindo', 'mtk', 'pancasila', 'bindo', 'senbud', 'mtk', 'bindo']
+    let u = n
+    for (const h of HARI_SEKOLAH) hari[h] = hari[h].map((m) => m ?? umum[u++ % umum.length])
+    jadwal[kelas] = hari
+  })
+  return jadwal
+}
+
+// Jadwal pelajaran awal per kelas: { kelas: { hari: [kode mapel per sesi] } } (diisi ke tabel jadwal_pelajaran)
+export const JADWAL_AWAL = buatJadwal()
+
+// Kalender akademik awal 2026/2027 (diisi ke tabel kalender). Tanggal libur keagamaan bertanda
+// `perkiraan` perlu dicocokkan dengan SKB 3 Menteri yang resmi.
+export const KALENDER_AWAL = [
+  { mulai: '2026-07-13', selesai: '2026-07-15', judul: 'Masa Pengenalan Lingkungan Sekolah (MPLS)', jenis: 'kegiatan' },
+  { mulai: '2026-08-17', judul: 'HUT Kemerdekaan RI ke-81', jenis: 'libur' },
+  { mulai: '2026-08-25', judul: 'Maulid Nabi Muhammad SAW', jenis: 'libur', perkiraan: true },
+  { mulai: '2026-10-12', selesai: '2026-10-16', judul: 'Penilaian Tengah Semester (PTS) Ganjil', jenis: 'ujian' },
+  { mulai: '2026-10-14', judul: 'Pemeriksaan Kesehatan Gigi', jenis: 'kegiatan' },
+  { mulai: '2026-10-23', judul: 'Field Trip Kelas 4 ke Museum Nasional', jenis: 'kegiatan' },
+  { mulai: '2026-10-28', judul: 'Upacara Hari Sumpah Pemuda', jenis: 'kegiatan' },
+  { mulai: '2026-11-10', judul: 'Upacara Hari Pahlawan', jenis: 'kegiatan' },
+  { mulai: '2026-11-25', judul: 'Peringatan Hari Guru Nasional', jenis: 'kegiatan' },
+  { mulai: '2026-12-07', selesai: '2026-12-11', judul: 'Penilaian Akhir Semester (PAS) Ganjil', jenis: 'ujian' },
+  { mulai: '2026-12-18', judul: 'Pembagian Rapor Semester Ganjil', jenis: 'kegiatan' },
+  { mulai: '2026-12-21', selesai: '2027-01-01', judul: 'Libur Semester Ganjil', jenis: 'libur' },
+  { mulai: '2026-12-25', judul: 'Hari Raya Natal', jenis: 'libur' },
+  { mulai: '2027-01-01', judul: 'Tahun Baru 2027', jenis: 'libur' },
+  { mulai: '2027-01-04', judul: 'Hari Pertama Semester Genap', jenis: 'kegiatan' },
+  { mulai: '2027-01-05', judul: 'Isra Mikraj Nabi Muhammad SAW', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-02-06', judul: 'Tahun Baru Imlek', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-03-08', selesai: '2027-03-16', judul: 'Libur Hari Raya Idulfitri', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-03-22', selesai: '2027-03-26', judul: 'Penilaian Tengah Semester (PTS) Genap', jenis: 'ujian' },
+  { mulai: '2027-03-26', judul: 'Wafat Yesus Kristus', jenis: 'libur' },
+  { mulai: '2027-05-06', judul: 'Kenaikan Yesus Kristus', jenis: 'libur' },
+  { mulai: '2027-05-17', judul: 'Hari Raya Iduladha', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-05-20', judul: 'Hari Raya Waisak', jenis: 'libur', perkiraan: true },
+  { mulai: '2027-06-01', judul: 'Hari Lahir Pancasila', jenis: 'libur' },
+  { mulai: '2027-06-07', selesai: '2027-06-11', judul: 'Penilaian Akhir Tahun (PAT)', jenis: 'ujian' },
+  { mulai: '2027-06-18', judul: 'Pembagian Rapor Kenaikan Kelas', jenis: 'kegiatan' },
+  { mulai: '2027-06-21', selesai: '2027-07-09', judul: 'Libur Kenaikan Kelas', jenis: 'libur' },
+]
+
+// Data contoh dibuat dengan jadwal & hari libur di atas (pelajaranHari, isHariSekolah)
+sinkronkanAcuan({ jadwal: JADWAL_AWAL, kalender: KALENDER_AWAL })
 
 // Hari sekolah ke-n setelah tanggal tertentu
 function hariSekolahSetelah(dari, n) {

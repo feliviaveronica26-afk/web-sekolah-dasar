@@ -24,23 +24,51 @@ export const daftarBulan = (bulan) =>
 
 export const jatuhTempo = (bulan) => `${bulan}-${String(SPP.tanggalJatuhTempo).padStart(2, '0')}`
 
+const bulanBerikut = (bulan) => {
+  const [y, m] = bulan.split('-').map(Number)
+  return m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, '0')}`
+}
+
+/*
+  Tanggal masuk siswa: siswa baru/pindahan baru ditagih SPP mulai bulan masuknya (sama dengan
+  SppController di Laravel). Tanggal masuk dikirim server ke Tata Usaha, Kepala Sekolah, dan keluarga
+  siswa itu; tanpa tanggal masuk semua bulan tahun ajaran ditagih.
+*/
+const cacheMasuk = new WeakMap()
+const tanggalMasuk = (data, nis) => {
+  let peta = cacheMasuk.get(data.siswa)
+  if (!peta) cacheMasuk.set(data.siswa, (peta = new Map(data.siswa.map((s) => [s.nis, s.tanggalMasuk || '']))))
+  return peta.get(nis) ?? ''
+}
+
+// Jatuh tempo bulan itu untuk siswa ini: siswa yang masuk setelah tanggal jatuh tempo bulan masuknya
+// membayar bulan pertamanya paling lambat jatuh tempo bulan berikutnya
+export function jatuhTempoSiswa(data, nis, bulan) {
+  const tempo = jatuhTempo(bulan)
+  const masuk = tanggalMasuk(data, nis)
+  return masuk.startsWith(bulan) && masuk > tempo ? jatuhTempo(bulanBerikut(bulan)) : tempo
+}
+
 export const kadaluarsa = (trx) => new Date(trx.kadaluarsa) < new Date()
 
 export const transaksiAktif = (data, nis) =>
   data.transaksi.find((t) => t.nis === nis && t.status === 'menunggu' && !kadaluarsa(t))
 
 export const STATUS_SPP = {
-  lunas: { label: 'Lunas', cls: 'bg-emerald-100 text-emerald-700', chip: 'bg-emerald-500' },
-  diproses: { label: 'Menunggu Pembayaran', cls: 'bg-sky-100 text-sky-700', chip: 'bg-sky-400' },
-  terlambat: { label: 'Terlambat', cls: 'bg-rose-100 text-rose-700', chip: 'bg-rose-500' },
-  tagihan: { label: 'Belum Dibayar', cls: 'bg-amber-100 text-amber-800', chip: 'bg-amber-400' },
-  mendatang: { label: 'Belum Jatuh Tempo', cls: 'bg-slate-100 text-slate-600', chip: 'bg-slate-200' },
+  lunas: { label: 'Lunas', cls: 'warna-emerald', chip: 'titik-emerald' },
+  diproses: { label: 'Menunggu Pembayaran', cls: 'warna-sky', chip: 'titik-sky' },
+  terlambat: { label: 'Terlambat', cls: 'warna-rose', chip: 'titik-rose' },
+  tagihan: { label: 'Belum Dibayar', cls: 'warna-amber', chip: 'titik-amber' },
+  mendatang: { label: 'Belum Jatuh Tempo', cls: 'warna-abu', chip: 'bg-abu-200' },
+  // Bulan sebelum siswa baru/pindahan masuk: tidak ditagih
+  sebelumMasuk: { label: 'Belum Terdaftar', cls: 'bg-abu-50 text-abu-400', chip: 'bg-abu-100' },
 }
 
 export function statusSpp(data, nis, bulan) {
   if (data.spp[nis]?.[bulan]) return 'lunas'
+  if (bulan < tanggalMasuk(data, nis).slice(0, 7)) return 'sebelumMasuk'
   if (transaksiAktif(data, nis)?.bulan.includes(bulan)) return 'diproses'
-  if (todayKey() > jatuhTempo(bulan)) return 'terlambat'
+  if (todayKey() > jatuhTempoSiswa(data, nis, bulan)) return 'terlambat'
   if (bulan <= bulanIni()) return 'tagihan'
   return 'mendatang'
 }

@@ -16,13 +16,13 @@ const ISIAN_KONTAK = [
 
 function Baris({ icon: Icon, label, nilai }) {
   return (
-    <div className="flex items-start gap-3 py-3">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500">
+    <div className="d-flex align-items-start gap-3 py-3">
+      <span className="d-flex h-9 w-9 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-abu-100 text-tinta-3">
         <Icon className="h-4 w-4" />
       </span>
       <div className="min-w-0">
-        <p className="text-xs text-slate-500">{label}</p>
-        <p className={`font-semibold ${nilai ? 'text-slate-800' : 'text-slate-400'}`}>{nilai || 'Belum diisi'}</p>
+        <p className="fs-xs text-tinta-3">{label}</p>
+        <p className={`fw-semibold ${nilai ? 'text-tinta' : 'text-abu-400'}`}>{nilai || 'Belum diisi'}</p>
       </div>
     </div>
   )
@@ -81,52 +81,52 @@ export default function OrtuKeluarga() {
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="d-grid gap-6 kolom-lg-2">
         <Card className="p-6">
           <JudulKartu icon={UserRound} judul="Orang tua / wali" />
-          <div className="divide-y divide-slate-100">
+          <div className="pembatas-y pembatas-abu">
             {orang.map(([peran, nama, kerja]) => (
-              <div key={peran} className="flex items-center gap-3 py-3">
+              <div key={peran} className="d-flex align-items-center gap-3 py-3">
                 <Avatar nama={nama || peran} size="sm" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-slate-500">{peran}</p>
-                  <p className={`font-semibold ${nama ? 'text-slate-800' : 'text-slate-400'}`}>{nama || 'Belum diisi'}</p>
+                  <p className="fs-xs text-tinta-3">{peran}</p>
+                  <p className={`fw-semibold ${nama ? 'text-tinta' : 'text-abu-400'}`}>{nama || 'Belum diisi'}</p>
                 </div>
                 {kerja && (
-                  <span className="flex items-center gap-1.5 text-sm text-slate-600">
-                    <Briefcase className="h-3.5 w-3.5" /> {kerja}
+                  <span className="d-flex align-items-center gap-1-5 fs-sm text-tinta-2">
+                    <Briefcase className="h-3-5 w-3-5" /> {kerja}
                   </span>
                 )}
               </div>
             ))}
           </div>
-          <p className="mt-3 text-xs text-slate-500">Nama orang tua dan data anak diubah oleh Tata Usaha. Hubungi Tata Usaha bila ada yang keliru.</p>
+          <p className="mt-3 fs-xs text-tinta-3">Nama orang tua dan data anak diubah oleh Tata Usaha. Hubungi Tata Usaha bila ada yang keliru.</p>
         </Card>
 
         <Card className="p-6">
           <JudulKartu icon={Phone} judul="Kontak & alamat" />
-          <div className="divide-y divide-slate-100">
+          <div className="pembatas-y pembatas-abu">
             <Baris icon={Phone} label="WhatsApp" nilai={keluarga.whatsapp} />
             <Baris icon={Mail} label="Email" nilai={keluarga.email} />
             <Baris icon={MapPin} label="Alamat rumah" nilai={keluarga.alamat} />
           </div>
         </Card>
 
-        <Card className="p-6 lg:col-span-2">
+        <Card className="p-6 rentang-lg-2">
           <JudulKartu icon={HouseHeart} judul={anak.length > 1 ? 'Anak yang bersekolah di sini' : 'Ananda'} />
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="d-grid gap-3 kolom-sm-2">
             {anak.map((s) => (
-              <li key={s.nis} className="rounded-2xl border border-slate-100 p-3">
-                <div className="flex items-center gap-3">
+              <li key={s.nis} className="rounded-3 border border-abu-100 p-3">
+                <div className="d-flex align-items-center gap-3">
                   <Avatar nama={s.nama} />
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-slate-800">{s.nama}</p>
-                    <p className="text-xs text-slate-500">NIS {s.nis}</p>
+                    <p className="text-truncate fw-semibold text-tinta">{s.nama}</p>
+                    <p className="fs-xs text-tinta-3">NIS {s.nis}</p>
                   </div>
-                  <Badge className="ml-auto bg-primary-50 text-primary-700">Kelas {s.kelas}</Badge>
+                  <Badge className="ms-auto bg-merah-50 text-merah-700">Kelas {s.kelas}</Badge>
                 </div>
                 {adaBiodata(s) && (
-                  <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-slate-100 pt-3 text-sm">
+                  <dl className="mt-3 d-grid kolom-2 column-gap-4 row-gap-2 border-top border-abu-100 pt-3 fs-sm">
                     {[
                       ['NISN', s.nisn],
                       ['Tempat, tanggal lahir', teksLahir(s)],
@@ -134,20 +134,20 @@ export default function OrtuKeluarga() {
                       ['Golongan darah', s.golonganDarah],
                     ].map(([k, v]) => (
                       <div key={k}>
-                        <dt className="text-xs text-slate-500">{k}</dt>
-                        <dd className={`font-semibold ${v ? 'text-slate-800' : 'text-slate-400'}`}>{v || 'Belum diisi'}</dd>
+                        <dt className="fs-xs text-tinta-3">{k}</dt>
+                        <dd className={`fw-semibold ${v ? 'text-tinta' : 'text-abu-400'}`}>{v || 'Belum diisi'}</dd>
                       </div>
                     ))}
-                    <div className="col-span-2">
-                      <dt className="text-xs text-slate-500">Catatan kesehatan untuk guru</dt>
-                      <dd className={`font-semibold ${s.catatanKesehatan ? 'text-amber-800' : 'text-slate-400'}`}>{s.catatanKesehatan || 'Tidak ada'}</dd>
+                    <div className="rentang-2">
+                      <dt className="fs-xs text-tinta-3">Catatan kesehatan untuk guru</dt>
+                      <dd className={`fw-semibold ${s.catatanKesehatan ? 'text-warning-emphasis' : 'text-abu-400'}`}>{s.catatanKesehatan || 'Tidak ada'}</dd>
                     </div>
                   </dl>
                 )}
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs text-slate-500">
+          <p className="mt-3 fs-xs text-tinta-3">
             Biodata dan catatan kesehatan Ananda dicatat Tata Usaha dan hanya terlihat oleh wali kelas, pengelola data siswa, dan keluarga. Hubungi Tata Usaha
             bila ada yang perlu diperbarui, mis. alergi baru.
           </p>
@@ -163,21 +163,21 @@ export default function OrtuKeluarga() {
             <button type="button" onClick={() => setForm(null)} className={btn.secondary}>
               Batal
             </button>
-            <button type="submit" form="form-keluarga" disabled={menyimpan} className={`${btn.primary} disabled:opacity-60`}>
+            <button type="submit" form="form-keluarga" disabled={menyimpan} className={`${btn.primary} `}>
               {menyimpan ? 'Menyimpan…' : 'Simpan'}
             </button>
           </>
         }
       >
         {form && (
-          <form id="form-keluarga" onSubmit={simpan} className="grid gap-4 sm:grid-cols-2">
+          <form id="form-keluarga" onSubmit={simpan} className="d-grid gap-4 kolom-sm-2">
             {galat && (
-              <div className="sm:col-span-2">
+              <div className="rentang-sm-2">
                 <Alert tone="error">{galat}</Alert>
               </div>
             )}
             {ISIAN_KONTAK.map((f) => (
-              <div key={f.name} className={f.full ? 'sm:col-span-2' : ''}>
+              <div key={f.name} className={f.full ? 'rentang-sm-2' : ''}>
                 <label htmlFor={`keluarga-${f.name}`} className={labelCls}>
                   {f.label}
                 </label>
@@ -188,7 +188,7 @@ export default function OrtuKeluarga() {
                   onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
                   className={inputCls}
                 />
-                {f.hint && <p className="mt-1.5 text-xs text-slate-500">{f.hint}</p>}
+                {f.hint && <p className="mt-1-5 fs-xs text-tinta-3">{f.hint}</p>}
               </div>
             ))}
           </form>

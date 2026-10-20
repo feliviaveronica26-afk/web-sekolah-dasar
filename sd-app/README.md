@@ -1,6 +1,7 @@
 # SD Harapan Gemilang — Frontend
 
-Website sekolah + portal siswa, orang tua, guru & staf, dan kepala sekolah. Dibuat dengan React, Vite 6, dan Tailwind CSS 4.
+Website sekolah + portal siswa, orang tua, guru & staf, dan kepala sekolah. Dibuat dengan React, Vite 6, dan
+Bootstrap 5.3 (Sass, tanpa JavaScript Bootstrap).
 
 ## Menjalankan
 
@@ -41,10 +42,16 @@ yang sama tetap bisa memakai data yang sama lewat alamat website.
 - **Perubahan dari perangkat lain** ikut tampil: website menanyakan `GET /api/versi` tiap 15 detik
   (3 detik di halaman presensi & chat) dan hanya memuat ulang bagian yang berubah. Saat kembali ke tab,
   semua data dimuat ulang, jadi perubahan yang dibuat langsung di MySQL Workbench juga terlihat.
-- **Data acuan** (jadwal, mapel, ekskul, SPP, pilihan formulir) dan **data contoh** dibuat dari
-  `src/data/dummy.js`. Setelah mengubah data acuan, jalankan `npm run ekspor-laravel` (menulis
-  `resources/data/referensi.json` & `database/seeders/data/contoh.json` di folder Laravel) agar
-  aturan di server ikut berubah.
+- **Data acuan** (kelas, sesi, mapel, ekskul, SPP, pilihan formulir) dan **data contoh** dibuat dari
+  `src/data/dummy.js` & `scripts/data-contoh.js`. Setelah mengubah data acuan, jalankan
+  `npm run ekspor-laravel` (menulis `resources/data/referensi.json` serta `jadwal.json`, `kalender.json`,
+  `contoh.json` di `database/seeders/data/` Laravel) agar aturan di server ikut berubah.
+- **Jadwal pelajaran & kalender akademik** tersimpan di MySQL (tabel `jadwal_pelajaran` & `kalender`)
+  dan diubah Wakasek Kurikulum/Kepala Sekolah dari menu **Jadwal** dan **Kalender**. Website menyalinnya
+  ke `src/utils/acuan.js` untuk fungsi presensi & hari sekolah. Agenda berjenis **Libur** membuat
+  tanggalnya bukan hari sekolah di website dan server (`isHariSekolah` / `Waktu::hariSekolah`): presensi
+  ditutup dan rekap tidak menghitungnya. Satu guru mapel tidak boleh dijadwalkan di dua kelas pada jam
+  yang sama (`JadwalController`); bentrok lama dari jadwal contoh hanya ditandai.
 - Daftar guru terbuka untuk umum (halaman Guru), tetapi **NIP hanya dikirim ke Kepala Sekolah**.
 - **Login** lewat `POST /api/masuk`: akun di tabel `users` (kolom `username`, `role`, `guru_id`, `nis`,
   `kelas`, `anak_nis`, `aktif`), password bcrypt. Sesi disimpan Laravel (tabel `sessions`) dan
@@ -115,6 +122,10 @@ dengan bcrypt. Password tidak pernah ditulis di kode; ganti dengan `php artisan 
   siswa & orang tuanya sendiri. Guru mapel dan staf lain hanya menerima nama, NIS, kelas, dan jenis
   kelamin; teman sekelas hanya tanggal & bulan ulang tahun (tampil di kartu teman). Catatan kesehatan
   (mis. alergi) tampil di daftar kelas wali kelas.
+- **Siswa baru** ditambahkan lewat **Data Siswa** (pintasan **Tambah Siswa** di beranda Wakasek
+  Kesiswaan) dan langsung masuk semua menu kelas, rekap, SPP, dan beranda Kepala Sekolah. Selama belum
+  punya catatan presensi/nilai ia tidak dihitung 0% (tampil "–"), dan SPP-nya ditagih mulai bulan masuk.
+  Tata Usaha lalu melengkapi data keluarganya (panel "Data siswa perlu dilengkapi") dan membuat akun login.
 
 ## Tampilan
 
@@ -125,10 +136,9 @@ berfoto, contoh tampilan Portal Orang Tua di ponsel, berita bergambar, dan galer
 dominan; kuning stabilo sebagai aksen, merah marun untuk linimasa harian & footer.
 
 - Huruf **Plus Jakarta Sans** (rancangan huruf asal Indonesia) untuk judul (tebal 800) dan isi.
-- Token warna (`--color-kertas`, `kartu`, `tinta`, `garis`, `stabilo`, `krem`) ada di `src/index.css`. Kontras
-  teks sudah dihitung (≥ 4,5:1); teks di atas merah memakai `primary-700` ke atas (putih/`krem`/`stabilo`),
-  `primary-600` hanya untuk tombol & bidang berteks putih. Gaya publik hanya aktif di dalam kelas `.situs`
-  (dipasang di `PublicLayout`, `Login`, `NotFound`), jadi **portal tidak ikut berubah**.
+- Warna (`$merah` 50–950, `kertas`, `kartu`, `tinta`, `garis`, `stabilo`, `krem`) ada di
+  `src/styles/_tema.scss`. Kontras teks sudah dihitung (≥ 4,5:1); teks di atas merah memakai `merah-700` ke
+  atas (putih/`krem`/`stabilo`), `merah-600` (= `primary`) hanya untuk tombol & bidang berteks putih.
 - Komponen khusus publik di `src/components/Situs.jsx`: latar merah & jejak halaman, kepala halaman
   berfoto, judul bagian, label pil, tombol pil, isian formulir, pita teks berjalan (bisa dijeda), dan `Foto`.
 - **Foto** ada di `public/foto/` (WebP). Saat ini berisi **foto contoh dari Unsplash** (lisensi Unsplash,
@@ -139,9 +149,32 @@ dominan; kuning stabilo sebagai aksen, merah marun untuk linimasa harian & foote
 - Hindari pola template generik: gradasi warna-warni, gumpalan, gelombang, bintang lima palsu, dan emoji.
   Gradasi gelap di atas foto hanya dipakai agar teks di atasnya tetap terbaca.
 
-**Portal** tetap memakai huruf judul **Fredoka** (membulat, ramah anak), komponen di `src/components/ui.jsx`,
-dan hiasan di `src/components/Hiasan.jsx`. Grafik tanpa pustaka tambahan ada di `src/components/Grafik.jsx`
-(batang & garis, satu warna data, tooltip saat hover/fokus keyboard).
+**Portal** memakai kulit merah putih yang sama dengan beranda (huruf, kartu, tombol pil, warna aktif),
+komponen di `src/components/ui.jsx`, dan hiasan di `src/components/Hiasan.jsx`. Grafik tanpa pustaka
+tambahan ada di `src/components/Grafik.jsx` (batang & garis, satu warna data, tooltip saat hover/fokus keyboard).
+
+### Bootstrap
+
+Gaya ditulis dengan **Bootstrap 5.3** lewat Sass (`src/styles/main.scss`). Yang dipakai hanya CSS-nya:
+jendela, menu HP, tab, dan dropdown dibuka-tutup oleh state React (kelas `show`/`active`), jadi tidak ada
+`bootstrap.js`.
+
+| Berkas | Isi |
+|--------|-----|
+| `src/styles/_tema.scss` | variabel Bootstrap: warna tema (`primary` merah sekolah, `stabilo`, `tinta`, `kertas`, `merah-tua`, `marun`), breakpoint 640/768/1024/1280/1536, skala jarak (1 = 0,25rem … 48 = 12rem, termasuk `0-5`, `1-5`, `2-5`, `3-5`), ukuran huruf (`fs-xs` … `fs-8xl`), sudut membulat, tombol & isian |
+| `src/styles/_utilitas.scss` | perluasan Utility API: warna merek (`text-merah-700`, `bg-abu-50`, `border-garis`), `kolom-*` (grid-template-columns, mis. `kolom-lg-isi-320`), `rentang-*` (col-span), `ukuran-*` (lebar = tinggi), `rasio-*`, `min-w-*`, posisi negatif (`top-n24`), `ls-*` (jarak huruf) |
+| `src/styles/_dasar.scss` | penyesuaian Reboot & kelas bantu kecil: `antara-y-*` (jarak antar-anak), `pembatas-y`, `clamp-*`, `warna-{hue}`/`teks-{hue}` untuk warna mapel & ekskul, efek hover, gradien spanduk |
+| `src/styles/_komponen.scss` | tombol (`btn-primary`, `btn-kedua`, `btn-bahaya`, `btn-terang`, …), kartu, isian, lencana, tab pil, jendela `.modal-sekolah` (lembar bawah di HP) |
+| `src/styles/_situs.scss` · `_portal.scss` | bagian khusus halaman publik (hero, bento, linimasa, denah sekolah, FAQ) dan portal (menu samping, kartu angka, denah kelas, kalender, chat) |
+| `src/styles/_gerak.scss` | semua animasi (lihat **Animasi**) |
+
+- Kelas utilitas Bootstrap memakai `!important`. Bila dua kelas sejenis dipasang bersamaan (mis. `py-2`
+  dan `py-2-5`), yang menang adalah yang **didefinisikan belakangan di CSS**, bukan yang ditulis belakangan
+  di `className`. Karena itu komponen bantu menerima ukuran/warna sebagai parameter (mis.
+  `pilihan(aktif, ukuran)` di `Situs.jsx`, `Catatan warna=`) alih-alih ditimpa dari luar.
+- Saat `npm run build`, aturan CSS untuk kelas yang tidak pernah ditulis di `src/` dibuang (pemangkas di
+  `vite.config.js`), sehingga CSS akhir ±136 kB (27 kB gzip) walau Utility API membuat ribuan varian.
+  Tulis nama kelas utuh — jangan dirakit seperti `` `kolom-${n}` `` — agar tidak ikut terbuang.
 
 ### Responsif
 
@@ -151,9 +184,9 @@ terpotong. Aturan yang dipakai:
 
 - **Menu samping portal** tampil tetap mulai 1280 px (`xl`). Di bawahnya (HP, tablet, laptop kecil) menu
   dibuka lewat tombol ☰ agar isi halaman mendapat lebar penuh.
-- **Grid tidak melebar karena isinya**: `src/index.css` memberi `min-width: 0` pada setiap anak `.grid`, jadi
-  teks `truncate` atau tabel lebar tidak lagi mendorong kolom keluar layar. Tabel lebar memakai
-  `overflow-x-auto` (digeser di dalam kartunya).
+- **Grid tidak melebar karena isinya**: `src/styles/_dasar.scss` memberi `min-width: 0` pada setiap anak
+  `.d-grid` dan `.row`, jadi teks `text-truncate` atau tabel lebar tidak lagi mendorong kolom keluar layar.
+  Tabel lebar memakai `overflow-x-auto` + `min-w-640` dsb. (digeser di dalam kartunya).
 - **Kartu statistik** (`StatCard`) memakai *container query*: ikon pindah ke atas label bila kartunya sempit,
   dan nominal panjang (mis. Rp172.200.000) mengecil mengikuti lebar kartu.
 - **Grafik** mengukur lebar wadahnya sendiri (`ResizeObserver`), jadi tulisan sumbu tetap 11 px di HP
@@ -184,8 +217,9 @@ Portal Guru & Staf memakai satu halaman untuk semua jabatan; menu muncul sesuai 
 
 Sekolah memiliki 18 rombongan belajar, kelas **1A–6C** (`KELAS` di `src/data/dummy.js`), masing-masing
 24 siswa contoh dengan satu wali kelas. Nama siswa contoh dibuat otomatis oleh `lengkapiKelas`.
-Setiap kelas punya jadwal pelajaran (`JADWAL`, dibuat oleh `buatJadwal`): wali kelas mengajar mapel
-umum di kelasnya, sedangkan Pendidikan Agama, Bahasa Inggris, PJOK, dan Informatika diajar guru mapel.
+Setiap kelas punya jadwal pelajaran (tabel `jadwal_pelajaran`; jadwal awal dibuat `buatJadwal` di
+`scripts/data-contoh.js`): wali kelas mengajar mapel umum di kelasnya, sedangkan Pendidikan Agama,
+Bahasa Inggris, PJOK, dan Informatika diajar guru mapel.
 
 - **Daftar Siswa** (menu guru): semua kelas bisa dilihat, lengkap dengan kehadiran 20 hari, nilai,
   poin sikap, dan detail per siswa. Bisa diunduh sebagai CSV.
@@ -334,6 +368,22 @@ pemeriksaan berkala di latar belakang yang memakai `api(path, { latar: true })` 
 sesi). Saat aplikasi pertama dibuka, `index.html` menampilkan layar muat awal bergaya sama sampai
 React siap.
 
+## Animasi
+
+Tanpa pustaka animasi. Aturannya: hanya `transform`, `opacity`, dan `clip-path` (tata letak & ukuran
+komponen tidak berubah), masuk melambat & keluar lebih cepat, dan semuanya mati bila perangkat memakai
+pengaturan **kurangi gerakan** (`prefers-reduced-motion`). Token durasi & easing (`--gerak-*`,
+`--ease-*`) dan semua kelas animasi ada di `src/styles/_gerak.scss`.
+
+| Bagian | Isi |
+|--------|-----|
+| `src/utils/gerak.js` | `kurangiGerak()`, `useAnimasiKeluar()` (animasi tutup), `useTerlihat()` (sekali masuk layar), `uraiAngka()` |
+| `<Muncul gaya>` (Hiasan.jsx) | muncul saat digulir: naik (bawaan), `kiri`, `kanan`, `skala`, `tirai` (bingkai foto terbuka), `bertahap` (anak berurutan) |
+| `<TeksNaik>` | judul halaman muncul kata demi kata (pembaca layar membaca kalimat utuh) |
+| `<AngkaNaik>` | angka menghitung naik; nilai akhir tetap di DOM sebagai penahan lebar |
+| Efek gulir | `.paralaks` (foto bergerak pelan), `.isi-linimasa`, `.progres-baca` — hanya di peramban yang mendukung animasi berbasis gulir |
+| Portal | `.ui-stat`, `.isi-progres`, `.isi-cincin`, grafik tumbuh (`.batang-tumbuh`, `.kolom-tumbuh`, `.garis-tumbuh`), `.ikon-aktif`, `.lencana-pop`, `.lonceng-goyang`, `.bertahap` |
+
 ## Keamanan
 
 - **Login di server (Laravel).** Password disimpan bcrypt di tabel `users`; sesi berupa cookie
@@ -365,8 +415,8 @@ dengan `public/_headers` di konfigurasi Apache/Nginx, serta menghapus akun demo.
 - Data contoh (432 siswa, absensi 20 hari, nilai, SPP, dll.) diisi seeder Laravel dari
   `scripts/data-contoh.js`. Tombol "Reset Data Demo" dihapus karena data kini dipakai bersama;
   untuk mengulang data contoh, kosongkan tabelnya lalu jalankan `php artisan db:seed`.
-- Data acuan (jadwal, kalender, fasilitas, ekskul, profil sekolah) masih di `src/data/dummy.js`. Biodata
-  guru & staf, data orang tua, dan biodata siswa sudah di database (lihat "Data guru, siswa & orang tua").
+- Konten sekolah (fasilitas, ekskul, profil sekolah, galeri) masih di `src/data/dummy.js`. Jadwal,
+  kalender, biodata guru & staf, data orang tua, dan biodata siswa sudah di database.
 
 ## Struktur
 
@@ -378,7 +428,7 @@ src/
                   DenahKelas (denah gedung kelas), StatusJaringan (notifikasi koneksi), BilahMuat (bilah muat berlogo)
   context/        AuthContext (login), DataContext (data + aksi), ChatContext (chat), akses (jabatan & menu)
   pages/Chat.jsx  Chat untuk semua portal (dimuat terpisah)
-  data/dummy.js   Data acuan & konten sekolah (jadwal, mapel, ekskul, fasilitas, kalender, PPDB)
+  data/dummy.js   Data acuan & konten sekolah (kelas, sesi, mapel, ekskul, fasilitas, PPDB)
   data/foto.js    Daftar foto halaman publik & pemetaannya ke fasilitas, ekskul, berita, galeri
   pages/public/   Beranda, Profil, Akademik, Guru, Fasilitas, Berita, Galeri, PPDB, Kontak
   pages/siswa/    Dashboard, Presensi (OTP), Jadwal, Absensi per Mapel, Tugas, Nilai, Lencana, Ekskul, Perpustakaan, Profil

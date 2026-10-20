@@ -32,11 +32,11 @@ export function nilaiAkhir(n) {
 }
 
 export function predikat(n) {
-  if (n === null || n === undefined) return { huruf: '–', label: 'Belum dinilai', cls: 'bg-slate-100 text-slate-500', bar: 'bg-slate-300' }
-  if (n >= 90) return { huruf: 'A', label: 'Sangat Baik', cls: 'bg-emerald-100 text-emerald-700', bar: 'bg-emerald-500' }
-  if (n >= 80) return { huruf: 'B', label: 'Baik', cls: 'bg-sky-100 text-sky-700', bar: 'bg-sky-500' }
-  if (n >= KKTP) return { huruf: 'C', label: 'Cukup', cls: 'bg-amber-100 text-amber-800', bar: 'bg-amber-400' }
-  return { huruf: 'D', label: 'Perlu Bimbingan', cls: 'bg-rose-100 text-rose-700', bar: 'bg-rose-500' }
+  if (n === null || n === undefined) return { huruf: '–', label: 'Belum dinilai', cls: 'warna-abu', bar: 'bg-abu-300' }
+  if (n >= 90) return { huruf: 'A', label: 'Sangat Baik', cls: 'warna-emerald', bar: 'titik-emerald' }
+  if (n >= 80) return { huruf: 'B', label: 'Baik', cls: 'warna-sky', bar: 'titik-sky' }
+  if (n >= KKTP) return { huruf: 'C', label: 'Cukup', cls: 'warna-amber', bar: 'titik-amber' }
+  return { huruf: 'D', label: 'Perlu Bimbingan', cls: 'warna-rose', bar: 'titik-rose' }
 }
 
 // Materi utama per mapel untuk kalimat deskripsi capaian rapor
@@ -80,13 +80,15 @@ export function rekapNilai(data, siswa) {
   }
 }
 
-// Peringkat siswa di kelasnya berdasarkan rata-rata nilai
+// Peringkat siswa di kelasnya berdasarkan rata-rata nilai. Siswa yang belum punya nilai (mis. siswa
+// baru) belum diberi peringkat (posisi null) dan tidak dihitung; sama dengan Rapor::peringkat di Laravel.
 export function peringkatKelas(data, siswa) {
   const sekelas = data.siswa
     .filter((s) => s.kelas === siswa.kelas)
-    .map((s) => ({ nis: s.nis, rata: rekapNilai(data, s).rataRata ?? 0 }))
+    .map((s) => ({ nis: s.nis, rata: rekapNilai(data, s).rataRata }))
+    .filter((s) => s.rata !== null)
     .sort((a, b) => b.rata - a.rata)
-  return { posisi: sekelas.findIndex((s) => s.nis === siswa.nis) + 1, dari: sekelas.length }
+  return { posisi: sekelas.findIndex((s) => s.nis === siswa.nis) + 1 || null, dari: sekelas.length }
 }
 
 // Catatan wali kelas bawaan di rapor (dipakai jika wali kelas belum menulis sendiri)

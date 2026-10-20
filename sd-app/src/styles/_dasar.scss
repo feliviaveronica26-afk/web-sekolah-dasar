@@ -1,0 +1,641 @@
+// ============================================================================
+// Dasar: penyesuaian Reboot Bootstrap, variabel CSS, dan kelas bantu kecil
+// ============================================================================
+
+// Warna & token sebagai variabel CSS (dipakai SVG dan gaya inline, mis. peta di halaman Kontak)
+:root {
+  @each $k, $v in $merah {
+    --color-primary-#{$k}: #{$v};
+  }
+  --color-kertas: #{$kertas};
+  --color-kertas-tua: #{$kertas-tua};
+  --color-kartu: #{$kartu};
+  --color-tinta: #{$tinta};
+  --color-tinta-2: #{$tinta-2};
+  --color-tinta-3: #{$tinta-3};
+  --color-garis: #{$garis};
+  --color-stabilo: #{$stabilo};
+  --color-krem: #{$krem};
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Ukuran judul diatur per elemen lewat kelas fs-*, bukan ukuran bawaan h1–h6
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  text-wrap: balance;
+}
+h1,
+h2 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+p {
+  text-wrap: pretty;
+}
+
+// Daftar tanpa butir & tanpa jarak bawaan (semua daftar di situs ini memakai tata letak sendiri)
+ul,
+ol {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+dl,
+dd {
+  margin-bottom: 0;
+}
+dd {
+  margin-left: 0;
+}
+dt {
+  font-weight: inherit;
+}
+figure,
+blockquote {
+  margin: 0;
+}
+
+// Gambar & ikon sebagai blok, tidak melebihi wadahnya
+img,
+svg,
+video,
+canvas {
+  display: block;
+  vertical-align: middle;
+}
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+// Tombol polos (tanpa .btn) tidak membawa gaya bawaan peramban
+button {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+a {
+  color: inherit;
+}
+summary {
+  cursor: pointer;
+}
+
+::selection {
+  background: $stabilo;
+  color: $tinta;
+}
+
+// Garis fokus jelas untuk tautan & elemen interaktif yang tidak punya cincin fokus Bootstrap
+:where(a, summary, [tabindex]):focus-visible {
+  outline: 2px solid $tinta;
+  outline-offset: 3px;
+}
+:where(button:not(.btn, .nav-link, .btn-close, .list-group-item, .dropdown-item)):focus-visible {
+  outline: 2px solid $tinta;
+  outline-offset: 2px;
+}
+
+// Isi grid boleh lebih sempit dari isinya (teks terpotong/tabel tidak melebarkan kolom sampai keluar layar)
+:where(.d-grid, .grid, .row) > * {
+  min-width: 0;
+}
+
+// Tinggi baris yang menyertai tiap ukuran huruf (skala tipografi situs). Utilitas fs-* Bootstrap hanya
+// mengubah ukuran huruf, sehingga angka besar (fs-3xl) ikut memakai 1.5 dari body dan kartu jadi lebih
+// tinggi. Kelas lh-* (ber-!important) tetap menang bila dipasang; kelas komponen di _situs/_portal juga.
+$tinggi-baris-fs: (
+  xs: 1.3333,
+  sm: 1.4286,
+  base: 1.5,
+  lg: 1.5556,
+  xl: 1.4,
+  "2xl": 1.3333,
+  "3xl": 1.2,
+  "4xl": 1.1111,
+  "5xl": 1,
+  "6xl": 1,
+  "7xl": 1,
+  "8xl": 1,
+);
+@each $bp in map-keys($grid-breakpoints) {
+  $ix: breakpoint-infix($bp, $grid-breakpoints);
+  @include media-breakpoint-up($bp) {
+    @each $k, $lh in $tinggi-baris-fs {
+      .fs#{$ix}-#{$k} {
+        line-height: $lh;
+      }
+    }
+  }
+}
+
+// ---- Kelas bantu yang tidak disediakan Bootstrap ----
+// Konteks tumpukan sendiri: anak ber-z-index negatif (z-n1, z-n2) tetap di dalam kotak induknya
+.isolate {
+  isolation: isolate;
+}
+.border-putus {
+  border-style: dashed !important;
+}
+// Garis tipis di antara item yang bersebelahan (vertikal / horizontal)
+.pembatas-y > * + * {
+  border-top: 1px solid var(--bs-border-color);
+}
+.pembatas-x > * + * {
+  border-left: 1px solid var(--bs-border-color);
+}
+.pembatas-abu > * + * {
+  border-color: $gray-100;
+}
+.pembatas-terang > * + * {
+  border-color: rgb(255 255 255 / 0.1);
+}
+// Potong teks setelah N baris
+@each $n in 1, 2, 3, 4, 5 {
+  .clamp-#{$n} {
+    display: -webkit-box;
+    -webkit-line-clamp: #{$n};
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+// Jarak antar-anak berurutan (pengganti space-y/space-x): .antara-y-4 > * + * { margin-top: 1rem }
+@each $k, $v in $spacers {
+  .antara-y-#{$k} > :not(:first-child) {
+    margin-top: $v !important;
+  }
+  .antara-x-#{$k} > :not(:first-child) {
+    margin-left: $v !important;
+  }
+}
+// Efek hover tambahan
+.hover-latar-putih:hover {
+  background-color: $white !important;
+}
+.hover-latar-merah-tua:hover {
+  background-color: map-get($merah, 700) !important;
+}
+.hover-garis-abu:hover {
+  border-color: $gray-300 !important;
+}
+.hover-bayangan-kecil {
+  transition: box-shadow 0.2s ease;
+  &:hover {
+    box-shadow: $box-shadow !important;
+  }
+}
+.hover-garis-bawah:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hover-redup {
+  transition: filter 0.15s ease;
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+// Tombol polos (bukan .btn) yang dinonaktifkan
+button:disabled:not(.btn) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+// Daftar berbutir (bila memang perlu butir)
+.butir-titik {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.butir-angka {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.spasi-pre-line {
+  white-space: pre-line;
+}
+.spasi-pre-wrap {
+  white-space: pre-wrap;
+}
+.resize-none {
+  resize: none;
+}
+.garis-1px {
+  height: 1px;
+}
+.lebar-1px {
+  width: 1px;
+}
+.d-contents {
+  display: contents !important;
+}
+
+.mt-px {
+  margin-top: 1px !important;
+}
+.basis-52 {
+  flex-basis: 13rem;
+}
+.min-h-layar {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+// Kotak isian yang tingginya mengikuti isi (kolom pesan chat)
+.ukuran-isi {
+  field-sizing: content;
+}
+// Teks terpotong "…" mulai breakpoint tertentu (text-sm-truncate, …)
+@each $bp in map-keys($grid-breakpoints) {
+  @if $bp != xs {
+    @include media-breakpoint-up($bp) {
+      .text-#{$bp}-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+// Anak pertama dalam daftar bergaris tidak perlu garis/jarak atas
+.pertama-pt-0:first-child {
+  padding-top: 0 !important;
+}
+.pertama-tanpa-garis:first-child {
+  border-top: 0 !important;
+}
+.garis-ganda-bawah {
+  border-bottom-width: 4px !important;
+  border-bottom-style: double !important;
+}
+// Kotak centang & radio bawaan peramban berwarna merah sekolah
+.aksen-merah {
+  accent-color: $primary;
+}
+.skala-abu {
+  filter: grayscale(1);
+}
+.sentuh-none {
+  touch-action: none;
+}
+.miring-45 {
+  rotate: 45deg;
+}
+.miring-n12 {
+  rotate: -12deg;
+}
+.bayangan-jatuh {
+  filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+}
+// Bayangan berwarna merah di bawah tombol/pil yang aktif
+.bayangan-merah {
+  box-shadow:
+    0 4px 6px -1px rgba($primary, 0.2),
+    0 2px 4px -2px rgba($primary, 0.2) !important;
+}
+// Latar mengikuti warna teks elemen (ikon lampiran, bilah putar audio)
+.latar-arus {
+  background-color: currentColor !important;
+}
+@each $n in 10, 15, 20 {
+  .latar-arus-#{$n} {
+    background-color: color-mix(in srgb, currentColor #{$n * 1%}, transparent) !important;
+  }
+}
+// Lapisan gelap di belakang kartu/penampil foto
+.latar-redup {
+  background-color: rgb(15 23 42 / 0.55);
+}
+// Cincin (box-shadow, tidak mengubah ukuran) di sekeliling avatar & sel penanda
+.cincin-putih-tebal {
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.3);
+}
+.cincin-putih-tebal-20 {
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.2);
+}
+.cincin-tanda {
+  box-shadow:
+    0 0 0 1px $white,
+    0 0 0 3px rgb(15 23 42 / 0.4);
+}
+.cincin-arus {
+  box-shadow: 0 0 0 2px currentColor;
+}
+.garis-luar-putus {
+  outline: 1px dashed currentColor;
+}
+// Animasi lebar bilah (progres, grafik batang) saat nilainya berubah
+.transisi-lebar {
+  transition: width 0.7s ease;
+}
+// Gradien spanduk portal (sapaan di beranda tiap peran)
+$gradasi-spanduk: (
+  "merah": linear-gradient(to bottom right, map-get($merah, 600), map-get($merah, 800)),
+  "merah-jingga": linear-gradient(to bottom right, map-get($merah, 600), map-get($merah, 600), #f97316),
+  "gelap": linear-gradient(to bottom right, #1e293b, #0f172a, map-get($merah, 900)),
+  "emas": linear-gradient(to bottom right, #fcd34d, #fb923c),
+  // Sampul buku per kategori (perpustakaan)
+  "sampul-rakyat": linear-gradient(to bottom right, #fcd34d, #f97316),
+  "sampul-pengetahuan": linear-gradient(to bottom right, #38bdf8, #6366f1),
+  "sampul-pelajaran": linear-gradient(to bottom right, #34d399, #0d9488),
+  "sampul-fiksi": linear-gradient(to bottom right, #f9a8d4, #f43f5e),
+  "sampul-sejarah": linear-gradient(to bottom right, map-get($merah, 500), map-get($merah, 700)),
+  "sampul-lain": linear-gradient(to bottom right, $gray-400, $gray-600),
+);
+@each $nama, $g in $gradasi-spanduk {
+  .gradasi-#{$nama} {
+    background-image: $g;
+  }
+}
+// Tata letak berdasar lebar wadah sendiri (container query @2xl = 42rem), mis. kartu presensi
+.wadah-kueri {
+  container-type: inline-size;
+}
+@container (min-width: 42rem) {
+  .kueri-baris {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+  .kueri-w-44 {
+    width: 11rem !important;
+  }
+  .kueri-w-60 {
+    width: 15rem !important;
+  }
+  .kueri-w-80 {
+    width: 20rem !important;
+  }
+}
+// Kisi untuk HP agak lebar (≥400px / ≥480px) sebelum breakpoint sm
+@media (min-width: 400px) and (max-width: 639.98px) {
+  .kolom-400-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  .kolom-400-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+@media (min-width: 480px) and (max-width: 639.98px) {
+  .kolom-480-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+// Baris yang bertumpuk di HP sempit lalu mendatar mulai 480px (judul + nominal)
+@media (min-width: 480px) {
+  .baris-480 {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+  }
+}
+// Ikon sebaris teks sedikit diturunkan agar sejajar garis dasar huruf
+.turun-3px {
+  vertical-align: -3px;
+}
+// Kotak isian polos (tanpa .form-control, mis. kolom chat & kode OTP) tetap punya tanda fokus yang jelas
+:where(input, textarea):not(.form-control, .form-check-input, [type="checkbox"], [type="radio"], [type="range"], [type="file"]):focus-visible {
+  outline: 0;
+  border-color: map-get($merah, 500) !important;
+  box-shadow: 0 0 0 0.25rem map-get($merah, 100);
+}
+
+// Jarak dari atas saat melompat ke #bagian (agar tidak tertutup navbar yang menempel)
+.gulir-mt-24 {
+  scroll-margin-top: 6rem;
+}
+.teks-transparan {
+  color: transparent !important;
+}
+// Garis lingkaran tipis di ujung tombol/elemen kecil
+.cincin-putih {
+  box-shadow: 0 0 0 2px #fff;
+}
+
+// Pasangan latar muda + teks tegas untuk warna yang tidak punya padanan tema (mapel, avatar, ekskul)
+$warna-tambahan: (
+  "violet": (#ede9fe, #6d28d9, #8b5cf6),
+  "orange": (#ffedd5, #c2410c, #f97316),
+  "teal": (#ccfbf1, #0f766e, #14b8a6),
+  "indigo": (#e0e7ff, #4338ca, #6366f1),
+  "lime": (#ecfccb, #4d7c0f, #84cc16),
+  "cyan": (#cffafe, #0e7490, #06b6d4),
+  "pink": (#fce7f3, #be185d, #ec4899),
+  "fuchsia": (#fae8ff, #a21caf, #d946ef),
+  "yellow": (#fef9c3, #854d0e, #eab308),
+  "emerald": (#d1fae5, #047857, #10b981),
+  "amber": (#fef3c7, #92400e, #f59e0b),
+  "sky": (#e0f2fe, #0369a1, #0ea5e9),
+  "rose": (#ffe4e6, #be123c, #f43f5e),
+  "merah": (map-get($merah, 100), map-get($merah, 700), map-get($merah, 500)),
+  "abu": ($gray-100, $gray-700, $gray-500),
+);
+@each $nama, $w in $warna-tambahan {
+  .warna-#{$nama} {
+    background-color: nth($w, 1) !important;
+    color: nth($w, 2) !important;
+  }
+  .teks-#{$nama} {
+    color: nth($w, 2) !important;
+  }
+  .titik-#{$nama} {
+    background-color: nth($w, 3) !important;
+  }
+  .teks-terang-#{$nama} {
+    color: nth($w, 3) !important;
+  }
+}
+
+// Angka sejajar untuk jam, tanggal, dan biaya
+.angka {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+// Coretan stabilo di belakang kata
+.stabilo {
+  background-image: linear-gradient(transparent 52%, $stabilo 52%, $stabilo 92%, transparent 92%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding-inline: 0.12em;
+}
+
+// Pola titik-titik dekoratif di latar berwarna
+.pola-titik {
+  background-image: radial-gradient(rgb(255 255 255 / 0.18) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+.pola-titik-merah {
+  background-image: radial-gradient(rgb(217 26 40 / 0.12) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+.stripe-merah-putih {
+  background: linear-gradient(to bottom, $primary 50%, #fff 50%);
+}
+
+// Latar buram di belakang panel melayang
+.buram {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.buram-sm {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+// Transisi halus untuk efek hover/fokus
+.transisi {
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.2s ease,
+    opacity 0.15s ease,
+    translate 0.2s ease,
+    scale 0.2s ease,
+    rotate 0.3s ease;
+}
+
+// ---- Efek hover kecil (Bootstrap tidak menyediakan utilitas hover) ----
+.hover-latar:hover {
+  background-color: $gray-50 !important;
+}
+.hover-latar-abu:hover {
+  background-color: $gray-100 !important;
+}
+.hover-latar-merah:hover {
+  background-color: map-get($merah, 50) !important;
+}
+.hover-teks-merah:hover {
+  color: map-get($merah, 700) !important;
+}
+.hover-teks-tinta:hover {
+  color: $tinta !important;
+}
+.hover-garis-merah:hover {
+  border-color: map-get($merah, 200) !important;
+}
+.hover-angkat {
+  transition:
+    translate 0.2s ease,
+    box-shadow 0.3s ease,
+    border-color 0.2s ease;
+  &:hover {
+    translate: 0 -0.25rem;
+    box-shadow: 0 30px 50px -30px rgb(68 6 11 / 0.45);
+  }
+}
+.hover-angkat-sedikit {
+  transition:
+    translate 0.2s ease,
+    box-shadow 0.3s ease;
+  &:hover {
+    translate: 0 -0.125rem;
+    box-shadow: $box-shadow;
+  }
+}
+// Foto di dalam kartu sedikit membesar saat kartunya disorot
+.kartu-zoom img,
+.kartu-zoom .zoom {
+  transition: scale 0.7s ease;
+}
+.kartu-zoom:hover img,
+.kartu-zoom:hover .zoom {
+  scale: 1.05;
+}
+// Grup: anak bereaksi saat induknya (.grup, atau .kartu-zoom di halaman publik) disorot
+:is(.grup, .kartu-zoom) :is(.grup-geser, .grup-geser-kecil, .grup-besar) {
+  transition:
+    translate 0.2s ease,
+    scale 0.2s ease;
+}
+:is(.grup, .kartu-zoom):hover .grup-geser {
+  translate: 0.25rem 0;
+}
+:is(.grup, .kartu-zoom):hover .grup-geser-kecil {
+  translate: 0.125rem 0;
+}
+:is(.grup, .kartu-zoom):hover .grup-besar {
+  scale: 1.1;
+}
+// Tombol kecil (mis. hapus pesan) yang tersembunyi: tampil saat induknya disorot, saat difokus
+// lewat keyboard, dan selalu tampil di layar sentuh (tidak ada hover)
+:is(.grup, .kartu-zoom):hover .grup-tampil,
+.grup-tampil:focus-visible {
+  opacity: 1 !important;
+}
+@media (pointer: coarse) {
+  .grup-tampil {
+    opacity: 0.9 !important;
+  }
+}
+.hover-latar-arus-15:hover {
+  background-color: color-mix(in srgb, currentColor 15%, transparent) !important;
+}
+.hover-teks-putih:hover {
+  color: $white !important;
+}
+.hover-teks-amber:hover {
+  color: #b45309 !important;
+}
+// Kolom unggah berkas: tombol "Pilih file" bergaya tombol pil merah muda
+.isian-berkas::file-selector-button {
+  margin-right: 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background-color: map-get($merah, 50);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: map-get($merah, 700);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.isian-berkas:hover::file-selector-button {
+  background-color: map-get($merah, 100);
+}
+// Panah tautan bergeser saat disorot
+.geser-panah svg:last-child {
+  transition: translate 0.2s ease;
+}
+.geser-panah:hover svg:last-child {
+  translate: 0.25rem 0;
+}
+
+// iPhone & iPad memperbesar halaman saat kolom isian berhuruf < 16px disentuh: khusus iOS jadikan 16px
+@supports (-webkit-touch-callout: none) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"], .fs-lg, .fs-xl, .fs-2xl, .fs-3xl),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+// Saat mencetak kuitansi/rapor, hanya area .area-cetak yang ikut tercetak
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .area-cetak,
+  .area-cetak * {
+    visibility: visible;
+  }
+  .area-cetak {
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: none !important;
+  }
+}

@@ -50,58 +50,58 @@ export default function SiswaProfil() {
     <>
       <DashHeader title="Profil Saya" desc="Data diri dan kartu pelajar digital. Hubungi wali kelas atau Tata Usaha jika ada data yang salah." />
 
-      <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
-        <div className="space-y-6">
+      <div className="d-grid gap-6 kolom-lg-400-isi">
+        <div className="antara-y-6">
           {/* Kartu pelajar digital */}
-          <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary-600 to-primary-800 p-5 text-white shadow-lg">
-            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10" />
-            <div className="absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-white/5" />
-            <div className="relative flex items-center gap-3 border-b border-white/20 pb-3">
-              <img src="/logo.png" alt="" className="h-11 w-11 object-contain drop-shadow-md" />
+          <div className="position-relative overflow-hidden rounded-4 gradasi-merah p-5 text-white shadow-lg">
+            <div className="position-absolute end-n12 top-n12 h-40 w-40 rounded-pill bg-white bg-opacity-10" />
+            <div className="position-absolute bottom-n20 start-n10 h-40 w-40 rounded-pill bg-white bg-opacity-5" />
+            <div className="position-relative d-flex align-items-center gap-3 border-bottom border-white border-opacity-20 pb-3">
+              <img src="/logo.png" alt="" className="h-11 w-11 object-fit-contain bayangan-jatuh" />
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-primary-100">Kartu Pelajar</p>
-                <p className="font-extrabold">{SEKOLAH.nama}</p>
+                <p className="fs-10 fw-semibold text-uppercase ls-widest text-merah-100">Kartu Pelajar</p>
+                <p className="fw-extrabold">{SEKOLAH.nama}</p>
               </div>
             </div>
-            <div className="relative mt-4 flex gap-4">
-              <Avatar nama={siswa.nama} size="xl" className="bg-white text-primary-700 ring-4 ring-white/30" />
-              <div className="min-w-0 space-y-1.5 text-sm">
-                <p className="text-lg font-extrabold leading-tight">{siswa.nama}</p>
+            <div className="position-relative mt-4 d-flex gap-4">
+              <Avatar nama={siswa.nama} size="xl" className="bg-white text-merah-700 cincin-putih-tebal" />
+              <div className="min-w-0 antara-y-1-5 fs-sm">
+                <p className="fs-lg fw-extrabold lh-tight">{siswa.nama}</p>
                 <p>
-                  <span className="text-primary-200">NIS</span> {siswa.nis}
+                  <span className="text-merah-200">NIS</span> {siswa.nis}
                 </p>
                 {siswa.nisn && (
                   <p>
-                    <span className="text-primary-200">NISN</span> {siswa.nisn}
+                    <span className="text-merah-200">NISN</span> {siswa.nisn}
                   </p>
                 )}
                 <p>
-                  <span className="text-primary-200">Kelas</span> {siswa.kelas}
+                  <span className="text-merah-200">Kelas</span> {siswa.kelas}
                 </p>
               </div>
             </div>
-            <div className="stripe-merah-putih relative mt-4 h-1.5 rounded-full" />
-            <p className="relative mt-2 text-[10px] text-primary-100">Berlaku selama menjadi siswa · {SEKOLAH.alamat}</p>
+            <div className="stripe-merah-putih position-relative mt-4 h-1-5 rounded-pill" />
+            <p className="position-relative mt-2 fs-10 text-merah-100">Berlaku selama menjadi siswa · {SEKOLAH.alamat}</p>
           </div>
 
           {waliKelas && (
-            <Card className="flex items-center gap-4 p-5">
+            <Card className="d-flex align-items-center gap-4 p-5">
               <Avatar nama={waliKelas.nama} />
               <div>
-                <p className="text-xs text-slate-500">Wali Kelas {siswa.kelas}</p>
-                <p className="font-bold text-slate-900">{waliKelas.nama}</p>
+                <p className="fs-xs text-tinta-3">Wali Kelas {siswa.kelas}</p>
+                <p className="fw-bold text-tinta">{waliKelas.nama}</p>
               </div>
             </Card>
           )}
 
           {ekskul.length > 0 && (
             <Card className="p-5">
-              <p className="flex items-center gap-2 text-sm font-bold text-slate-700">
-                <Trophy className="h-4 w-4 text-primary-600" /> Ekstrakurikuler yang diikuti
+              <p className="d-flex align-items-center gap-2 fs-sm fw-bold text-tinta-2">
+                <Trophy className="h-4 w-4 text-primary" /> Ekstrakurikuler yang diikuti
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-3 d-flex flex-wrap gap-2">
                 {ekskul.map((e) => (
-                  <Link key={e.id} to="/dashboard/siswa/ekskul" className={`rounded-full px-3 py-1.5 text-sm font-semibold transition hover:brightness-95 ${e.warna}`}>
+                  <Link key={e.id} to="/dashboard/siswa/ekskul" className={`rounded-pill px-3 py-1-5 fs-sm fw-semibold transisi hover-redup ${e.warna}`}>
                     {e.nama}
                   </Link>
                 ))}
@@ -110,50 +110,50 @@ export default function SiswaProfil() {
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="antara-y-6">
           <Card className="overflow-hidden">
-            <div className="border-b border-slate-100 px-6 py-4">
-              <h2 className="font-bold text-slate-900">Biodata</h2>
+            <div className="border-bottom border-abu-100 px-6 py-4">
+              <h2 className="fw-bold text-tinta">Biodata</h2>
             </div>
-            <dl className="divide-y divide-slate-100">
+            <dl className="pembatas-y pembatas-abu">
               {biodata.map(([k, v]) => (
-                <div key={k} className="grid gap-1 px-6 py-3 text-sm sm:grid-cols-[200px_1fr]">
-                  <dt className="text-slate-500">{k}</dt>
-                  <dd className="font-semibold text-slate-800">{v || '–'}</dd>
+                <div key={k} className="d-grid gap-1 px-6 py-3 fs-sm kolom-sm-200-isi">
+                  <dt className="text-tinta-3">{k}</dt>
+                  <dd className="fw-semibold text-tinta">{v || '–'}</dd>
                 </div>
               ))}
             </dl>
             {siswa.catatanKesehatan && (
-              <div className="flex items-start gap-2 border-t border-amber-100 bg-amber-50 px-6 py-3 text-sm text-amber-900">
-                <HeartPulse className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+              <div className="d-flex align-items-start gap-2 border-top border-warning-subtle bg-warning-subtle px-6 py-3 fs-sm text-warning-emphasis">
+                <HeartPulse className="mt-0-5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
                 <span>
-                  Catatan kesehatan: <span className="font-semibold">{siswa.catatanKesehatan}</span>
+                  Catatan kesehatan: <span className="fw-semibold">{siswa.catatanKesehatan}</span>
                 </span>
               </div>
             )}
             {keluarga?.whatsapp && (
-              <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 text-sm text-slate-600">
-                <Phone className="h-4 w-4" /> Kontak orang tua: <span className="font-semibold text-slate-800">{keluarga.whatsapp}</span>
+              <div className="d-flex align-items-center gap-2 bg-abu-50 px-6 py-3 fs-sm text-tinta-2">
+                <Phone className="h-4 w-4" /> Kontak orang tua: <span className="fw-semibold text-tinta">{keluarga.whatsapp}</span>
               </div>
             )}
           </Card>
 
           <Card className="p-6">
-            <h2 className="font-bold text-slate-900">
-              Teman Sekelas <span className="font-normal text-slate-400">({temanSekelas.length})</span>
+            <h2 className="fw-bold text-tinta">
+              Teman Sekelas <span className="fw-normal text-abu-400">({temanSekelas.length})</span>
             </h2>
-            <p className="mt-1 text-sm text-slate-500">Ketuk nama teman untuk melihat kartu data dirinya.</p>
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+            <p className="mt-1 fs-sm text-tinta-3">Ketuk nama teman untuk melihat kartu data dirinya.</p>
+            <div className="mt-4 d-grid kolom-2 gap-3 kolom-sm-3 kolom-xl-4">
               {temanSekelas.map((t) => (
                 <button
                   key={t.nis}
                   type="button"
                   aria-haspopup="dialog"
                   onClick={(e) => setPilihan({ teman: t, asal: e.currentTarget, nomorAbsen: urutanKelas.indexOf(t.nis) + 1 })}
-                  className="flex flex-col items-center rounded-2xl bg-slate-50 p-3 text-center transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-primary-100 active:translate-y-0 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                  className="d-flex flex-column align-items-center rounded-3 bg-abu-50 p-3 text-center transisi hover-angkat-sedikit hover-latar-putih hover-bayangan-kecil tekan"
                 >
                   <Avatar nama={t.nama} />
-                  <p className="mt-2 text-xs font-semibold leading-snug text-slate-700">{t.nama}</p>
+                  <p className="mt-2 fs-xs fw-semibold lh-snug text-tinta-2">{t.nama}</p>
                 </button>
               ))}
             </div>

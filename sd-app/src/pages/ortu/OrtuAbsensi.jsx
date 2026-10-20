@@ -31,24 +31,24 @@ export default function OrtuAbsensi() {
     <>
       <DashHeader title="Absensi Anak" desc={`Riwayat kehadiran ${anak?.nama ?? ''} setiap hari sekolah.`} />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        <div className="space-y-6">
-          <Card className="p-4 sm:p-6">
-            <div className="mb-5 flex items-center justify-between">
-              <button onClick={() => geser(-1)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Bulan sebelumnya">
+      <div className="d-grid gap-6 kolom-lg-isi-280">
+        <div className="antara-y-6">
+          <Card className="p-4 p-sm-6">
+            <div className="mb-5 d-flex align-items-center justify-content-between">
+              <button onClick={() => geser(-1)} className="rounded-1 p-2 text-tinta-3 hover-latar-abu" aria-label="Bulan sebelumnya">
                 <ChevronLeft className="h-5 w-5" />
               </button>
-              <h2 className="font-bold text-slate-900">
+              <h2 className="fw-bold text-tinta">
                 {bulan.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
               </h2>
-              <button onClick={() => geser(1)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Bulan berikutnya">
+              <button onClick={() => geser(1)} className="rounded-1 p-2 text-tinta-3 hover-latar-abu" aria-label="Bulan berikutnya">
                 <ChevronRight className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-1.5 text-center sm:gap-2">
+            <div className="d-grid kolom-7 gap-1-5 text-center gap-sm-2">
               {NAMA_HARI.map((h) => (
-                <div key={h} className="pb-1 text-xs font-bold uppercase text-slate-400">
+                <div key={h} className="pb-1 fs-xs fw-bold text-uppercase text-abu-400">
                   {h}
                 </div>
               ))}
@@ -64,12 +64,12 @@ export default function OrtuAbsensi() {
                   <div
                     key={key}
                     title={info?.label}
-                    className={`flex aspect-square flex-col items-center justify-center rounded-xl text-sm font-semibold ${
-                      info ? info.cls : libur ? 'bg-slate-50 text-slate-300' : 'bg-white text-slate-500 ring-1 ring-slate-100'
-                    } ${key === hariIni ? 'ring-2 ring-primary-500' : ''}`}
+                    className={`d-flex rasio-1x1 flex-column align-items-center justify-content-center rounded-2 fs-sm fw-semibold ${
+                      info ? info.cls : libur ? 'bg-abu-50 text-abu-300' : 'bg-white text-tinta-3 border border-abu-100'
+                    } ${key === hariIni ? 'border border-2 border-merah-500' : ''}`}
                   >
                     {d.getDate()}
-                    {info && <span className="hidden text-[10px] font-medium sm:block">{info.label}</span>}
+                    {info && <span className="d-none fs-10 fw-medium d-sm-block">{info.label}</span>}
                   </div>
                 )
               })}
@@ -78,24 +78,24 @@ export default function OrtuAbsensi() {
           {anak && <KehadiranPelajaran nis={nis} kelas={anak.kelas} judul="Hari ini per pelajaran" />}
         </div>
 
-        <div className="space-y-4">
+        <div className="antara-y-4">
           <Card className="p-5">
-            <p className="text-sm text-slate-500">Persentase kehadiran bulan ini</p>
-            <p className="mt-1 text-4xl font-extrabold text-emerald-600">{ringkas.total ? `${ringkas.persen}%` : '–'}</p>
-            <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full bg-emerald-500" style={{ width: `${ringkas.persen}%` }} />
+            <p className="fs-sm text-tinta-3">Persentase kehadiran bulan ini</p>
+            <p className="mt-1 fs-4xl fw-extrabold text-success">{ringkas.total ? `${ringkas.persen}%` : '–'}</p>
+            <div className="mt-3 h-2-5 overflow-hidden rounded-pill bg-abu-100">
+              <div className="h-100 rounded-pill titik-emerald" style={{ width: `${ringkas.persen}%` }} />
             </div>
-            <p className="mt-2 text-xs text-slate-500">{ringkas.total} hari tercatat</p>
+            <p className="mt-2 fs-xs text-tinta-3">{ringkas.total} hari tercatat</p>
           </Card>
           <Card className="p-5">
-            <p className="mb-3 text-sm font-bold text-slate-700">Rekap bulan ini</p>
-            <div className="space-y-2.5">
+            <p className="mb-3 fs-sm fw-bold text-tinta-2">Rekap bulan ini</p>
+            <div className="antara-y-2-5">
               {Object.entries(STATUS_ABSEN).map(([kode, s]) => (
-                <div key={kode} className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2 text-slate-600">
-                    <span className={`h-3 w-3 rounded-full ${s.dot}`} /> {s.label}
+                <div key={kode} className="d-flex align-items-center justify-content-between fs-sm">
+                  <span className="d-flex align-items-center gap-2 text-tinta-2">
+                    <span className={`h-3 w-3 rounded-pill ${s.dot}`} /> {s.label}
                   </span>
-                  <span className="font-bold text-slate-900">{ringkas[kode]} hari</span>
+                  <span className="fw-bold text-tinta">{ringkas[kode]} hari</span>
                 </div>
               ))}
             </div>

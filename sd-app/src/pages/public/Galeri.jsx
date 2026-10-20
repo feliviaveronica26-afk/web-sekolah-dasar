@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BookOpen, Camera, ChevronLeft, ChevronRight, Flag, FlaskConical, Monitor, Music, Sprout, Store, Tent, Trophy, X } from 'lucide-react'
 import { Muncul } from '../../components/Hiasan'
-import { Foto, KepalaHalaman, wadah } from '../../components/Situs'
+import { Foto, KepalaHalaman, angkaSaring, pilSaring, wadah } from '../../components/Situs'
 import { GALERI, SEKOLAH } from '../../data/dummy'
 import { FOTO, fotoUntuk } from '../../data/foto'
 import { formatTanggal } from '../../utils/format'
@@ -16,6 +16,8 @@ function Gambar({ g, besar = false, className = '', hias = false }) {
   const foto = fotoUntuk(g, { pakaiKategori: false })
   return <Foto foto={foto} alt={foto && !hias ? g.judul : ''} ikon={IKON[g.ikon] ?? Camera} nada={NADA[g.kategori]} besar={besar} className={className} />
 }
+
+const tombolGeser = 'btn btn-garis-terang min-h-11 px-5 fs-sm'
 
 export default function Galeri() {
   const [kategori, setKategori] = useState('Semua')
@@ -51,8 +53,8 @@ export default function Galeri() {
         foto={FOTO.tawa}
       />
 
-      <section className={`${wadah} py-12 lg:py-16`}>
-        <div role="group" aria-label="Saring menurut kategori" className="flex flex-wrap gap-2">
+      <section className={`${wadah} py-12 py-lg-16`}>
+        <div role="group" aria-label="Saring menurut kategori" className="d-flex flex-wrap gap-2">
           {daftarKategori.map((k) => (
             <button
               key={k}
@@ -62,75 +64,72 @@ export default function Galeri() {
                 setKategori(k)
                 setIndeks(null)
               }}
-              className={`inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-[15px] font-bold transition ${
-                kategori === k ? 'bg-primary-600 text-white' : 'bg-kartu text-tinta-2 ring-1 ring-inset ring-garis hover:text-tinta hover:ring-tinta/30'
-              }`}
+              className={pilSaring(kategori === k)}
             >
               {k}{' '}
-              <span className={`angka rounded-full px-2 py-0.5 text-xs ${kategori === k ? 'bg-white/20' : 'bg-kertas-tua text-tinta-3'}`}>
-                {k === 'Semua' ? GALERI.length : GALERI.filter((g) => g.kategori === k).length}
-              </span>
+              <span className={angkaSaring(kategori === k)}>{k === 'Semua' ? GALERI.length : GALERI.filter((g) => g.kategori === k).length}</span>
             </button>
           ))}
         </div>
 
-        <ul className="mt-8 grid auto-rows-[15rem] gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[17rem]">
+        <ul className="kisi-galeri mt-8 d-grid gap-4 kolom-sm-2 kolom-lg-3">
           {daftar.map((g, i) => {
             const utama = i === 0 && kategori === 'Semua'
             return (
-              <Muncul as="li" key={g.id} jeda={(i % 3) * 60} className={utama ? 'sm:col-span-2 sm:row-span-2' : ''}>
-                <button type="button" onClick={() => setIndeks(i)} className="group relative isolate block h-full w-full overflow-hidden rounded-[1.75rem] text-left text-white">
-                  <span className="absolute inset-0 -z-20">
-                    <Gambar g={g} besar={utama} hias className="transition duration-700 group-hover:scale-105" />
+              <Muncul as="li" key={g.id} gaya="skala" jeda={(i % 3) * 60} className={utama ? 'rentang-sm-2 rentang-baris-sm-2' : ''}>
+                <button
+                  type="button"
+                  onClick={() => setIndeks(i)}
+                  className="kartu-zoom position-relative isolate d-block h-100 w-100 overflow-hidden rounded-kartu text-start text-white"
+                >
+                  <span className="position-absolute inset-0 z-n2">
+                    <Gambar g={g} besar={utama} hias />
                   </span>
-                  <span aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/20 to-black/0" />
-                  <span className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                    <span className="block text-sm">
-                      <span className="rounded-full bg-white/20 px-2.5 py-0.5 font-bold backdrop-blur">{g.kategori}</span>
-                      <span className="angka ml-2 text-white/80">{formatTanggal(g.tanggal)}</span>
+                  <span aria-hidden="true" className="gradasi-foto gradasi-foto--galeri" />
+                  <span className="position-absolute start-0 end-0 bottom-0 p-5 p-sm-6">
+                    <span className="d-block fs-sm">
+                      <span className="rounded-pill bg-white bg-opacity-20 px-2-5 py-0-5 fw-bold buram">{g.kategori}</span>
+                      <span className="angka ms-2 text-white text-opacity-80">{formatTanggal(g.tanggal)}</span>
                     </span>
-                    <span className={`mt-2 block font-extrabold leading-snug tracking-tight ${utama ? 'text-3xl sm:text-4xl' : 'text-xl'}`}>{g.judul}</span>
+                    <span className={`mt-2 d-block fw-extrabold lh-snug ls-tight ${utama ? 'fs-3xl fs-sm-4xl' : 'fs-xl'}`}>{g.judul}</span>
                   </span>
                 </button>
               </Muncul>
             )
           })}
         </ul>
-        <p className="mt-10 text-[15px] text-tinta-3">Dokumentasi lengkap setiap kegiatan ada di Instagram {SEKOLAH.instagram}.</p>
+        <p className="mt-10 fs-15 text-tinta-3">Dokumentasi lengkap setiap kegiatan ada di Instagram {SEKOLAH.instagram}.</p>
       </section>
 
       {dipilih && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta/95 p-4" onClick={() => setIndeks(null)}>
-          <div role="dialog" aria-modal="true" aria-label={dipilih.judul} className="relative w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setIndeks(null)}
-              className="absolute -top-14 right-0 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-bold text-white hover:bg-white/10"
-            >
-              <X className="h-5 w-5" /> Tutup
+        // Latar memudar masuk, kotak foto membesar lembut; foto & keterangan berganti lembut saat digeser
+        <div className="latar-modal position-fixed inset-0 z-50 d-flex align-items-center justify-content-center latar-galeri p-4" onClick={() => setIndeks(null)}>
+          <div role="dialog" aria-modal="true" aria-label={dipilih.judul} className="pop-awal position-relative w-100 mw-3xl" onClick={(e) => e.stopPropagation()}>
+            <button type="button" onClick={() => setIndeks(null)} className="tombol-tutup-galeri btn btn-polos position-absolute end-0 min-h-11 px-4 fs-sm text-white">
+              <X className="ukuran-5" /> Tutup
             </button>
-            <div className="aspect-video overflow-hidden rounded-[1.75rem]">
+            <div key={`foto-${dipilih.id}`} className="tampil-lembut rasio-16x9 overflow-hidden rounded-kartu">
               <Gambar g={dipilih} besar />
             </div>
-            <div className="mt-5 flex items-start justify-between gap-6 text-white">
+            <div key={`ket-${dipilih.id}`} className="tampil-lembut mt-5 d-flex align-items-start justify-content-between gap-6 text-white">
               <div>
-                <p className="text-sm text-white/70">
+                <p className="fs-sm text-white text-opacity-70">
                   {dipilih.kategori} · <span className="angka">{formatTanggal(dipilih.tanggal)}</span>
                 </p>
-                <p className="mt-1 text-3xl font-extrabold leading-tight tracking-tight">{dipilih.judul}</p>
-                <p className="mt-2 leading-relaxed text-white/75">{dipilih.desc}</p>
+                <p className="mt-1 fs-3xl fw-extrabold lh-tight ls-tight">{dipilih.judul}</p>
+                <p className="mt-2 lh-relaxed text-white text-opacity-75">{dipilih.desc}</p>
               </div>
-              <p className="angka shrink-0 text-sm text-white/70">
+              <p className="angka flex-shrink-0 fs-sm text-white text-opacity-70">
                 {indeks + 1} / {daftar.length}
               </p>
             </div>
             {daftar.length > 1 && (
-              <div className="mt-6 flex gap-3">
-                <button type="button" onClick={() => geser(-1)} className="inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-bold text-white ring-1 ring-inset ring-white/30 hover:bg-white/10">
-                  <ChevronLeft className="h-4 w-4" /> Sebelumnya
+              <div className="mt-6 d-flex gap-3">
+                <button type="button" onClick={() => geser(-1)} className={tombolGeser}>
+                  <ChevronLeft className="ukuran-4" /> Sebelumnya
                 </button>
-                <button type="button" onClick={() => geser(1)} className="inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-bold text-white ring-1 ring-inset ring-white/30 hover:bg-white/10">
-                  Berikutnya <ChevronRight className="h-4 w-4" />
+                <button type="button" onClick={() => geser(1)} className={tombolGeser}>
+                  Berikutnya <ChevronRight className="ukuran-4" />
                 </button>
               </div>
             )}

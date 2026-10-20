@@ -2,18 +2,12 @@ import { Link } from 'react-router-dom'
 
 export default function Logo({ light = false, compact = false }) {
   return (
-    <Link to="/" className="group flex items-center gap-2.5">
-      <img
-        src="/logo.png"
-        alt={compact ? 'SD Harapan Gemilang' : ''}
-        className={`h-12 w-12 object-contain transition group-hover:rotate-[-6deg] ${light ? 'drop-shadow-lg' : 'drop-shadow-sm'}`}
-      />
+    <Link to="/" className="logo-portal d-flex align-items-center gap-2-5">
+      <img src="/logo.png" alt={compact ? 'SD Harapan Gemilang' : ''} className={`logo-portal__gambar ukuran-12 object-fit-contain ${light ? 'bayangan-logo-terang' : 'bayangan-logo'}`} />
       {!compact && (
-        <span className="leading-tight">
-          <span className={`block text-[11px] font-bold uppercase tracking-[0.18em] ${light ? 'text-primary-200' : 'text-primary-600'}`}>
-            Sekolah Dasar
-          </span>
-          <span className={`block font-display text-lg font-bold ${light ? 'text-white' : 'text-slate-900'}`}>Harapan Gemilang</span>
+        <span className="lh-tight">
+          <span className={`d-block fs-2xs fw-bold text-uppercase ls-lebar ${light ? 'text-merah-200' : 'text-primary'}`}>Sekolah Dasar</span>
+          <span className={`d-block fs-lg fw-bold ${light ? 'text-white' : 'text-tinta'}`}>Harapan Gemilang</span>
         </span>
       )}
     </Link>

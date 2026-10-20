@@ -21,7 +21,7 @@ export default function KelolaPengumuman() {
         { name: 'isi', label: 'Isi Pengumuman', type: 'textarea', required: true },
       ]}
       columns={[
-        { key: 'judul', label: 'Judul', render: (p) => <span className="font-semibold text-slate-800">{p.judul}</span> },
+        { key: 'judul', label: 'Judul', render: (p) => <span className="fw-semibold text-tinta">{p.judul}</span> },
         { key: 'kategori', label: 'Kategori', render: (p) => <KategoriBadge kategori={p.kategori} /> },
         { key: 'tanggal', label: 'Tanggal', render: (p) => formatTanggal(p.tanggal) },
       ]}

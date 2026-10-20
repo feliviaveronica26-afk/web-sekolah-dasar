@@ -152,6 +152,29 @@ class SiswaTest extends TestCase
         $this->assertSame('Kristen', $s->fresh()->agama);
     }
 
+    public function test_wakasek_kesiswaan_menambah_siswa_yang_langsung_terhubung_ke_portal_lain(): void
+    {
+        $isian = ['nis' => '269901', 'nama' => 'Nadia Putri', 'kelas' => '4A', 'jk' => 'P', 'ortu' => 'Bapak Hendra', 'tanggalMasuk' => '2026-10-19'];
+
+        // Wali kelas tidak menambah siswa; Wakasek Kesiswaan boleh
+        $this->sebagai($this->staf('g2'))->postJson('/api/siswa', $isian)->assertForbidden();
+        $jawaban = $this->sebagai($this->staf('g5'))->postJson('/api/siswa', $isian)->assertCreated()->json('data');
+        $this->assertSame('269901', $jawaban['siswa'][0]['nis']);
+        $this->assertSame(25, array_sum($jawaban['jumlahSiswa']['4A']));
+
+        // Langsung tampil untuk wali kelasnya (dengan tanggal masuk), guru mapel, Tata Usaha (belum punya akun), dan Kepala Sekolah
+        $this->assertSame('2026-10-19', $this->siswa($this->staf('g2'))['269901']['tanggalMasuk']);
+        $this->assertArrayHasKey('269901', $this->siswa($this->staf('g7')));
+        $this->assertNull($this->siswa($this->staf('g9'))['269901']['akun']);
+        $this->assertSame('4A', $this->siswa($this->akun('kepsek'))['269901']['kelas']);
+
+        // Belum punya nilai: belum diberi peringkat, dan teman sekelasnya tetap diperingkat dari 24 siswa
+        $peringkat = fn (string $nis) => $this->sebagai($this->akun('siswa', ['nis' => $nis, 'kelas' => '4A']))
+            ->getJson('/api/data?koleksi=nilai')->assertOk()->json("data.peringkat.{$nis}");
+        $this->assertSame(['posisi' => null, 'dari' => 24], $peringkat('269901'));
+        $this->assertSame(24, $peringkat('230401')['dari']);
+    }
+
     public function test_akun_siswa_dibuat_tata_usaha_dan_wajib_ganti_password(): void
     {
         $s = Siswa::where('nis', '234113')->first();

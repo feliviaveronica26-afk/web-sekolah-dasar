@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext'
 import { ringkasAbsensi, useData } from '../../context/DataContext'
 import { ISTIRAHAT, MAPEL, SESI } from '../../data/dummy'
 import { formatHari, formatTanggal, todayKey } from '../../utils/format'
+import { teksHadir } from '../../utils/ringkasan'
 import { rekapNilai } from '../../utils/nilai'
 import { ekskulSiswa, lencanaSiswa, levelSiswa, ringkasSikap, streakHadir } from '../../utils/prestasi'
 import { infoTenggat, jadwalBerikutnya } from './helpers'
@@ -61,41 +62,41 @@ export default function SiswaDashboard() {
   return (
     <>
       {/* Sapaan & level */}
-      <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-linear-to-br from-primary-600 via-primary-600 to-orange-500 p-6 text-white sm:p-8">
-        <div className="pola-titik absolute inset-0" />
-        <Gumpalan className="absolute -right-16 -top-20 h-72 w-72 text-white/10" />
-        <Bintang className="absolute right-[38%] top-6 hidden h-6 w-6 animate-melayang text-amber-300 sm:block" />
-        <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-          <div className="flex items-center gap-4">
-            <Avatar nama={user.nama} size="lg" className="bg-white text-primary-700 ring-4 ring-white/30" />
+      <div className="position-relative mb-6 overflow-hidden rounded-5 gradasi-merah-jingga p-6 text-white p-sm-8">
+        <div className="pola-titik position-absolute inset-0" />
+        <Gumpalan className="putar-lambat position-absolute end-n16 top-n20 h-72 w-72 text-white text-opacity-10" />
+        <Bintang className="position-absolute kanan-38 top-6 d-none h-6 w-6 melayang teks-terang-amber d-sm-block" />
+        <div className="position-relative d-grid gap-6 kolom-lg-isi-auto align-items-lg-center">
+          <div className="d-flex align-items-center gap-4">
+            <Avatar nama={user.nama} size="lg" className="bg-white text-merah-700 cincin-putih-tebal" />
             <div>
-              <p className="text-sm font-semibold text-primary-100">
+              <p className="fs-sm fw-semibold text-merah-100">
                 Kelas {user.kelas} · NIS {user.nis}
               </p>
-              <h1 className="text-3xl font-bold sm:text-4xl">Halo, {namaDepan}! 👋</h1>
-              <p className="mt-1 max-w-lg text-primary-50">{mutiara}</p>
+              <h1 className="fs-3xl fw-bold fs-sm-4xl">Halo, {namaDepan}! <span className="lambai">👋</span></h1>
+              <p className="mt-1 mw-lg text-merah-50">{mutiara}</p>
             </div>
           </div>
 
           <Link
             to={`${BASE}/lencana`}
-            className="block rounded-2xl bg-white/15 p-4 ring-1 ring-white/20 backdrop-blur transition hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-white lg:w-72"
+            className="d-block rounded-3 bg-white bg-opacity-15 p-4 border border-white border-opacity-20 buram transisi hover-terang w-lg-72"
           >
-            <div className="flex items-center justify-between">
-              <p className="font-display text-lg font-bold">
+            <div className="d-flex align-items-center justify-content-between">
+              <p className="fs-lg fw-bold">
                 Level {level.level} · {level.gelar}
               </p>
-              <Sparkles className="h-5 w-5 text-amber-300" />
+              <Sparkles className="h-5 w-5 teks-terang-amber" />
             </div>
-            <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/25">
-              <div className="h-full rounded-full bg-amber-300 transition-all duration-700" style={{ width: `${level.progres * 100}%` }} />
+            <div className="mt-2 h-2-5 overflow-hidden rounded-pill bg-white bg-opacity-25">
+              <div className="isi-progres h-100 rounded-pill bg-warning-subtle transisi-lebar" style={{ width: `${level.progres * 100}%` }} />
             </div>
-            <p className="mt-1.5 text-xs text-primary-100">
+            <p className="mt-1-5 fs-xs text-merah-100">
               {level.xp} XP · {level.sisa} XP lagi ke level {level.level + 1}
             </p>
-            <div className="mt-3 flex flex-wrap gap-2 text-sm">
-              <span className="rounded-full bg-white/20 px-3 py-1 font-semibold">🔥 {streak} hari hadir</span>
-              <span className="rounded-full bg-white/20 px-3 py-1 font-semibold">⭐ {Math.max(0, sikap.total)} poin</span>
+            <div className="mt-3 d-flex flex-wrap gap-2 fs-sm">
+              <span className="rounded-pill bg-white bg-opacity-20 px-3 py-1 fw-semibold">🔥 {streak} hari hadir</span>
+              <span className="rounded-pill bg-white bg-opacity-20 px-3 py-1 fw-semibold">⭐ {Math.max(0, sikap.total)} poin</span>
             </div>
           </Link>
         </div>
@@ -103,38 +104,38 @@ export default function SiswaDashboard() {
 
       <IsiPresensiOtp className="mb-6" />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard icon={CalendarCheck} label="Kehadiranku" value={`${kehadiran.persen}%`} hint="20 hari sekolah terakhir" tone="emerald" ke={`${BASE}/presensi`} />
+      <div className="d-grid kolom-2 gap-4 kolom-lg-4">
+        <StatCard icon={CalendarCheck} label="Kehadiranku" value={teksHadir(kehadiran)} hint="20 hari sekolah terakhir" tone="emerald" ke={`${BASE}/presensi`} />
         <StatCard icon={ClipboardList} label="Tugas belum selesai" value={tugasAktif.length} hint={`dari ${tugasKelas.length} tugas`} tone="amber" ke={`${BASE}/tugas`} />
         <StatCard icon={TrendingUp} label="Rata-rata nilai" value={nilai.rataRata ?? '–'} hint="semester ini" tone="sky" ke={`${BASE}/nilai`} />
         <StatCard icon={Star} label="Lencana" value={`${didapat.length}/${lencana.length}`} hint="sudah didapat" tone="primary" ke={`${BASE}/lencana`} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-5">
+      <div className="mt-6 d-grid gap-6 kolom-lg-5">
         {/* Jadwal */}
-        <Card className="min-w-0 p-6 lg:col-span-2">
+        <Card className="min-w-0 p-6 rentang-lg-2">
           <JudulKartu icon={BookOpen} judul={`Jadwal ${jadwal?.label ?? ''}`}>
-            <Link to="/dashboard/siswa/jadwal" className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to="/dashboard/siswa/jadwal" className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Lengkap <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
           {jadwal ? (
             <>
-              <p className="-mt-2 text-sm text-slate-500">{formatHari(jadwal.tanggal)}</p>
-              <ol className="mt-4 space-y-2">
-                {jadwal.sesi.map((kode, i) => (
+              <p className="mt-n2 fs-sm text-tinta-3">{formatHari(jadwal.tanggal)}</p>
+              <ol className="bertahap mt-4 antara-y-2">
+                {jadwal.sesi.map((kode, i) => MAPEL[kode] && (
                   <li key={kode + i}>
                     <Link
                       to={`${BASE}/jadwal`}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition ${i === sesiAktif ? 'bg-primary-50 ring-2 ring-primary-300' : 'bg-slate-50 hover:bg-slate-100'}`}
+                      className={`d-flex align-items-center gap-3 rounded-2 px-3 py-2-5 transisi ${i === sesiAktif ? 'bg-merah-50 border border-2 border-merah-300' : 'bg-abu-50 hover-latar-abu'}`}
                     >
-                      <span className="w-12 shrink-0 text-xs font-semibold text-slate-500">{SESI[i].mulai}</span>
-                      <span className={`rounded-lg px-2.5 py-1 text-sm font-semibold ${MAPEL[kode].warna}`}>{MAPEL[kode].nama}</span>
-                      {i === sesiAktif && <span className="ml-auto animate-pulse text-xs font-bold text-primary-600">● Sekarang</span>}
+                      <span className="w-12 flex-shrink-0 fs-xs fw-semibold text-tinta-3">{SESI[i].mulai}</span>
+                      <span className={`rounded-1 px-2-5 py-1 fs-sm fw-semibold ${MAPEL[kode].warna}`}>{MAPEL[kode].nama}</span>
+                      {i === sesiAktif && <span className="ms-auto berdenyut fs-xs fw-bold text-primary">● Sekarang</span>}
                     </Link>
                     {i + 1 === ISTIRAHAT.setelahSesi && (
-                      <p className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-400">
-                        <Coffee className="h-3.5 w-3.5" /> Istirahat {ISTIRAHAT.mulai} – {ISTIRAHAT.selesai}
+                      <p className="d-flex align-items-center gap-2 px-3 py-1-5 fs-xs text-abu-400">
+                        <Coffee className="h-3-5 w-3-5" /> Istirahat {ISTIRAHAT.mulai} – {ISTIRAHAT.selesai}
                       </p>
                     )}
                   </li>
@@ -142,38 +143,38 @@ export default function SiswaDashboard() {
               </ol>
             </>
           ) : (
-            <p className="text-sm text-slate-500">Belum ada jadwal.</p>
+            <p className="fs-sm text-tinta-3">Belum ada jadwal.</p>
           )}
         </Card>
 
         {/* Tugas */}
-        <Card className="min-w-0 p-6 lg:col-span-3">
+        <Card className="min-w-0 p-6 rentang-lg-3">
           <JudulKartu icon={ClipboardList} judul="Tugas yang harus dikerjakan">
-            <Link to="/dashboard/siswa/tugas" className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to="/dashboard/siswa/tugas" className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Semua <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
-          <div className="mb-4 flex items-center gap-3 text-sm">
+          <div className="mb-4 d-flex align-items-center gap-3 fs-sm">
             <Progres nilai={tugasKelas.length ? ((tugasKelas.length - tugasAktif.length) / tugasKelas.length) * 100 : 0} warna="bg-emerald-500" className="flex-1" />
-            <span className="font-semibold text-slate-600">
+            <span className="fw-semibold text-tinta-2">
               {tugasKelas.length - tugasAktif.length}/{tugasKelas.length} selesai
             </span>
           </div>
           {tugasAktif.length === 0 ? (
-            <p className="rounded-xl bg-emerald-50 px-4 py-6 text-center text-sm font-semibold text-emerald-700">Tidak ada tugas. Waktunya bermain! 🎉</p>
+            <p className="rounded-2 bg-success-subtle px-4 py-6 text-center fs-sm fw-semibold text-success">Tidak ada tugas. Waktunya bermain! 🎉</p>
           ) : (
-            <div className="space-y-2">
+            <div className="bertahap antara-y-2">
               {tugasAktif.slice(0, 4).map((t) => {
                 const tenggat = infoTenggat(t.tenggat)
                 return (
                   <Link
                     to="/dashboard/siswa/tugas"
                     key={t.id}
-                    className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border border-slate-100 px-4 py-3 transition hover:border-primary-200 hover:bg-primary-50/40 sm:flex-nowrap"
+                    className="d-flex flex-wrap align-items-center column-gap-3 row-gap-1-5 rounded-2 border border-abu-100 px-4 py-3 transisi hover-garis-merah hover-latar-merah flex-sm-nowrap"
                   >
-                    <span className={`rounded-lg px-2 py-1 text-xs font-bold ${MAPEL[t.mapel].warna}`}>{MAPEL[t.mapel].nama}</span>
-                    <Badge className={`${tenggat.cls} sm:order-last`}>{tenggat.teks}</Badge>
-                    <p className="w-full text-sm font-semibold text-slate-800 sm:w-auto sm:flex-1 sm:truncate">{t.judul}</p>
+                    <span className={`rounded-1 px-2 py-1 fs-xs fw-bold ${MAPEL[t.mapel].warna}`}>{MAPEL[t.mapel].nama}</span>
+                    <Badge className={`${tenggat.cls} order-sm-last`}>{tenggat.teks}</Badge>
+                    <p className="w-100 fs-sm fw-semibold text-tinta w-sm-auto flex-sm-1 text-sm-truncate">{t.judul}</p>
                   </Link>
                 )
               })}
@@ -182,37 +183,37 @@ export default function SiswaDashboard() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+      <div className="mt-6 d-grid gap-6 kolom-lg-3">
         {/* Lencana */}
         <Card className="p-6">
           <JudulKartu icon={Star} judul="Lencanaku">
-            <Link to="/dashboard/siswa/lencana" className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to="/dashboard/siswa/lencana" className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Semua <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
-          <div className="flex flex-wrap gap-2">
+          <div className="d-flex flex-wrap gap-2">
             {didapat.map((l) => (
               <Link
                 key={l.kode}
                 to={`${BASE}/lencana`}
                 title={l.nama}
                 aria-label={`Lencana ${l.nama}`}
-                className={`grid h-12 w-12 place-items-center rounded-2xl bg-linear-to-br text-2xl shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${l.warna}`}
+                className={`d-flex h-12 w-12 align-items-center justify-content-center rounded-3 fs-2xl shadow-sm transisi hover-angkat-sedikit hover-bayangan-kecil ${l.warna}`}
               >
                 {l.emoji}
               </Link>
             ))}
-            {didapat.length === 0 && <p className="text-sm text-slate-500">Belum ada lencana. Ayo kumpulkan!</p>}
+            {didapat.length === 0 && <p className="fs-sm text-tinta-3">Belum ada lencana. Ayo kumpulkan!</p>}
           </div>
           {berikutnya && (
-            <Link to={`${BASE}/lencana`} className="mt-5 block rounded-2xl bg-slate-50 p-4 transition hover:bg-slate-100">
-              <p className="text-xs font-semibold text-slate-500">Lencana berikutnya</p>
-              <p className="mt-1 font-bold text-slate-900">
+            <Link to={`${BASE}/lencana`} className="mt-5 d-block rounded-3 bg-abu-50 p-4 transisi hover-latar-abu">
+              <p className="fs-xs fw-semibold text-tinta-3">Lencana berikutnya</p>
+              <p className="mt-1 fw-bold text-tinta">
                 {berikutnya.emoji} {berikutnya.nama}
               </p>
-              <p className="text-xs text-slate-500">{berikutnya.syarat}</p>
+              <p className="fs-xs text-tinta-3">{berikutnya.syarat}</p>
               <Progres nilai={berikutnya.progres * 100} warna="bg-amber-400" className="mt-2" />
-              <p className="mt-1 text-xs font-semibold text-slate-600">{berikutnya.teks}</p>
+              <p className="mt-1 fs-xs fw-semibold text-tinta-2">{berikutnya.teks}</p>
             </Link>
           )}
         </Card>
@@ -220,23 +221,23 @@ export default function SiswaDashboard() {
         {/* Ekskul */}
         <Card className="p-6">
           <JudulKartu icon={Tent} judul="Ekskul minggu ini">
-            <Link to="/dashboard/siswa/ekskul" className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to="/dashboard/siswa/ekskul" className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Atur <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
           {ekskul.length === 0 ? (
-            <p className="text-sm text-slate-500">Kamu belum ikut ekskul. Yuk pilih satu!</p>
+            <p className="fs-sm text-tinta-3">Kamu belum ikut ekskul. Yuk pilih satu!</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="bertahap antara-y-2">
               {ekskul.map((e) => (
                 <li key={e.id}>
-                  <Link to={`${BASE}/ekskul`} className="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-2.5 transition hover:bg-slate-100">
-                    <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${e.warna}`}>
+                  <Link to={`${BASE}/ekskul`} className="d-flex align-items-center gap-3 rounded-2 bg-abu-50 px-3 py-2-5 transisi hover-latar-abu">
+                    <span className={`d-flex h-10 w-10 flex-shrink-0 align-items-center justify-content-center rounded-2 ${e.warna}`}>
                       <Ikon nama={e.ikon} className="h-5 w-5" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-sm font-bold text-slate-800">{e.nama}</span>
-                      <span className="block text-xs text-slate-500">
+                      <span className="d-block fs-sm fw-bold text-tinta">{e.nama}</span>
+                      <span className="d-block fs-xs text-tinta-3">
                         {e.hari} · {e.jam}
                       </span>
                     </span>
@@ -250,16 +251,16 @@ export default function SiswaDashboard() {
         {/* Agenda */}
         <Card className="p-6">
           <JudulKartu icon={CalendarDays} judul="Agenda sekolah">
-            <Link to="/dashboard/siswa/kalender" className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+            <Link to="/dashboard/siswa/kalender" className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
               Kalender <ArrowRight className="h-4 w-4" />
             </Link>
           </JudulKartu>
-          <ul className="space-y-2">
+          <ul className="bertahap antara-y-2">
             {agenda.map((e) => (
               <li key={e.judul + e.mulai}>
-                <Link to={`${BASE}/kalender`} className={`block rounded-xl px-4 py-3 transition hover:brightness-95 ${JENIS_AGENDA[e.jenis].soft}`}>
-                  <p className="text-sm font-bold">{e.judul}</p>
-                  <p className="text-xs opacity-80">{rentangAgenda(e)}</p>
+                <Link to={`${BASE}/kalender`} className={`d-block rounded-2 px-4 py-3 transisi hover-redup ${JENIS_AGENDA[e.jenis].soft}`}>
+                  <p className="fs-sm fw-bold">{e.judul}</p>
+                  <p className="fs-xs opacity-80">{rentangAgenda(e)}</p>
                 </Link>
               </li>
             ))}
@@ -269,21 +270,21 @@ export default function SiswaDashboard() {
 
       <Card className="mt-6 p-6">
         <JudulKartu icon={Megaphone} judul="Pengumuman">
-          <Link to={`${BASE}/pengumuman`} className="flex items-center gap-1 text-sm font-semibold text-primary-600">
+          <Link to={`${BASE}/pengumuman`} className="d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
             Semua <ArrowRight className="h-4 w-4" />
           </Link>
         </JudulKartu>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="d-grid gap-4 kolom-md-2">
           {pengumuman.map((p) => (
-            <Link key={p.id} to={`${BASE}/pengumuman?buka=${encodeURIComponent(p.id)}`} className="group block rounded-2xl bg-slate-50 p-4 transition hover:bg-slate-100">
-              <div className="flex items-center gap-2">
+            <Link key={p.id} to={`${BASE}/pengumuman?buka=${encodeURIComponent(p.id)}`} className="grup d-block rounded-3 bg-abu-50 p-4 transisi hover-latar-abu">
+              <div className="d-flex align-items-center gap-2">
                 <KategoriBadge kategori={p.kategori} />
-                <span className="text-xs text-slate-500">{formatTanggal(p.tanggal)}</span>
+                <span className="fs-xs text-tinta-3">{formatTanggal(p.tanggal)}</span>
               </div>
-              <p className="mt-2 font-semibold text-slate-800">{p.judul}</p>
-              <p className="mt-1 line-clamp-2 text-sm text-slate-600">{p.isi}</p>
-              <p className="mt-2 flex items-center gap-1 text-sm font-semibold text-primary-600">
-                Baca selengkapnya <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              <p className="mt-2 fw-semibold text-tinta">{p.judul}</p>
+              <p className="mt-1 clamp-2 fs-sm text-tinta-2">{p.isi}</p>
+              <p className="mt-2 d-flex align-items-center gap-1 fs-sm fw-semibold text-primary">
+                Baca selengkapnya <ArrowRight className="h-4 w-4 transisi grup-geser-kecil" />
               </p>
             </Link>
           ))}

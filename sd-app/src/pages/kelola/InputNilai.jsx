@@ -52,8 +52,8 @@ function KotakNilai({ nilai, onChange, label }) {
         clearTimeout(tunda.current)
         tunda.current = setTimeout(() => simpan(teks), 800)
       }}
-      className={`w-14 rounded-lg border px-1.5 py-1.5 text-center text-sm tabular-nums [appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none focus:ring-2 focus:ring-primary-200 ${
-        kurang ? 'border-amber-300 bg-amber-50 text-amber-900' : 'border-slate-200 bg-white text-slate-800'
+      className={`kotak-nilai w-14 rounded-1 border px-1-5 py-1-5 text-center fs-sm angka ${
+        kurang ? 'border-warning-subtle bg-warning-subtle text-warning-emphasis' : 'border-abu-200 bg-white text-tinta'
       }`}
     />
   )
@@ -108,7 +108,7 @@ export default function InputNilai() {
         }
       />
 
-      <Card className="mb-6 grid gap-4 p-5 sm:grid-cols-2">
+      <Card className="mb-6 d-grid gap-4 p-5 kolom-sm-2">
         <div>
           <label className={labelCls} htmlFor="kelas">
             Kelas
@@ -142,7 +142,7 @@ export default function InputNilai() {
         </Card>
       ) : (
         <>
-          <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="mb-6 d-grid kolom-2 gap-4 kolom-lg-4">
             <StatCard icon={Users} label="Jumlah siswa" value={siswa.length} hint={`Kelas ${kelas}`} tone="sky" />
             <StatCard icon={TrendingUp} label="Rata-rata kelas" value={rata ?? '–'} hint={MAPEL[mapel].nama} tone="emerald" />
             <StatCard icon={Target} label="Tuntas KKTP" value={`${terisi.filter((b) => b.akhir >= KKTP).length}/${siswa.length}`} hint={`KKTP ${KKTP}`} tone="amber" />
@@ -151,48 +151,48 @@ export default function InputNilai() {
 
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[760px] text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+              <table className="w-100 min-w-760 text-start fs-sm">
+                <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                   <tr>
-                    <th className="px-5 py-3 font-semibold">Siswa</th>
+                    <th className="px-5 py-3 fw-semibold">Siswa</th>
                     {Array.from({ length: JUMLAH_TUGAS }, (_, i) => (
-                      <th key={i} className="px-1.5 py-3 text-center font-semibold">
+                      <th key={i} className="px-1-5 py-3 text-center fw-semibold">
                         Tugas {i + 1}
                       </th>
                     ))}
-                    <th className="px-1.5 py-3 text-center font-semibold">PTS</th>
-                    <th className="px-1.5 py-3 text-center font-semibold">PAS</th>
-                    <th className="px-3 py-3 text-center font-semibold">Akhir</th>
-                    <th className="px-5 py-3 font-semibold">Predikat</th>
+                    <th className="px-1-5 py-3 text-center fw-semibold">PTS</th>
+                    <th className="px-1-5 py-3 text-center fw-semibold">PAS</th>
+                    <th className="px-3 py-3 text-center fw-semibold">Akhir</th>
+                    <th className="px-5 py-3 fw-semibold">Predikat</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="pembatas-y pembatas-abu">
                   {baris.map(({ s, n, akhir }) => {
                     const p = predikat(akhir)
                     return (
-                      <tr key={s.nis} className="hover:bg-slate-50/60">
-                        <td className="px-5 py-2.5">
-                          <span className="flex items-center gap-3">
+                      <tr key={s.nis} className="hover-latar">
+                        <td className="px-5 py-2-5">
+                          <span className="d-flex align-items-center gap-3">
                             <Avatar nama={s.nama} size="sm" />
                             <span>
-                              <span className="block font-semibold text-slate-800">{s.nama}</span>
-                              <span className="block text-xs text-slate-500">{s.nis}</span>
+                              <span className="d-block fw-semibold text-tinta">{s.nama}</span>
+                              <span className="d-block fs-xs text-tinta-3">{s.nis}</span>
                             </span>
                           </span>
                         </td>
                         {Array.from({ length: JUMLAH_TUGAS }, (_, i) => (
-                          <td key={i} className="px-1.5 py-2.5 text-center">
+                          <td key={i} className="px-1-5 py-2-5 text-center">
                             <KotakNilai nilai={n.tugas?.[i]} label={`Tugas ${i + 1} ${s.nama}`} onChange={(v) => ubahTugas(s.nis, i, v)} />
                           </td>
                         ))}
-                        <td className="px-1.5 py-2.5 text-center">
+                        <td className="px-1-5 py-2-5 text-center">
                           <KotakNilai nilai={n.pts} label={`PTS ${s.nama}`} onChange={(v) => simpanNilai(s.nis, mapel, { pts: v })} />
                         </td>
-                        <td className="px-1.5 py-2.5 text-center">
+                        <td className="px-1-5 py-2-5 text-center">
                           <KotakNilai nilai={n.pas} label={`PAS ${s.nama}`} onChange={(v) => simpanNilai(s.nis, mapel, { pas: v })} />
                         </td>
-                        <td className="px-3 py-2.5 text-center text-base font-bold tabular-nums text-slate-900">{akhir ?? '–'}</td>
-                        <td className="px-5 py-2.5">
+                        <td className="px-3 py-2-5 text-center fs-base fw-bold angka text-tinta">{akhir ?? '–'}</td>
+                        <td className="px-5 py-2-5">
                           <Badge className={p.cls}>
                             {p.huruf} · {p.label}
                           </Badge>
@@ -203,8 +203,8 @@ export default function InputNilai() {
                 </tbody>
               </table>
             </div>
-            <p className="flex items-start gap-2 border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" /> Nilai akhir = 40% rata-rata tugas + 30% PTS + 30% PAS (dihitung dari komponen yang sudah terisi). Kotak kuning menandakan nilai di bawah KKTP {KKTP}.
+            <p className="d-flex align-items-start gap-2 border-top border-abu-100 px-5 py-3 fs-xs text-tinta-3">
+              <Info className="mt-0-5 h-3-5 w-3-5 flex-shrink-0" /> Nilai akhir = 40% rata-rata tugas + 30% PTS + 30% PAS (dihitung dari komponen yang sudah terisi). Kotak kuning menandakan nilai di bawah KKTP {KKTP}.
             </p>
           </Card>
         </>

@@ -17,11 +17,17 @@ export function RingkasanNilai({ siswa }) {
   // Siswa & orang tua tidak menerima nilai teman sekelas, jadi peringkatnya dihitung server
   const peringkat = data.peringkat[siswa.nis] ?? peringkatKelas(data, siswa)
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="d-grid kolom-2 gap-4 kolom-lg-4">
       <StatCard icon={TrendingUp} label="Rata-rata nilai" value={r.rataRata ?? '–'} hint={predikat(r.rataRata).label} tone="sky" />
       <StatCard icon={Target} label="Mapel tuntas" value={`${r.tuntas}/${r.daftar.length}`} hint={`KKTP ${KKTP}`} tone="emerald" />
       <StatCard icon={Medal} label="Nilai tertinggi" value={r.terbaik?.akhir ?? '–'} hint={r.terbaik?.nama} tone="amber" />
-      <StatCard icon={Award} label="Peringkat kelas" value={`${peringkat.posisi}`} hint={`dari ${peringkat.dari} siswa`} tone="primary" />
+      <StatCard
+        icon={Award}
+        label="Peringkat kelas"
+        value={peringkat.posisi ?? '–'}
+        hint={peringkat.posisi ? `dari ${peringkat.dari} siswa` : 'Belum ada nilai'}
+        tone="primary"
+      />
     </div>
   )
 }
@@ -54,36 +60,36 @@ export function RincianNilai({ siswa }) {
           acuan={{ nilai: KKTP, label: 'KKTP' }}
         />
       ) : (
-        <div className="-mx-6 overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+        <div className="mx-n6 overflow-x-auto">
+          <table className="w-100 min-w-640 text-start fs-sm">
+            <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
               <tr>
-                <th className="px-6 py-3 font-semibold">Mata pelajaran</th>
+                <th className="px-6 py-3 fw-semibold">Mata pelajaran</th>
                 {Array.from({ length: JUMLAH_TUGAS }, (_, i) => (
-                  <th key={i} className="px-2 py-3 text-center font-semibold">
+                  <th key={i} className="px-2 py-3 text-center fw-semibold">
                     T{i + 1}
                   </th>
                 ))}
-                <th className="px-2 py-3 text-center font-semibold">PTS</th>
-                <th className="px-2 py-3 text-center font-semibold">PAS</th>
-                <th className="px-2 py-3 text-center font-semibold">Akhir</th>
-                <th className="px-6 py-3 font-semibold">Predikat</th>
+                <th className="px-2 py-3 text-center fw-semibold">PTS</th>
+                <th className="px-2 py-3 text-center fw-semibold">PAS</th>
+                <th className="px-2 py-3 text-center fw-semibold">Akhir</th>
+                <th className="px-6 py-3 fw-semibold">Predikat</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 tabular-nums">
+            <tbody className="pembatas-y pembatas-abu angka">
               {r.daftar.map((d) => (
-                <tr key={d.kode} className="hover:bg-slate-50/60">
+                <tr key={d.kode} className="hover-latar">
                   <td className="px-6 py-3">
-                    <span className={`rounded-lg px-2 py-1 text-xs font-bold ${d.warna}`}>{d.nama}</span>
+                    <span className={`rounded-1 px-2 py-1 fs-xs fw-bold ${d.warna}`}>{d.nama}</span>
                   </td>
                   {Array.from({ length: JUMLAH_TUGAS }, (_, i) => (
-                    <td key={i} className="px-2 py-3 text-center text-slate-600">
+                    <td key={i} className="px-2 py-3 text-center text-tinta-2">
                       {sel(d.tugas?.[i])}
                     </td>
                   ))}
-                  <td className="px-2 py-3 text-center text-slate-600">{sel(d.pts)}</td>
-                  <td className="px-2 py-3 text-center text-slate-400">{sel(d.pas)}</td>
-                  <td className="px-2 py-3 text-center font-bold text-slate-900">{sel(d.akhir)}</td>
+                  <td className="px-2 py-3 text-center text-tinta-2">{sel(d.pts)}</td>
+                  <td className="px-2 py-3 text-center text-abu-400">{sel(d.pas)}</td>
+                  <td className="px-2 py-3 text-center fw-bold text-tinta">{sel(d.akhir)}</td>
                   <td className="px-6 py-3">
                     <Badge className={d.predikat.cls}>
                       {d.predikat.huruf} · {d.predikat.label}
@@ -93,7 +99,7 @@ export function RincianNilai({ siswa }) {
               ))}
             </tbody>
           </table>
-          <p className="px-6 pt-3 text-xs text-slate-500">
+          <p className="px-6 pt-3 fs-xs text-tinta-3">
             Nilai akhir = 40% rata-rata tugas + 30% PTS + 30% PAS. Selama PAS belum dilaksanakan, bobot dihitung dari komponen yang sudah ada.
           </p>
         </div>
@@ -117,127 +123,127 @@ export function KartuRapor({ siswa, bisaEdit = false }) {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <p className="text-sm text-slate-500">Rapor sementara (sebelum PAS). Nilai dapat berubah hingga pembagian rapor 18 Desember 2026.</p>
+      <div className="mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3 d-print-none">
+        <p className="fs-sm text-tinta-3">Rapor sementara (sebelum PAS). Nilai dapat berubah hingga pembagian rapor 18 Desember 2026.</p>
         <button onClick={() => window.print()} className={btn.secondary}>
           <Printer className="h-4 w-4" /> Cetak Rapor
         </button>
       </div>
 
       <Card className="area-cetak overflow-hidden">
-        <div className="flex items-center gap-4 border-b-4 border-double border-slate-300 bg-white px-6 py-5">
-          <img src="/logo.png" alt="" className="h-14 w-14 object-contain" />
+        <div className="d-flex align-items-center gap-4 garis-ganda-bawah border-abu-300 bg-white px-6 py-5">
+          <img src="/logo.png" alt="" className="h-14 w-14 object-fit-contain" />
           <div className="flex-1">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary-600">Laporan Hasil Belajar</p>
-            <p className="font-display text-xl font-bold text-slate-900">{SEKOLAH.nama}</p>
-            <p className="text-xs text-slate-500">
+            <p className="fs-xs fw-bold text-uppercase ls-widest text-primary">Laporan Hasil Belajar</p>
+            <p className="fs-xl fw-bold text-tinta">{SEKOLAH.nama}</p>
+            <p className="fs-xs text-tinta-3">
               NPSN {SEKOLAH.npsn} · {SEKOLAH.alamat}
             </p>
           </div>
         </div>
 
-        <dl className="grid gap-x-6 gap-y-1.5 bg-slate-50 px-6 py-4 text-sm sm:grid-cols-2">
+        <dl className="d-grid column-gap-6 row-gap-1-5 bg-abu-50 px-6 py-4 fs-sm kolom-sm-2">
           {[
             ['Nama', siswa.nama],
             ['NIS', siswa.nis],
             ['Kelas', siswa.kelas],
             ['Semester', SEMESTER],
           ].map(([k, v]) => (
-            <div key={k} className="flex gap-3">
-              <dt className="w-20 text-slate-500">{k}</dt>
-              <dd className="font-semibold text-slate-900">{v}</dd>
+            <div key={k} className="d-flex gap-3">
+              <dt className="w-20 text-tinta-3">{k}</dt>
+              <dd className="fw-semibold text-tinta">{v}</dd>
             </div>
           ))}
         </dl>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[620px] text-left text-sm">
-            <thead className="border-y border-slate-200 text-xs uppercase tracking-wider text-slate-500">
+          <table className="w-100 min-w-620 text-start fs-sm">
+            <thead className="border-top border-bottom border-abu-200 fs-xs text-uppercase ls-wider text-tinta-3">
               <tr>
-                <th className="w-10 px-4 py-2.5 font-semibold">No</th>
-                <th className="px-4 py-2.5 font-semibold">Mata pelajaran</th>
-                <th className="px-4 py-2.5 text-center font-semibold">Nilai</th>
-                <th className="px-4 py-2.5 font-semibold">Capaian kompetensi</th>
+                <th className="w-10 px-4 py-2-5 fw-semibold">No</th>
+                <th className="px-4 py-2-5 fw-semibold">Mata pelajaran</th>
+                <th className="px-4 py-2-5 text-center fw-semibold">Nilai</th>
+                <th className="px-4 py-2-5 fw-semibold">Capaian kompetensi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="pembatas-y pembatas-abu">
               {r.daftar.map((d, i) => (
                 <tr key={d.kode}>
-                  <td className="px-4 py-2.5 text-slate-500">{i + 1}</td>
-                  <td className="px-4 py-2.5 font-semibold text-slate-800">{d.nama}</td>
-                  <td className="px-4 py-2.5 text-center font-bold tabular-nums text-slate-900">{sel(d.akhir)}</td>
-                  <td className="px-4 py-2.5 text-slate-600">{deskripsiCapaian(d.kode, d.akhir)}</td>
+                  <td className="px-4 py-2-5 text-tinta-3">{i + 1}</td>
+                  <td className="px-4 py-2-5 fw-semibold text-tinta">{d.nama}</td>
+                  <td className="px-4 py-2-5 text-center fw-bold angka text-tinta">{sel(d.akhir)}</td>
+                  <td className="px-4 py-2-5 text-tinta-2">{deskripsiCapaian(d.kode, d.akhir)}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr className="border-t border-slate-200 bg-slate-50">
+              <tr className="border-top border-abu-200 bg-abu-50">
                 <td />
-                <td className="px-4 py-2.5 font-bold text-slate-800">Rata-rata</td>
-                <td className="px-4 py-2.5 text-center font-bold tabular-nums text-primary-700">{sel(r.rataRata)}</td>
-                <td className="px-4 py-2.5 text-slate-600">{predikat(r.rataRata).label}</td>
+                <td className="px-4 py-2-5 fw-bold text-tinta">Rata-rata</td>
+                <td className="px-4 py-2-5 text-center fw-bold angka text-merah-700">{sel(r.rataRata)}</td>
+                <td className="px-4 py-2-5 text-tinta-2">{predikat(r.rataRata).label}</td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        <div className="grid gap-4 p-6 md:grid-cols-3">
-          <div className="rounded-xl border border-slate-200 p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Ketidakhadiran</p>
-            <dl className="mt-2 space-y-1 text-sm">
+        <div className="d-grid gap-4 p-6 kolom-md-3">
+          <div className="rounded-2 border border-abu-200 p-4">
+            <p className="fs-xs fw-bold text-uppercase ls-wider text-tinta-3">Ketidakhadiran</p>
+            <dl className="mt-2 antara-y-1 fs-sm">
               {[
                 ['Sakit', hadir.S],
                 ['Izin', hadir.I],
                 ['Tanpa keterangan', hadir.A],
               ].map(([k, v]) => (
-                <div key={k} className="flex justify-between">
-                  <dt className="text-slate-600">{k}</dt>
-                  <dd className="font-semibold text-slate-900">{v} hari</dd>
+                <div key={k} className="d-flex justify-content-between">
+                  <dt className="text-tinta-2">{k}</dt>
+                  <dd className="fw-semibold text-tinta">{v} hari</dd>
                 </div>
               ))}
             </dl>
           </div>
-          <div className="rounded-xl border border-slate-200 p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Ekstrakurikuler</p>
-            <ul className="mt-2 space-y-1 text-sm">
-              {ekskul.length === 0 && <li className="text-slate-500">–</li>}
+          <div className="rounded-2 border border-abu-200 p-4">
+            <p className="fs-xs fw-bold text-uppercase ls-wider text-tinta-3">Ekstrakurikuler</p>
+            <ul className="mt-2 antara-y-1 fs-sm">
+              {ekskul.length === 0 && <li className="text-tinta-3">–</li>}
               {ekskul.map((e) => (
-                <li key={e.id} className="flex justify-between gap-2">
-                  <span className="text-slate-700">{e.nama}</span>
-                  <span className="font-semibold text-slate-900">Baik</span>
+                <li key={e.id} className="d-flex justify-content-between gap-2">
+                  <span className="text-tinta-2">{e.nama}</span>
+                  <span className="fw-semibold text-tinta">Baik</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-xl border border-slate-200 p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Sikap</p>
-            <p className="mt-2 text-sm text-slate-700">
+          <div className="rounded-2 border border-abu-200 p-4">
+            <p className="fs-xs fw-bold text-uppercase ls-wider text-tinta-3">Sikap</p>
+            <p className="mt-2 fs-sm text-tinta-2">
               {sikap.positif} apresiasi · {sikap.perbaikan} catatan perbaikan
             </p>
-            <p className="mt-1 text-sm font-semibold text-slate-900">Total poin: {sikap.total > 0 ? `+${sikap.total}` : sikap.total}</p>
+            <p className="mt-1 fs-sm fw-semibold text-tinta">Total poin: {sikap.total > 0 ? `+${sikap.total}` : sikap.total}</p>
           </div>
         </div>
 
         <div className="px-6 pb-6">
-          <div className="rounded-xl bg-amber-50 p-4 ring-1 ring-amber-100">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Catatan wali kelas</p>
+          <div className="rounded-2 bg-warning-subtle p-4 border border-warning-subtle">
+            <div className="d-flex align-items-center justify-content-between gap-3">
+              <p className="fs-xs fw-bold text-uppercase ls-wider text-warning-emphasis">Catatan wali kelas</p>
               {bisaEdit && !ubah && (
                 <button
                   onClick={() => {
                     setDraf(catatan)
                     setUbah(true)
                   }}
-                  className="text-xs font-semibold text-amber-800 underline print:hidden"
+                  className="fs-xs fw-semibold text-warning-emphasis text-decoration-underline d-print-none"
                 >
                   Ubah catatan
                 </button>
               )}
             </div>
             {ubah ? (
-              <div className="mt-2 print:hidden">
-                <textarea value={draf} onChange={(e) => setDraf(e.target.value)} rows={3} className="w-full rounded-xl border border-amber-200 bg-white p-3 text-sm focus:outline-none focus:ring-4 focus:ring-amber-100" />
-                <div className="mt-2 flex flex-wrap justify-end gap-2">
+              <div className="mt-2 d-print-none">
+                <textarea value={draf} onChange={(e) => setDraf(e.target.value)} rows={3} className="w-100 rounded-2 border border-warning-subtle bg-white p-3 fs-sm" />
+                <div className="mt-2 d-flex flex-wrap justify-content-end gap-2">
                   <button onClick={() => setUbah(false)} className={btn.secondary}>
                     Batal
                   </button>
@@ -252,11 +258,11 @@ export function KartuRapor({ siswa, bisaEdit = false }) {
                 </div>
               </div>
             ) : (
-              <p className="mt-2 text-sm italic text-amber-900">“{catatan}”</p>
+              <p className="mt-2 fs-sm fst-italic text-warning-emphasis">“{catatan}”</p>
             )}
           </div>
 
-          <div className="mt-8 grid grid-cols-3 gap-4 text-center text-xs text-slate-600">
+          <div className="mt-8 d-grid kolom-3 gap-4 text-center fs-xs text-tinta-2">
             {[
               ['Orang Tua/Wali', siswa.ortu],
               [`Wali Kelas ${siswa.kelas}`, wali?.nama ?? '–'],
@@ -265,11 +271,11 @@ export function KartuRapor({ siswa, bisaEdit = false }) {
               <div key={peran}>
                 <p>{peran}</p>
                 <div className="h-14" />
-                <p className="border-t border-slate-300 pt-1 font-semibold text-slate-800">{n}</p>
+                <p className="border-top border-abu-300 pt-1 fw-semibold text-tinta">{n}</p>
               </div>
             ))}
           </div>
-          <p className="mt-6 text-right text-xs text-slate-400">Dicetak dari Portal {SEKOLAH.nama} · {formatTanggal(todayKey())}</p>
+          <p className="mt-6 text-end fs-xs text-abu-400">Dicetak dari Portal {SEKOLAH.nama} · {formatTanggal(todayKey())}</p>
         </div>
       </Card>
     </div>

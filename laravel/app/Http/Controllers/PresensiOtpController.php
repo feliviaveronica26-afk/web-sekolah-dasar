@@ -25,6 +25,10 @@ class PresensiOtpController extends Controller
         $a = $this->akses($request);
         $isian = $request->validate(['kelas' => ['required', 'string'], 'kunci' => ['nullable', 'string', 'max:30']]);
         $hariIni = Waktu::hariIni();
+        if (! Waktu::hariSekolah($hariIni)) {
+            $libur = Waktu::liburPada($hariIni);
+            throw ValidationException::withMessages(['kelas' => $libur ? "Hari ini libur ({$libur}), presensi tidak dibuka." : 'Hari ini libur, presensi tidak dibuka.']);
+        }
         $kelas = $isian['kelas'];
         $kunci = $isian['kunci'] ?? null;
         $pelajaran = $kunci ? Referensi::pelajaranDariKunci($kelas, $hariIni, $kunci) : null;

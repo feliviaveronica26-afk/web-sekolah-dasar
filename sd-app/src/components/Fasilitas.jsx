@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { agendaPada } from './KalenderAkademik'
 import { TombolSalin } from './Spp'
-import { isian, labelIsian, pilihan, tombol } from './Situs'
+import { isian, isianPilih, labelIsian, pilihan, tombol } from './Situs'
 import { Alert, Badge, JebakanBot } from './ui'
 import { useData } from '../context/DataContext'
 import { DENAH_GERBANG, DENAH_JALUR, DENAH_LAIN, DENAH_ZONA, FASILITAS, KUNJUNGAN, SEKOLAH, UKURAN_DENAH } from '../data/dummy'
@@ -43,10 +43,10 @@ export const IKON_FASILITAS = {
 }
 
 export const STATUS_KUNJUNGAN = {
-  Menunggu: 'bg-amber-100 text-amber-800',
-  Dikonfirmasi: 'bg-emerald-100 text-emerald-700',
-  Ditolak: 'bg-rose-100 text-rose-700',
-  Selesai: 'bg-slate-100 text-slate-600',
+  Menunggu: 'warna-amber',
+  Dikonfirmasi: 'warna-emerald',
+  Ditolak: 'warna-rose',
+  Selesai: 'warna-abu',
 }
 
 const { lebar: LEBAR, tinggi: TINGGI } = UKURAN_DENAH
@@ -66,19 +66,17 @@ const IKON_DENAH = {
   pramuka: Tent,
 }
 
-// Area terbuka diberi warna rumput/taman, bangunan berwarna putih
+// Area terbuka diberi warna rumput/taman, bangunan berwarna putih (lihat .denah-* di _situs.scss)
 const GAYA_FASILITAS = {
-  lapangan: 'border-lime-300 bg-lime-100 text-lime-900',
-  taman: 'border-emerald-300 bg-emerald-200/70 text-emerald-900',
+  lapangan: 'denah-fasilitas--lapangan',
+  taman: 'denah-fasilitas--taman',
 }
-
-const label = 'text-[7px] font-bold leading-tight @sm:text-[8px] @lg:text-[10px] @2xl:text-xs'
 
 function IsiArea({ Ikon, teks, kecil }) {
   return (
     <>
-      <Ikon className="h-3 w-3 shrink-0 @lg:h-4 @lg:w-4 @2xl:h-5 @2xl:w-5" />
-      {!kecil && <span className={`hidden max-w-full @sm:block ${label}`}>{teks}</span>}
+      <Ikon className="denah-ikon flex-shrink-0" />
+      {!kecil && <span className="denah-label mw-100">{teks}</span>}
     </>
   )
 }
@@ -86,7 +84,7 @@ function IsiArea({ Ikon, teks, kecil }) {
 // Tiang bendera di Lapangan Upacara
 function TiangBendera() {
   return (
-    <svg viewBox="0 0 24 32" className="absolute left-1/2 top-[8%] h-[55%] -translate-x-1/2" aria-hidden="true">
+    <svg viewBox="0 0 24 32" className="denah-tiang position-absolute start-50" aria-hidden="true">
       <rect x="5" y="2" width="1.6" height="27" rx="0.8" fill="#64748b" />
       <rect x="6.6" y="3" width="13" height="4" fill="#d91a28" />
       <rect x="6.6" y="7" width="13" height="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.4" />
@@ -104,40 +102,32 @@ export function DenahSekolah({ aktif, kecil = false }) {
 
   return (
     <div>
-      <div
-        className="@container relative w-full overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50"
-        style={{ aspectRatio: `${LEBAR} / ${TINGGI}` }}
-        role="group"
-        aria-label="Denah sekolah"
-      >
+      <div className="denah position-relative w-100 overflow-hidden rounded-3" style={{ aspectRatio: `${LEBAR} / ${TINGGI}` }} role="group" aria-label="Denah sekolah">
         {/* Zona berlatar */}
         {DENAH_ZONA.map((z) => (
-          <div key={z.nama} style={posisi(z.denah)} className="absolute rounded-lg border border-dashed border-emerald-300 bg-emerald-100/70">
-            {!kecil && <span className="absolute -top-px left-1.5 hidden text-[7px] font-bold uppercase tracking-wider text-emerald-700/70 @md:block @2xl:text-[9px]">{z.nama}</span>}
+          <div key={z.nama} style={posisi(z.denah)} className="denah-zona position-absolute rounded-1">
+            {!kecil && <span className="denah-zona__label position-absolute">{z.nama}</span>}
           </div>
         ))}
 
         {/* Jalan & selasar */}
         {DENAH_JALUR.map((j, i) => (
-          <div key={i} style={posisi(j)} className="absolute bg-amber-100" />
+          <div key={i} style={posisi(j)} className="denah-jalan position-absolute" />
         ))}
 
         {/* Pagar keliling sekolah */}
-        <div className="pointer-events-none absolute inset-[0.9%] rounded-xl border-[3px] border-slate-400/80" title="Pagar sekolah" />
+        <div className="denah-pagar pe-none position-absolute rounded-2" title="Pagar sekolah" />
 
         {/* Gerbang utama di pagar kanan */}
         <div
           title="Gerbang Utama"
-          className="absolute right-0 z-10 flex items-center justify-center rounded-l-md bg-amber-200 text-primary-700 ring-2 ring-primary-500"
+          className="denah-gerbang position-absolute end-0 z-10 d-flex align-items-center justify-content-center"
           style={{ top: persen(DENAH_GERBANG.y, TINGGI), height: persen(DENAH_GERBANG.h, TINGGI), width: '3.4%' }}
         >
-          <DoorOpen className="h-2.5 w-2.5 @lg:h-3.5 @lg:w-3.5" />
+          <DoorOpen className="denah-gerbang__ikon" />
         </div>
         {!kecil && (
-          <span
-            className="absolute z-10 hidden -translate-y-1/2 whitespace-nowrap text-[8px] font-bold text-primary-700 @md:block @2xl:text-[10px]"
-            style={{ right: '4.2%', top: persen(DENAH_GERBANG.y + DENAH_GERBANG.h / 2, TINGGI) }}
-          >
+          <span className="denah-gerbang__label position-absolute z-10 text-nowrap" style={{ right: '4.2%', top: persen(DENAH_GERBANG.y + DENAH_GERBANG.h / 2, TINGGI) }}>
             Gerbang Utama →
           </span>
         )}
@@ -145,17 +135,17 @@ export function DenahSekolah({ aktif, kecil = false }) {
         {/* Bangunan & area yang bukan fasilitas */}
         {DENAH_LAIN.map((a) =>
           a.jenis === 'upacara' ? (
-            <div key={a.nama} style={posisi(a.denah)} title="Lapangan Upacara & tiang bendera" className="absolute rounded-lg border-2 border-stone-300 bg-stone-100 text-stone-600">
+            <div key={a.nama} style={posisi(a.denah)} title="Lapangan Upacara & tiang bendera" className="denah-upacara position-absolute rounded-1">
               <TiangBendera />
-              {!kecil && <span className={`absolute inset-x-0 bottom-[10%] hidden text-center @sm:block ${label}`}>Lapangan Upacara · Tiang Bendera</span>}
+              {!kecil && <span className="denah-label denah-upacara__label position-absolute start-0 end-0 text-center">Lapangan Upacara · Tiang Bendera</span>}
             </div>
           ) : (
             <div
               key={a.nama}
               style={posisi(a.denah)}
               title={a.nama}
-              className={`absolute flex flex-col items-center justify-center gap-0.5 rounded-lg p-0.5 text-center @lg:gap-1 ${
-                a.jenis === 'parkir' ? 'border border-dashed border-slate-400 bg-slate-100/80 text-slate-500' : 'bg-slate-200 text-slate-600'
+              className={`denah-area position-absolute d-flex flex-column align-items-center justify-content-center rounded-1 text-center ${
+                a.jenis === 'parkir' ? 'denah-area--parkir' : 'denah-area--gedung'
               }`}
             >
               <IsiArea Ikon={IKON_DENAH[a.ikon] ?? Building2} teks={a.nama} kecil={kecil} />
@@ -175,10 +165,8 @@ export function DenahSekolah({ aktif, kecil = false }) {
                 style={posisi(area)}
                 title={area.label ?? f.nama}
                 aria-label={area.label ?? f.nama}
-                className={`group absolute flex flex-col items-center justify-center gap-0.5 rounded-lg border-2 p-0.5 text-center transition @lg:gap-1 ${
-                  dipilih
-                    ? 'z-10 border-primary-700 bg-primary-600 text-white shadow-lg'
-                    : `${GAYA_FASILITAS[f.id] ?? 'border-white bg-white text-slate-700 shadow-sm'} hover:z-10 hover:-translate-y-0.5 hover:border-primary-400 hover:text-primary-700 hover:shadow-md`
+                className={`denah-area denah-fasilitas position-absolute d-flex flex-column align-items-center justify-content-center rounded-1 text-center ${
+                  dipilih ? 'denah-fasilitas--aktif' : GAYA_FASILITAS[f.id] ?? ''
                 }`}
               >
                 <IsiArea Ikon={Ikon} teks={area.label ?? f.nama} kecil={kecil} />
@@ -190,29 +178,29 @@ export function DenahSekolah({ aktif, kecil = false }) {
 
       {kecil ? (
         fasilitasAktif && (
-          <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-sm bg-primary-600" />
+          <p className="mt-2 d-flex align-items-center gap-2 fs-xs text-tinta-3">
+            <span className="ukuran-2-5 flex-shrink-0 rounded-1 bg-primary" />
             <span>
-              <b className="text-slate-700">{fasilitasAktif.nama}</b> · {fasilitasAktif.lokasi}
+              <b className="text-tinta-2">{fasilitasAktif.nama}</b> · {fasilitasAktif.lokasi}
             </span>
           </p>
         )
       ) : (
-        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-500">
-          <li className="flex items-center gap-1.5">
-            <span className="h-3 w-4 rounded-sm border-2 border-slate-400" /> Pagar sekolah
+        <ul className="mt-3 d-flex flex-wrap column-gap-4 row-gap-1-5 fs-xs text-tinta-3">
+          <li className="d-flex align-items-center gap-1-5">
+            <span className="legenda-denah legenda-denah--pagar" /> Pagar sekolah
           </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-3 w-4 rounded-sm bg-amber-100 ring-1 ring-amber-200" /> Jalan
+          <li className="d-flex align-items-center gap-1-5">
+            <span className="legenda-denah legenda-denah--jalan" /> Jalan
           </li>
-          <li className="flex items-center gap-1.5">
-            <DoorOpen className="h-3.5 w-3.5 text-primary-600" /> Gerbang utama & pos satpam (kanan)
+          <li className="d-flex align-items-center gap-1-5">
+            <DoorOpen className="ukuran-3-5 text-primary" /> Gerbang utama & pos satpam (kanan)
           </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-3 w-4 rounded-sm border-2 border-white bg-white shadow ring-1 ring-slate-200" /> Fasilitas (klik untuk detail)
+          <li className="d-flex align-items-center gap-1-5">
+            <span className="legenda-denah legenda-denah--fasilitas" /> Fasilitas (klik untuk detail)
           </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-3 w-4 rounded-sm bg-slate-200" /> Ruang guru, kepala sekolah & lab server
+          <li className="d-flex align-items-center gap-1-5">
+            <span className="legenda-denah legenda-denah--gedung" /> Ruang guru, kepala sekolah & lab server
           </li>
         </ul>
       )}
@@ -267,19 +255,19 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
   if (berhasil) {
     return (
       <div className="py-2">
-        <CheckCircle2 className="h-10 w-10 text-emerald-700" aria-hidden="true" />
-        <p className="mt-4 text-3xl font-extrabold tracking-tight leading-tight">Permintaan kunjungan terkirim.</p>
+        <CheckCircle2 className="ukuran-10 text-success" aria-hidden="true" />
+        <p className="mt-4 fs-3xl fw-extrabold ls-tight lh-tight">Permintaan kunjungan terkirim.</p>
         <p className="angka mt-2 text-tinta-2">
           {formatHari(berhasil.tanggal)}, pukul {berhasil.sesi} WIB
         </p>
-        <div className="mt-6 rounded-xl border-2 border-dashed border-tinta/40 bg-white p-5">
-          <p className="text-sm text-tinta-3">Kode kunjungan Anda</p>
-          <p className="mt-1 font-mono text-3xl font-bold tracking-wider text-primary-700">{berhasil.kode}</p>
+        <div className="mt-6 rounded-2 border border-2 border-putus border-tinta border-opacity-50 bg-white p-5">
+          <p className="fs-sm text-tinta-3">Kode kunjungan Anda</p>
+          <p className="mt-1 font-monospace fs-3xl fw-bold ls-wider text-merah-700">{berhasil.kode}</p>
           <div className="mt-3">
             <TombolSalin teks={berhasil.kode} label="Salin kode" />
           </div>
         </div>
-        <p className="mt-5 text-[15px] leading-relaxed text-tinta-2">
+        <p className="mt-5 fs-15 lh-relaxed text-tinta-2">
           Tata Usaha akan mengonfirmasi melalui WhatsApp <b>{berhasil.whatsapp}</b>. Simpan kode ini untuk mengecek status di halaman Fasilitas.
         </p>
       </div>
@@ -287,24 +275,30 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
   }
 
   return (
-    <form onSubmit={kirim} className="relative space-y-5">
+    <form onSubmit={kirim} className="position-relative d-flex flex-column gap-5">
       <JebakanBot value={jebakan} onChange={setJebakan} />
       {error && (
         <div role="alert">
           <Alert tone="error">{error}</Alert>
         </div>
       )}
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="d-grid gap-5 kolom-sm-2">
         <div>
-          <label htmlFor="kj-nama" className={labelIsian}>Nama lengkap</label>
+          <label htmlFor="kj-nama" className={labelIsian}>
+            Nama lengkap
+          </label>
           <input id="kj-nama" required value={form.nama} onChange={set('nama')} className={isian} placeholder="Nama Bapak/Ibu" />
         </div>
         <div>
-          <label htmlFor="kj-wa" className={labelIsian}>No. WhatsApp</label>
+          <label htmlFor="kj-wa" className={labelIsian}>
+            No. WhatsApp
+          </label>
           <input id="kj-wa" required type="tel" value={form.whatsapp} onChange={set('whatsapp')} className={isian} placeholder="08xx-xxxx-xxxx" />
         </div>
         <div>
-          <label htmlFor="kj-tanggal" className={labelIsian}>Tanggal kunjungan</label>
+          <label htmlFor="kj-tanggal" className={labelIsian}>
+            Tanggal kunjungan
+          </label>
           <input
             id="kj-tanggal"
             type="date"
@@ -318,14 +312,16 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
             className={isian}
           />
           {form.tanggal && (
-            <p className={`mt-1.5 text-sm ${libur ? 'font-semibold text-rose-700' : 'text-tinta-3'}`}>
+            <p className={`mt-1-5 fs-sm ${libur ? 'fw-semibold text-danger-emphasis' : 'text-tinta-3'}`}>
               {libur ? 'Hari libur — pilih Senin sampai Jumat.' : formatHari(form.tanggal)}
             </p>
           )}
         </div>
         <div>
-          <label htmlFor="kj-jumlah" className={labelIsian}>Jumlah pengunjung</label>
-          <select id="kj-jumlah" value={form.jumlah} onChange={set('jumlah')} className={isian}>
+          <label htmlFor="kj-jumlah" className={labelIsian}>
+            Jumlah pengunjung
+          </label>
+          <select id="kj-jumlah" value={form.jumlah} onChange={set('jumlah')} className={isianPilih}>
             {Array.from({ length: KUNJUNGAN.maksOrang }, (_, i) => (
               <option key={i + 1} value={i + 1}>
                 {i + 1} orang
@@ -339,7 +335,7 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
         <p id="kj-sesi-label" className={labelIsian}>
           Sesi
         </p>
-        <div role="group" aria-labelledby="kj-sesi-label" className="grid grid-cols-3 gap-2">
+        <div role="group" aria-labelledby="kj-sesi-label" className="d-grid kolom-3 gap-2">
           {KUNJUNGAN.sesi.map((s) => {
             const sisa = KUNJUNGAN.kuotaPerSesi - terisi(s)
             const penuh = !form.tanggal || libur || sisa <= 0
@@ -350,10 +346,10 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
                 disabled={penuh}
                 aria-pressed={form.sesi === s}
                 onClick={() => setForm({ ...form, sesi: s })}
-                className={`px-2 text-center ${pilihan(form.sesi === s)}`}
+                className={`d-block text-center ${pilihan(form.sesi === s, 'px-2 py-2-5 fs-15')}`}
               >
-                <span className="angka block text-sm font-bold">{s}</span>
-                <span className={`block text-xs font-normal ${form.sesi === s ? 'text-krem' : 'text-tinta-3'}`}>
+                <span className="angka d-block fs-sm fw-bold">{s}</span>
+                <span className={`d-block fs-xs fw-normal ${form.sesi === s ? 'text-krem' : 'text-tinta-3'}`}>
                   {!form.tanggal ? 'Pilih tanggal' : sisa > 0 ? `Sisa ${sisa}` : 'Penuh'}
                 </span>
               </button>
@@ -363,8 +359,10 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
       </div>
 
       <div>
-        <label htmlFor="kj-keperluan" className={labelIsian}>Keperluan</label>
-        <select id="kj-keperluan" value={form.keperluan} onChange={set('keperluan')} className={isian}>
+        <label htmlFor="kj-keperluan" className={labelIsian}>
+          Keperluan
+        </label>
+        <select id="kj-keperluan" value={form.keperluan} onChange={set('keperluan')} className={isianPilih}>
           {KUNJUNGAN.keperluan.map((k) => (
             <option key={k}>{k}</option>
           ))}
@@ -375,14 +373,14 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
         <p id="kj-fasilitas-label" className={labelIsian}>
           Fasilitas yang ingin dilihat (opsional)
         </p>
-        <div role="group" aria-labelledby="kj-fasilitas-label" className="flex flex-wrap gap-2">
+        <div role="group" aria-labelledby="kj-fasilitas-label" className="d-flex flex-wrap gap-2">
           {FASILITAS.map((f) => (
             <button
               key={f.id}
               type="button"
               aria-pressed={form.fasilitas.includes(f.id)}
               onClick={() => toggleFasilitas(f.id)}
-              className={`py-2! text-sm! ${pilihan(form.fasilitas.includes(f.id))}`}
+              className={pilihan(form.fasilitas.includes(f.id), 'px-3 py-2 fs-sm')}
             >
               {f.nama}
             </button>
@@ -391,16 +389,16 @@ export function FormKunjungan({ fasilitasAwal = [] }) {
       </div>
 
       <div>
-        <label htmlFor="kj-catatan" className={labelIsian}>Catatan (opsional)</label>
+        <label htmlFor="kj-catatan" className={labelIsian}>
+          Catatan (opsional)
+        </label>
         <textarea id="kj-catatan" rows={3} value={form.catatan} onChange={set('catatan')} className={isian} placeholder="Misalnya: ingin bertanya tentang program ekstrakurikuler." />
       </div>
 
-      <button type="submit" disabled={mengirim} className={`${tombol.utama} w-full`}>
+      <button type="submit" disabled={mengirim} className={`${tombol.utama} w-100`}>
         {mengirim ? 'Mengirim...' : 'Kirim Permintaan Kunjungan'}
       </button>
-      <p className="text-center text-sm text-tinta-3">
-        Kunjungan didampingi guru/staf {SEKOLAH.nama}. Mohon membawa kartu identitas.
-      </p>
+      <p className="text-center fs-sm text-tinta-3">Kunjungan didampingi guru/staf {SEKOLAH.nama}. Mohon membawa kartu identitas.</p>
     </form>
   )
 }
@@ -434,21 +432,21 @@ export function CekKunjungan() {
         <label htmlFor="cek-kode" className={labelIsian}>
           Kode kunjungan
         </label>
-        <div className="flex gap-2">
-          <input id="cek-kode" value={kode} onChange={(e) => setKode(e.target.value)} placeholder="Contoh: KJG-7QX2MP" className={`${isian} font-mono uppercase`} />
-          <button type="submit" className={`${tombol.utama} shrink-0 px-4!`}>
-            <Search className="h-4 w-4" /> Cek
+        <div className="d-flex gap-2">
+          <input id="cek-kode" value={kode} onChange={(e) => setKode(e.target.value)} placeholder="Contoh: KJG-7QX2MP" className={`${isian} font-monospace text-uppercase`} />
+          <button type="submit" className={`${tombol.utama} flex-shrink-0 px-4`}>
+            <Search className="ukuran-4" /> Cek
           </button>
         </div>
       </form>
       <div aria-live="polite">
-        {batas > 0 && <p className="mt-3 text-[15px] text-rose-700">Terlalu banyak pengecekan. Coba lagi dalam {batas} menit.</p>}
-        {galat && <p className="mt-3 text-[15px] text-rose-700">{galat}</p>}
-        {hasil === null && <p className="mt-3 text-[15px] text-rose-700">Kode tidak ditemukan. Periksa kembali kode Anda.</p>}
+        {batas > 0 && <p className="mt-3 fs-15 text-danger-emphasis">Terlalu banyak pengecekan. Coba lagi dalam {batas} menit.</p>}
+        {galat && <p className="mt-3 fs-15 text-danger-emphasis">{galat}</p>}
+        {hasil === null && <p className="mt-3 fs-15 text-danger-emphasis">Kode tidak ditemukan. Periksa kembali kode Anda.</p>}
         {hasil && (
-          <div className="mt-5 border-t border-garis pt-4 text-[15px]">
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-mono font-bold">{hasil.kode}</span>
+          <div className="mt-5 border-top border-garis pt-4 fs-15">
+            <div className="d-flex align-items-center justify-content-between gap-2">
+              <span className="font-monospace fw-bold">{hasil.kode}</span>
               <Badge className={STATUS_KUNJUNGAN[hasil.status]}>{hasil.status}</Badge>
             </div>
             <p className="angka mt-2">
@@ -458,8 +456,8 @@ export function CekKunjungan() {
               {hasil.nama} · {hasil.jumlah} orang
             </p>
             {hasil.catatanTu && (
-              <p className="mt-3 border-l-2 border-primary-600 pl-3 text-tinta-2">
-                <span className="block text-sm text-tinta-3">Catatan Tata Usaha</span>
+              <p className="mt-3 border-start border-2 border-primary ps-3 text-tinta-2">
+                <span className="d-block fs-sm text-tinta-3">Catatan Tata Usaha</span>
                 {hasil.catatanTu}
               </p>
             )}

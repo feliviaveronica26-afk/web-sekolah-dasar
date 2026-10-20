@@ -1,0 +1,285 @@
+// ============================================================================
+// Komponen Bootstrap yang disesuaikan dengan gaya sekolah
+// ============================================================================
+
+// ---- Tombol ----
+// btn-lg = tombol besar halaman publik (tinggi minimal 48px agar mudah disentuh)
+.btn-lg {
+  min-height: 3rem;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+// Tombol utama merah dengan bayangan lembut
+.btn-primary.bayangan,
+.bayangan-merah {
+  box-shadow: 0 12px 24px -12px rgb(217 26 40 / 0.8);
+}
+// Putih bergaris tipis (tombol kedua)
+.btn-kedua {
+  @include button-variant(
+    $white,
+    $garis,
+    $tinta,
+    $hover-background: $gray-50,
+    $hover-border: $gray-300,
+    $hover-color: $tinta,
+    $active-background: $gray-100,
+    $active-border: $gray-300,
+    $active-color: $tinta,
+    $disabled-background: $white,
+    $disabled-border: $garis,
+    $disabled-color: $tinta-3
+  );
+}
+// Hijau untuk aksi "hadir" (Absen Masuk)
+.btn-hijau {
+  @include button-variant(#059669, #059669, $white, $hover-background: #047857, $hover-border: #047857, $active-background: #065f46, $active-border: #065f46);
+}
+// Merah lembut untuk aksi berbahaya (hapus, tolak)
+.btn-bahaya {
+  @include button-variant(
+    #fff1f2,
+    #fff1f2,
+    #be123c,
+    $hover-background: #ffe4e6,
+    $hover-border: #ffe4e6,
+    $hover-color: #9f1239,
+    $active-background: #fecdd3,
+    $active-border: #fecdd3,
+    $active-color: #9f1239
+  );
+}
+// Putih bertulisan merah, dipakai di atas latar merah
+.btn-terang {
+  @include button-variant(
+    $white,
+    $white,
+    map-get($merah, 700),
+    $hover-background: map-get($merah, 50),
+    $hover-border: map-get($merah, 50),
+    $hover-color: map-get($merah, 800),
+    $active-background: map-get($merah, 100),
+    $active-border: map-get($merah, 100),
+    $active-color: map-get($merah, 800)
+  );
+  box-shadow: 0 12px 24px -12px rgb(0 0 0 / 0.45);
+}
+// Garis putih transparan, dipakai di atas latar merah/gelap
+.btn-garis-terang {
+  @include button-variant(
+    transparent,
+    rgba($white, 0.6),
+    $white,
+    $hover-background: rgba($white, 0.1),
+    $hover-border: $white,
+    $hover-color: $white,
+    $active-background: rgba($white, 0.15),
+    $active-border: $white,
+    $active-color: $white
+  );
+}
+// Tombol polos (tanpa latar), mis. tombol ikon
+.btn-polos {
+  @include button-variant(
+    transparent,
+    transparent,
+    $tinta-2,
+    $hover-background: $gray-100,
+    $hover-border: transparent,
+    $hover-color: $tinta,
+    $active-background: $gray-200,
+    $active-border: transparent,
+    $active-color: $tinta
+  );
+}
+// Tombol ikon bulat kecil
+.btn-ikon {
+  padding: 0.5rem;
+  border-radius: $border-radius-pill;
+  line-height: 1;
+}
+
+// ---- Kartu ----
+// Kartu dipakai sebagai kotak biasa (isi tersusun normal); tata letak flex ditambahkan per kartu bila perlu
+.card {
+  display: block;
+  --bs-card-inner-border-radius: calc(1.75rem - 1px);
+}
+// Kartu yang seluruhnya tautan
+.card-tautan {
+  display: block;
+  border-radius: 1.75rem;
+  outline: none;
+  transition: translate 0.2s ease;
+  &:hover {
+    translate: 0 -0.125rem;
+  }
+  &:hover .card {
+    border-color: map-get($merah, 200);
+    box-shadow: $box-shadow;
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 0.25rem map-get($merah, 200);
+  }
+}
+
+// ---- Formulir ----
+.form-label {
+  color: $tinta;
+}
+.form-control,
+.form-select {
+  background-color: $white;
+}
+// Kolom isian besar halaman publik
+.form-control-lg,
+.form-select-lg {
+  min-height: 3rem;
+}
+.form-control::file-selector-button {
+  font-weight: 600;
+}
+
+// ---- Lencana ----
+// Lencana boleh terlipat di kolom tabel yang sempit (bawaan Bootstrap: satu baris), dan ikon di
+// dalamnya tetap sebaris dengan teks
+.badge {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  white-space: normal;
+}
+
+// ---- Kotak peringatan ----
+.alert {
+  font-size: 0.875rem;
+}
+
+// ---- Tab berbentuk segmen pil (komponen Tabs) ----
+.tab-pil {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  gap: 0;
+  padding: 0.25rem;
+  border-radius: $border-radius-pill;
+  background: $kertas-tua;
+  .nav-link {
+    flex-shrink: 0;
+    border-radius: $border-radius-pill;
+    color: $tinta-2;
+    white-space: nowrap;
+    &.active {
+      background: $primary;
+      color: $white;
+    }
+    &.active .jumlah {
+      color: rgb(255 255 255 / 0.8);
+    }
+  }
+  .jumlah {
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $gray-400;
+  }
+}
+
+// ---- Modal: lembar dari bawah di HP, kotak di tengah di layar lebar ----
+// Lebar: modal-sm 28rem, bawaan 32rem, modal-lg 42rem, modal-xl 56rem
+.modal.modal-sekolah {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  overflow: hidden;
+  @include media-breakpoint-up(sm) {
+    align-items: center;
+    padding: 1rem;
+  }
+  .latar-modal {
+    position: absolute;
+    inset: 0;
+    background: rgb(15 23 42 / 0.5);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+  .modal-dialog {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    max-width: none;
+    @include media-breakpoint-up(sm) {
+      max-width: 32rem;
+    }
+    &.modal-sm {
+      @include media-breakpoint-up(sm) {
+        max-width: 28rem;
+      }
+    }
+    &.modal-lg {
+      @include media-breakpoint-up(sm) {
+        max-width: 42rem;
+      }
+    }
+    &.modal-xl {
+      @include media-breakpoint-up(sm) {
+        max-width: 56rem;
+      }
+    }
+  }
+  .modal-content {
+    max-height: 92dvh;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: $box-shadow-lg;
+    @include media-breakpoint-up(sm) {
+      border-radius: 2rem;
+    }
+  }
+  .modal-body {
+    overflow-y: auto;
+  }
+  .modal-footer {
+    gap: 0.5rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    > * {
+      margin: 0;
+    }
+    @include media-breakpoint-up(sm) {
+      padding-bottom: 1rem;
+    }
+  }
+}
+
+// ---- Tabel ----
+.table {
+  --bs-table-bg: transparent;
+  font-size: 0.875rem;
+  margin-bottom: 0;
+  > thead th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $tinta-3;
+    white-space: nowrap;
+  }
+}
+
+// ---- Menu turun (notifikasi) ----
+.dropdown-menu {
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+// ---- Laci menu samping di HP ----
+.offcanvas {
+  --bs-offcanvas-width: min(20rem, 85vw);
+}

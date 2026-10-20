@@ -8,6 +8,7 @@ import { ringkasAbsensi, useData } from '../../context/DataContext'
 import { KKTP } from '../../data/dummy'
 import { mapelRapor, predikat, rekapNilai } from '../../utils/nilai'
 import { ringkasSikap } from '../../utils/prestasi'
+import { teksHadir } from '../../utils/ringkasan'
 
 export default function RaporKelas() {
   const { data } = useData()
@@ -22,11 +23,13 @@ export default function RaporKelas() {
     .filter((s) => s.kelas === kelas)
     .map((s) => {
       const r = rekapNilai(data, s)
-      return { s, r, hadir: ringkasAbsensi(data.absensi, s.nis, tanggal).persen, poin: ringkasSikap(data, s.nis).total }
+      return { s, r, hadir: ringkasAbsensi(data.absensi, s.nis, tanggal), poin: ringkasSikap(data, s.nis).total }
     })
     .sort((a, b) => (b.r.rataRata ?? 0) - (a.r.rataRata ?? 0))
 
-  const rataKelas = siswa.length ? Math.round((siswa.reduce((a, x) => a + (x.r.rataRata ?? 0), 0) / siswa.length) * 10) / 10 : null
+  // Siswa yang belum punya nilai (mis. siswa baru) tidak ikut rata-rata kelas
+  const adaNilai = siswa.filter((x) => x.r.rataRata !== null)
+  const rataKelas = adaNilai.length ? Math.round((adaNilai.reduce((a, x) => a + x.r.rataRata, 0) / adaNilai.length) * 10) / 10 : null
   const semuaTuntas = siswa.filter((x) => x.r.tuntas === x.r.daftar.length).length
   // Rata-rata kelas per mapel
   const perMapel = mapelRapor(kelas).map((kode) => {
@@ -42,7 +45,7 @@ export default function RaporKelas() {
         desc={`${SEMESTER}. Pantau capaian seluruh siswa dan cetak rapor sementara.`}
         action={
           L.daftarKelas.length > 1 && (
-            <select value={kelas} onChange={(e) => setKelas(e.target.value)} className={`${inputCls} w-auto!`} aria-label="Pilih kelas">
+            <select value={kelas} onChange={(e) => setKelas(e.target.value)} className={`${inputCls} w-auto`} aria-label="Pilih kelas">
               {L.daftarKelas.map((k) => (
                 <option key={k} value={k}>
                   Kelas {k}
@@ -53,48 +56,48 @@ export default function RaporKelas() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="d-grid kolom-2 gap-4 kolom-lg-4">
         <StatCard icon={Users} label="Jumlah siswa" value={siswa.length} hint={`Kelas ${kelas}`} tone="sky" />
         <StatCard icon={TrendingUp} label="Rata-rata kelas" value={rataKelas ?? '–'} hint={predikat(rataKelas).label} tone="emerald" />
         <StatCard icon={Target} label="Tuntas semua mapel" value={`${semuaTuntas}/${siswa.length}`} hint={`KKTP ${KKTP}`} tone="amber" />
         <StatCard icon={BookOpenCheck} label="Mapel dinilai" value={perMapel.length} tone="primary" />
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+      <div className="mt-6 d-grid gap-6 kolom-xl-14-10">
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[620px] text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <table className="w-100 min-w-620 text-start fs-sm">
+              <thead className="bg-abu-50 fs-xs text-uppercase ls-wider text-tinta-3">
                 <tr>
-                  <th className="px-5 py-3 font-semibold">#</th>
-                  <th className="px-5 py-3 font-semibold">Siswa</th>
-                  <th className="px-3 py-3 text-center font-semibold">Rata-rata</th>
-                  <th className="px-3 py-3 text-center font-semibold">Tuntas</th>
-                  <th className="px-3 py-3 text-center font-semibold">Hadir</th>
-                  <th className="px-3 py-3 text-center font-semibold">Poin</th>
-                  <th className="px-5 py-3 text-right font-semibold">Rapor</th>
+                  <th className="px-5 py-3 fw-semibold">#</th>
+                  <th className="px-5 py-3 fw-semibold">Siswa</th>
+                  <th className="px-3 py-3 text-center fw-semibold">Rata-rata</th>
+                  <th className="px-3 py-3 text-center fw-semibold">Tuntas</th>
+                  <th className="px-3 py-3 text-center fw-semibold">Hadir</th>
+                  <th className="px-3 py-3 text-center fw-semibold">Poin</th>
+                  <th className="px-5 py-3 text-end fw-semibold">Rapor</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 tabular-nums">
+              <tbody className="pembatas-y pembatas-abu angka">
                 {siswa.map(({ s, r, hadir, poin }, i) => (
-                  <tr key={s.nis} className="hover:bg-slate-50/60">
-                    <td className="px-5 py-3 font-bold text-slate-400">{i + 1}</td>
+                  <tr key={s.nis} className="hover-latar">
+                    <td className="px-5 py-3 fw-bold text-abu-400">{i + 1}</td>
                     <td className="px-5 py-3">
-                      <span className="flex items-center gap-3">
+                      <span className="d-flex align-items-center gap-3">
                         <Avatar nama={s.nama} size="sm" />
-                        <span className="font-semibold text-slate-800">{s.nama}</span>
+                        <span className="fw-semibold text-tinta">{s.nama}</span>
                       </span>
                     </td>
                     <td className="px-3 py-3 text-center">
                       <Badge className={predikat(r.rataRata).cls}>{r.rataRata ?? '–'}</Badge>
                     </td>
-                    <td className="px-3 py-3 text-center text-slate-700">
+                    <td className="px-3 py-3 text-center text-tinta-2">
                       {r.tuntas}/{r.daftar.length}
                     </td>
-                    <td className="px-3 py-3 text-center text-slate-700">{hadir}%</td>
-                    <td className="px-3 py-3 text-center text-slate-700">{poin > 0 ? `+${poin}` : poin}</td>
-                    <td className="px-5 py-3 text-right">
-                      <button onClick={() => setLihat(s.nis)} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-primary-600 hover:bg-primary-50">
+                    <td className="px-3 py-3 text-center text-tinta-2">{teksHadir(hadir)}</td>
+                    <td className="px-3 py-3 text-center text-tinta-2">{poin > 0 ? `+${poin}` : poin}</td>
+                    <td className="px-5 py-3 text-end">
+                      <button onClick={() => setLihat(s.nis)} className="d-inline-flex align-items-center gap-1-5 rounded-1 px-2-5 py-1-5 fs-xs fw-semibold text-primary hover-latar-merah">
                         <Eye className="h-4 w-4" /> Lihat
                       </button>
                     </td>
@@ -105,7 +108,7 @@ export default function RaporKelas() {
           </div>
         </Card>
 
-        <Card className="h-fit p-6">
+        <Card className="h-auto p-6">
           <JudulKartu icon={TrendingUp} judul="Rata-rata kelas per mapel" />
           <GrafikBatang judul={`Rata-rata kelas ${kelas} per mata pelajaran`} data={perMapel.map((m) => ({ label: m.nama, nilai: m.nilai }))} acuan={{ nilai: KKTP, label: 'KKTP' }} />
         </Card>

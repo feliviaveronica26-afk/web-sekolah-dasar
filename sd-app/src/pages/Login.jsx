@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Muncul, TeksNaik } from '../components/Hiasan'
 import { Merek } from '../components/Navbar'
 import { Foto, isian, labelIsian, tombol } from '../components/Situs'
 import { Alert } from '../components/ui'
@@ -81,56 +82,68 @@ export default function Login() {
     usernameRef.current?.focus()
   }
 
-  const kartuAkun = (aktif) =>
-    `min-h-11 rounded-xl border px-2 py-2 text-center transition ${aktif ? 'border-primary-700 bg-primary-700 text-white' : 'border-garis bg-white text-tinta hover:border-primary-600/60'}`
+  const kartuAkun = (aktif) => `btn rounded-2 min-h-11 px-2 py-2 d-block text-center ${aktif ? 'btn-primary' : 'btn-kedua'}`
 
   return (
-    <div className="situs grid min-h-screen lg:grid-cols-[0.9fr_1.1fr]">
+    <div className="d-grid min-vh-100 tata-login">
       {/* Panel merah berlatar foto */}
-      <div className="relative isolate hidden flex-col justify-between overflow-hidden bg-primary-800 p-12 text-white lg:flex xl:p-16">
-        <span aria-hidden="true" className="absolute inset-0 -z-20">
-          <Foto foto={FOTO.sahabat} alt="" prioritas />
+      <div className="position-relative isolate d-none d-lg-flex flex-column justify-content-between overflow-hidden bg-merah-800 p-12 p-xl-16 text-white">
+        <span aria-hidden="true" className="position-absolute inset-0 z-n2">
+          <Foto foto={FOTO.sahabat} alt="" prioritas className="foto-pelan" />
         </span>
-        <span aria-hidden="true" className="absolute inset-0 -z-10 bg-primary-800/[0.88]" />
-        <span className="w-fit rounded-2xl bg-white px-4 py-2.5">
+        <span aria-hidden="true" className="tirai-login position-absolute inset-0 z-n1" />
+        <span className="turun-awal align-self-start rounded-3 bg-white px-4 py-2-5">
           <Merek />
         </span>
         <div>
-          <p className="inline-flex rounded-full bg-stabilo px-3.5 py-1.5 text-sm font-bold text-tinta">Selamat datang kembali</p>
-          <p className="mt-5 max-w-md text-5xl font-extrabold leading-[1.05] tracking-tight">Satu portal untuk seluruh warga sekolah.</p>
-          <dl className="mt-10 grid max-w-lg grid-cols-2 gap-3">
+          <p className="masuk-awal d-inline-flex rounded-pill bg-stabilo px-3-5 py-1-5 fs-sm fw-bold text-tinta" style={{ '--tunda': '150ms' }}>
+            Selamat datang kembali
+          </p>
+          <p className="mt-5 mw-md fs-5xl fw-extrabold lh-105 ls-tight" style={{ '--tunda-teks': '250ms' }}>
+            <TeksNaik teks="Satu portal untuk seluruh warga sekolah." />
+          </p>
+          <Muncul as="dl" gaya="bertahap" jeda={600} className="mt-10 d-grid mw-lg kolom-2 gap-3">
             {PORTAL.map(([j, d]) => (
-              <div key={j} className="rounded-2xl bg-white/10 p-4 text-[15px] ring-1 ring-inset ring-white/15 backdrop-blur-sm">
-                <dt className="font-bold">{j}</dt>
-                <dd className="mt-1 leading-snug text-krem">{d}</dd>
+              <div key={j} className="rounded-3 bg-white bg-opacity-10 p-4 fs-15 border border-white border-opacity-15 buram-sm">
+                <dt className="fw-bold">{j}</dt>
+                <dd className="mt-1 lh-snug text-krem">{d}</dd>
               </div>
             ))}
-          </dl>
+          </Muncul>
         </div>
-        <p className="text-sm font-semibold text-krem">{SEKOLAH.slogan}.</p>
+        <p className="masuk-awal fs-sm fw-semibold text-krem" style={{ '--tunda': '1000ms' }}>
+          {SEKOLAH.slogan}.
+        </p>
       </div>
 
-      {/* Formulir */}
-      <main className="flex flex-col justify-center px-4 py-10 sm:px-12">
-        <div className="mx-auto w-full max-w-md">
-          <Link to="/" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-tinta-2 hover:text-tinta">
-            <ArrowLeft className="h-4 w-4" /> Kembali ke beranda
+      {/* Formulir: bagian-bagiannya muncul berurutan (lihat .bertahap) */}
+      <main className="d-flex flex-column justify-content-center px-4 py-10 px-sm-12">
+        <div className="bertahap mx-auto w-100 mw-md">
+          <Link to="/" className="d-inline-flex min-h-11 align-items-center gap-1-5 fs-sm fw-semibold text-tinta-2 hover-teks-tinta">
+            <ArrowLeft className="ukuran-4" /> Kembali ke beranda
           </Link>
-          <div className="mt-6 lg:hidden">
+          <div className="mt-6 d-lg-none">
             <Merek />
           </div>
-          <h1 className="mt-8 text-[2.75rem] leading-tight sm:text-5xl">Masuk ke portal</h1>
+          <h1 className="judul-login mt-8 lh-tight">Masuk ke portal</h1>
           <p className="mt-3 text-tinta-2">Silakan masuk menggunakan akun yang diberikan sekolah.</p>
 
-          <form onSubmit={masuk} className="mt-8 space-y-5">
+          <form onSubmit={masuk} className="mt-8 d-flex flex-column gap-5">
             <div aria-live="polite">
               {alasanKeluar && PESAN_KELUAR[alasanKeluar] && !error && <Alert tone="info">{PESAN_KELUAR[alasanKeluar]}</Alert>}
+              {/* Pesan galat bergetar singkat setiap muncul (setiap percobaan yang gagal) */}
               {kunci > 0 ? (
-                <Alert tone="error">
-                  Login dikunci sementara karena terlalu banyak percobaan yang salah. Coba lagi dalam <b>{formatTunggu(kunci)}</b>.
-                </Alert>
+                <div className="goyang-galat">
+                  <Alert tone="error">
+                    Login dikunci sementara karena terlalu banyak percobaan yang salah. Coba lagi dalam <b>{formatTunggu(kunci)}</b>.
+                  </Alert>
+                </div>
               ) : (
-                error && <Alert tone="error">{error}</Alert>
+                error && (
+                  <div className="goyang-galat">
+                    <Alert tone="error">{error}</Alert>
+                  </div>
+                )
               )}
             </div>
             <div>
@@ -147,19 +160,18 @@ export default function Login() {
                 autoComplete="username"
                 required
               />
-              <p className="mt-1.5 text-xs text-tinta-3">Siswa: username adalah NIS. Password awal diberikan Tata Usaha.</p>
             </div>
             <div>
               <label htmlFor="password" className={labelIsian}>
                 Password
               </label>
-              <div className="relative">
+              <div className="position-relative">
                 <input
                   id="password"
                   type={lihat ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`${isian} pr-12`}
+                  className={`${isian} pe-12`}
                   placeholder="Masukkan password"
                   autoComplete="current-password"
                   required
@@ -167,33 +179,33 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setLihat(!lihat)}
-                  className="absolute inset-y-0 right-0 grid w-12 place-items-center text-tinta-3 hover:text-tinta"
+                  className="position-absolute top-0 bottom-0 end-0 d-flex w-12 align-items-center justify-content-center text-tinta-3 hover-teks-tinta"
                   aria-label={lihat ? 'Sembunyikan password' : 'Tampilkan password'}
                 >
-                  {lihat ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {lihat ? <EyeOff className="ukuran-5" /> : <Eye className="ukuran-5" />}
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={memproses || kunci > 0} className={`${tombol.utama} w-full`}>
-              {memproses && <Loader2 className="h-4 w-4 animate-spin" />} {memproses ? 'Memeriksa...' : 'Masuk'}
+            <button type="submit" disabled={memproses || kunci > 0} className={`${tombol.utama} w-100`}>
+              {memproses && <Loader2 className="ukuran-4 berputar" />} {memproses ? 'Memeriksa...' : 'Masuk'}
             </button>
           </form>
 
-          <div className="mt-10 rounded-[1.75rem] bg-kertas-tua/70 p-5">
+          <div className="mt-10 d-flex flex-column gap-4 rounded-kartu latar-kertas-lembut p-5">
             {Object.entries(LABEL_ROLE).map(([role, label]) => (
-              <div key={role} className="mt-4 first:mt-0">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-tinta-3">{label}</p>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div key={role}>
+                <p className="mb-2 fs-xs fw-semibold text-uppercase ls-widest text-tinta-3">{label}</p>
+                <div className="d-grid kolom-2 kolom-sm-3 gap-2">
                   {/* Peran tanpa akun demo (Kepala Sekolah): kolom dikosongkan, diisi manual */}
                   {!AKUN_DEMO.some((a) => a.role === role) && (
                     <button type="button" onClick={() => isiManual(role)} aria-pressed={manual === role} className={kartuAkun(manual === role)}>
-                      <span className="block text-sm font-semibold">{label}</span>
+                      <span className="d-block fs-sm fw-semibold">{label}</span>
                     </button>
                   )}
                   {AKUN_DEMO.filter((a) => a.role === role).map((a) => (
                     <button key={a.username} type="button" onClick={() => isiDemo(a)} aria-pressed={username === a.username} className={kartuAkun(username === a.username)}>
-                      <span className="block text-sm font-semibold">{a.label}</span>
-                      <span className={`block text-xs ${username === a.username ? 'text-white/80' : 'text-tinta-3'}`}>{a.username}</span>
+                      <span className="d-block fs-sm fw-semibold">{a.label}</span>
+                      <span className={`d-block fs-xs fw-normal ${username === a.username ? 'text-white text-opacity-80' : 'text-tinta-3'}`}>{a.username}</span>
                     </button>
                   ))}
                 </div>

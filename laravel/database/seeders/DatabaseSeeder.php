@@ -14,6 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([GuruSeeder::class, BiodataStafSeeder::class, AkunSeeder::class, KeuanganSeeder::class, DataContohSeeder::class, OrangTuaSeeder::class, BiodataSiswaSeeder::class]);
+        $this->call([GuruSeeder::class, JadwalSeeder::class, KalenderSeeder::class, BiodataStafSeeder::class, AkunSeeder::class, KeuanganSeeder::class, DataContohSeeder::class, OrangTuaSeeder::class, BiodataSiswaSeeder::class]);
     }
 }

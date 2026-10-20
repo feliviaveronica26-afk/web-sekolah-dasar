@@ -19,18 +19,18 @@ const MENU_BANK = {
 function Langkah({ aktif }) {
   const daftar = ['Pilih Bulan', 'Cara Bayar', 'Bayar']
   return (
-    <ol className="mb-5 flex items-center gap-2">
+    <ol className="mb-5 d-flex align-items-center gap-2">
       {daftar.map((l, i) => (
-        <li key={l} className="flex flex-1 items-center gap-2">
+        <li key={l} className="d-flex flex-1 align-items-center gap-2">
           <span
-            className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
-              i < aktif ? 'bg-emerald-500 text-white' : i === aktif ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-400'
+            className={`d-flex h-7 w-7 flex-shrink-0 align-items-center justify-content-center rounded-pill fs-xs fw-bold ${
+              i < aktif ? 'titik-emerald text-white' : i === aktif ? 'bg-primary text-white' : 'bg-abu-100 text-abu-400'
             }`}
           >
             {i < aktif ? '✓' : i + 1}
           </span>
-          <span className={`text-xs font-semibold ${i === aktif ? 'text-slate-900' : 'text-slate-400'}`}>{l}</span>
-          {i < daftar.length - 1 && <span className="h-0.5 flex-1 rounded bg-slate-100" />}
+          <span className={`fs-xs fw-semibold ${i === aktif ? 'text-tinta' : 'text-abu-400'}`}>{l}</span>
+          {i < daftar.length - 1 && <span className="h-0-5 flex-1 rounded-1 bg-abu-100" />}
         </li>
       ))}
     </ol>
@@ -45,16 +45,16 @@ function Langkah({ aktif }) {
 function PanelSimulasi({ url, qris }) {
   const lokal = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)
   return (
-    <div className="mt-4 rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-      <p className="flex items-center gap-2 font-bold">
-        <Smartphone className="h-4 w-4 shrink-0" aria-hidden="true" /> Mode demo: Simulator Bank
+    <div className="mt-4 rounded-3 border border-putus border-warning-subtle bg-warning-subtle p-4 fs-sm text-warning-emphasis">
+      <p className="d-flex align-items-center gap-2 fw-bold">
+        <Smartphone className="h-4 w-4 flex-shrink-0" aria-hidden="true" /> Mode demo: Simulator Bank
       </p>
       <p className="mt-1">
         Website ini belum tersambung ke bank sungguhan. {qris ? 'Scan kode QR di atas dengan kamera HP' : 'Buka simulator'} untuk membayar lewat aplikasi bank
         tiruan; bank tiruan itulah yang mengonfirmasi pembayaran ke server sekolah.
       </p>
       {qris && lokal && (
-        <p className="mt-1 text-xs">
+        <p className="mt-1 fs-xs">
           HP tidak bisa membuka alamat <b>{window.location.host}</b>. Untuk scan dari HP, buka website ini lewat alamat jaringan laptop (mis.
           http://192.168.x.x:5173) dengan HP di Wi-Fi yang sama.
         </p>
@@ -63,9 +63,9 @@ function PanelSimulasi({ url, qris }) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex items-center gap-1.5 font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700"
+        className="mt-2 d-inline-flex align-items-center gap-1-5 fw-semibold text-warning-emphasis text-decoration-underline link-offset-1 hover-teks-amber"
       >
-        Buka Simulator Bank di tab baru <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+        Buka Simulator Bank di tab baru <ExternalLink className="h-3-5 w-3-5" aria-hidden="true" />
       </a>
     </div>
   )
@@ -81,7 +81,7 @@ function SisaWaktu({ sampai }) {
   const mm = String(Math.floor(sisa / 60)).padStart(2, '0')
   const ss = String(sisa % 60).padStart(2, '0')
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800">
+    <span className="d-inline-flex align-items-center gap-1-5 rounded-pill bg-warning-subtle px-3 py-1 fs-sm fw-bold text-warning-emphasis">
       <Clock className="h-4 w-4" /> {mm}:{ss}
     </span>
   )
@@ -165,11 +165,11 @@ export default function OrtuSpp() {
       <DashHeader title="Pembayaran SPP" desc={`${anak.nama} · Kelas ${anak.kelas} · Tahun ajaran ${SPP.tahunAjaran}`} />
 
       {trxBerjalan && langkah === null && (
-        <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-5 sm:flex-row sm:items-center">
-          <Clock className="h-6 w-6 shrink-0 text-sky-600" />
+        <div className="mb-6 d-flex flex-column gap-3 rounded-3 border border-info-subtle bg-info-subtle p-5 flex-sm-row align-items-sm-center">
+          <Clock className="h-6 w-6 flex-shrink-0 text-info" />
           <div className="flex-1">
-            <p className="font-bold text-sky-900">Ada pembayaran yang belum diselesaikan</p>
-            <p className="text-sm text-sky-800">
+            <p className="fw-bold text-info-emphasis">Ada pembayaran yang belum diselesaikan</p>
+            <p className="fs-sm text-info-emphasis">
               {rupiah(trxBerjalan.total)} via {trxBerjalan.metodeLabel} · berlaku sampai pukul{' '}
               {new Date(trxBerjalan.kadaluarsa).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
             </p>
@@ -183,34 +183,34 @@ export default function OrtuSpp() {
       {/* Ringkasan tagihan */}
       <Card className="mb-6 overflow-hidden">
         {wajib.length > 0 ? (
-          <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:p-8">
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary-50 text-primary-600">
+          <div className="d-flex flex-column gap-5 p-6 flex-sm-row align-items-sm-center p-sm-8">
+            <span className="d-flex h-14 w-14 flex-shrink-0 align-items-center justify-content-center rounded-3 bg-merah-50 text-primary">
               <Wallet className="h-7 w-7" />
             </span>
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-500">Tagihan yang perlu dibayar</p>
-              <p className="text-3xl font-extrabold text-slate-900 sm:text-4xl">{rupiah(wajib.length * SPP.nominal)}</p>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="fs-sm fw-medium text-tinta-3">Tagihan yang perlu dibayar</p>
+              <p className="fs-3xl fw-extrabold text-tinta fs-sm-4xl">{rupiah(wajib.length * SPP.nominal)}</p>
+              <p className="mt-1 fs-sm text-tinta-2">
                 {wajib.length} bulan: {daftarBulan(wajib)}
               </p>
               {terlambat.length > 0 && (
-                <p className="mt-2 inline-flex rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
+                <p className="mt-2 d-inline-flex rounded-pill bg-danger-subtle px-3 py-1 fs-xs fw-semibold text-danger">
                   {terlambat.length} bulan sudah lewat jatuh tempo
                 </p>
               )}
             </div>
-            <button onClick={mulaiBayar} disabled={!!trxBerjalan} className={`${btn.primary} px-8 py-3.5 text-base!`}>
+            <button onClick={mulaiBayar} disabled={!!trxBerjalan} className={`${btn.primary} px-8 py-3-5 fs-base`}>
               Bayar Sekarang
             </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:p-8">
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-600">
+          <div className="d-flex flex-column gap-5 p-6 flex-sm-row align-items-sm-center p-sm-8">
+            <span className="d-flex h-14 w-14 flex-shrink-0 align-items-center justify-content-center rounded-3 bg-success-subtle text-success">
               <PartyPopper className="h-7 w-7" />
             </span>
             <div className="flex-1">
-              <p className="text-xl font-extrabold text-slate-900">Semua tagihan sudah lunas 🎉</p>
-              <p className="mt-1 text-sm text-slate-600">Terima kasih, Bapak/Ibu. Tagihan berikutnya jatuh tempo setiap tanggal {SPP.tanggalJatuhTempo}.</p>
+              <p className="fs-xl fw-extrabold text-tinta">Semua tagihan sudah lunas 🎉</p>
+              <p className="mt-1 fs-sm text-tinta-2">Terima kasih, Bapak/Ibu. Tagihan berikutnya jatuh tempo setiap tanggal {SPP.tanggalJatuhTempo}.</p>
             </div>
             {bisaDibayar.length > 0 && !trxBerjalan && (
               <button onClick={mulaiBayar} className={btn.secondary}>
@@ -222,33 +222,33 @@ export default function OrtuSpp() {
       </Card>
 
       <Card className="mb-6 p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-bold text-slate-900">Status SPP {SPP.tahunAjaran}</h2>
-          <p className="text-sm text-slate-500">{rupiah(SPP.nominal)} / bulan · jatuh tempo tanggal {SPP.tanggalJatuhTempo}</p>
+        <div className="mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <h2 className="fw-bold text-tinta">Status SPP {SPP.tahunAjaran}</h2>
+          <p className="fs-sm text-tinta-3">{rupiah(SPP.nominal)} / bulan · jatuh tempo tanggal {SPP.tanggalJatuhTempo}</p>
         </div>
         <StripBulan data={data} nis={nis} />
         <div className="mt-4">
-          <LegendaSpp />
+          <LegendaSpp sebelumMasuk={SPP.bulan.some((b) => statusSpp(data, nis, b) === 'sebelumMasuk')} />
         </div>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="d-grid gap-6 kolom-lg-isi-320">
         <Card className="p-6">
-          <h2 className="font-bold text-slate-900">Riwayat Pembayaran</h2>
+          <h2 className="fw-bold text-tinta">Riwayat Pembayaran</h2>
           {riwayat.length === 0 ? (
             <EmptyState icon={Receipt} title="Belum ada pembayaran" />
           ) : (
-            <ul className="mt-4 divide-y divide-slate-100">
+            <ul className="mt-4 pembatas-y pembatas-abu">
               {riwayat.map((r) => (
-                <li key={r.noTransaksi} className="flex flex-wrap items-center gap-3 py-3">
-                  <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" />
+                <li key={r.noTransaksi} className="d-flex flex-wrap align-items-center gap-3 py-3">
+                  <CheckCircle2 className="h-5 w-5 flex-shrink-0 teks-terang-emerald" />
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-slate-800">SPP {daftarBulan(r.bulan)}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="fw-semibold text-tinta">SPP {daftarBulan(r.bulan)}</p>
+                    <p className="fs-xs text-tinta-3">
                       {formatTanggal(r.tanggal)} · {r.metode} · {rupiah(r.bulan.length * SPP.nominal)}
                     </p>
                   </div>
-                  <button onClick={() => setKuitansi(r)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700">
+                  <button onClick={() => setKuitansi(r)} className="d-inline-flex align-items-center gap-1-5 fs-sm fw-semibold text-primary hover-teks-merah">
                     <Receipt className="h-4 w-4" /> Kuitansi
                   </button>
                 </li>
@@ -257,13 +257,13 @@ export default function OrtuSpp() {
           )}
         </Card>
 
-        <Card className="h-fit p-6">
-          <h2 className="font-bold text-slate-900">Butuh bantuan?</h2>
-          <p className="mt-2 text-sm text-slate-600">
+        <Card className="h-auto p-6">
+          <h2 className="fw-bold text-tinta">Butuh bantuan?</h2>
+          <p className="mt-2 fs-sm text-tinta-2">
             Ada kendala pembayaran atau ingin membayar tunai? Hubungi Tata Usaha pada jam kerja.
           </p>
-          <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-slate-800">
-            <MessageCircle className="h-4 w-4 text-emerald-600" /> WhatsApp TU: {SEKOLAH.whatsapp}
+          <p className="mt-4 d-flex align-items-center gap-2 fs-sm fw-semibold text-tinta">
+            <MessageCircle className="h-4 w-4 text-success" /> WhatsApp TU: {SEKOLAH.whatsapp}
           </p>
         </Card>
       </div>
@@ -274,10 +274,10 @@ export default function OrtuSpp() {
           <>
             <Langkah aktif={0} />
             <PilihBulan data={data} nis={nis} terpilih={terpilih} onChange={setTerpilih} />
-            <div className="sticky bottom-0 -mx-6 -mb-5 mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
+            <div className="position-sticky bottom-0 mx-n6 mb-n5 mt-5 d-flex flex-wrap align-items-center justify-content-between gap-3 border-top border-abu-100 bg-white px-6 py-4">
               <div>
-                <p className="text-xs text-slate-500">Total ({terpilih.length} bulan)</p>
-                <p className="text-xl font-extrabold text-slate-900">{rupiah(total)}</p>
+                <p className="fs-xs text-tinta-3">Total ({terpilih.length} bulan)</p>
+                <p className="fs-xl fw-extrabold text-tinta">{rupiah(total)}</p>
               </div>
               <button onClick={() => setLangkah('metode')} disabled={terpilih.length === 0} className={btn.primary}>
                 Lanjut
@@ -289,20 +289,20 @@ export default function OrtuSpp() {
         {langkah === 'metode' && (
           <>
             <Langkah aktif={1} />
-            <div className="space-y-3">
+            <div className="antara-y-3">
               <button
                 type="button"
                 onClick={() => setMetode('qris')}
-                className={`flex w-full gap-4 rounded-2xl border-2 p-4 text-left transition ${
-                  metode === 'qris' ? 'border-primary-500 bg-primary-50' : 'border-slate-200 hover:border-slate-300'
+                className={`d-flex w-100 gap-4 rounded-3 border border-2 p-4 text-start transisi ${
+                  metode === 'qris' ? 'border-merah-500 bg-merah-50' : 'border-abu-200 hover-garis-abu'
                 }`}
               >
-                <QrCode className="mt-0.5 h-7 w-7 shrink-0 text-primary-600" />
+                <QrCode className="mt-0-5 h-7 w-7 flex-shrink-0 text-primary" />
                 <span>
-                  <span className="flex items-center gap-2 font-bold text-slate-900">
-                    QRIS <Badge className="bg-emerald-100 text-emerald-700">Paling mudah</Badge>
+                  <span className="d-flex align-items-center gap-2 fw-bold text-tinta">
+                    QRIS <Badge className="bg-success-subtle text-success">Paling mudah</Badge>
                   </span>
-                  <span className="mt-1 block text-sm text-slate-600">
+                  <span className="mt-1 d-block fs-sm text-tinta-2">
                     Scan pakai GoPay, OVO, DANA, ShopeePay, LinkAja, atau aplikasi m-banking apa pun.
                   </span>
                 </span>
@@ -311,26 +311,26 @@ export default function OrtuSpp() {
               <button
                 type="button"
                 onClick={() => setMetode('va')}
-                className={`flex w-full gap-4 rounded-2xl border-2 p-4 text-left transition ${
-                  metode === 'va' ? 'border-primary-500 bg-primary-50' : 'border-slate-200 hover:border-slate-300'
+                className={`d-flex w-100 gap-4 rounded-3 border border-2 p-4 text-start transisi ${
+                  metode === 'va' ? 'border-merah-500 bg-merah-50' : 'border-abu-200 hover-garis-abu'
                 }`}
               >
-                <Landmark className="mt-0.5 h-7 w-7 shrink-0 text-primary-600" />
+                <Landmark className="mt-0-5 h-7 w-7 flex-shrink-0 text-primary" />
                 <span>
-                  <span className="block font-bold text-slate-900">Transfer Virtual Account</span>
-                  <span className="mt-1 block text-sm text-slate-600">Transfer lewat m-banking, internet banking, atau ATM.</span>
+                  <span className="d-block fw-bold text-tinta">Transfer Virtual Account</span>
+                  <span className="mt-1 d-block fs-sm text-tinta-2">Transfer lewat m-banking, internet banking, atau ATM.</span>
                 </span>
               </button>
 
               {metode === 'va' && (
-                <div className="grid grid-cols-4 gap-2 pl-0 sm:pl-11">
+                <div className="d-grid kolom-4 gap-2 ps-0 ps-sm-11">
                   {BANK_VA.map((b) => (
                     <button
                       key={b.kode}
                       type="button"
                       onClick={() => setBank(b.kode)}
-                      className={`rounded-xl border-2 py-2.5 text-sm font-bold transition ${
-                        bank === b.kode ? 'border-primary-500 bg-white text-primary-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                      className={`rounded-2 border border-2 py-2-5 fs-sm fw-bold transisi ${
+                        bank === b.kode ? 'border-merah-500 bg-white text-merah-700' : 'border-abu-200 text-tinta-2 hover-garis-abu'
                       }`}
                     >
                       {b.nama}
@@ -340,22 +340,22 @@ export default function OrtuSpp() {
               )}
             </div>
 
-            <div className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm">
-              <div className="flex justify-between text-slate-600">
+            <div className="mt-5 rounded-3 bg-abu-50 p-4 fs-sm">
+              <div className="d-flex justify-content-between text-tinta-2">
                 <span>SPP {daftarBulan(terpilih)}</span>
                 <span>{rupiah(total)}</span>
               </div>
-              <div className="mt-1.5 flex justify-between text-slate-600">
+              <div className="mt-1-5 d-flex justify-content-between text-tinta-2">
                 <span>Biaya admin</span>
-                <span className="font-semibold text-emerald-600">Gratis</span>
+                <span className="fw-semibold text-success">Gratis</span>
               </div>
-              <div className="mt-3 flex justify-between border-t border-slate-200 pt-3 text-base font-extrabold text-slate-900">
+              <div className="mt-3 d-flex justify-content-between border-top border-abu-200 pt-3 fs-base fw-extrabold text-tinta">
                 <span>Total bayar</span>
                 <span>{rupiah(total)}</span>
               </div>
             </div>
 
-            <div className="mt-5 flex gap-2">
+            <div className="mt-5 d-flex gap-2">
               <button onClick={() => setLangkah('bulan')} className={btn.secondary} aria-label="Kembali">
                 <ArrowLeft className="h-4 w-4" />
               </button>
@@ -370,7 +370,7 @@ export default function OrtuSpp() {
           <>
             <Langkah aktif={2} />
             {kadaluarsa(trx) ? (
-              <div className="space-y-4 text-center">
+              <div className="antara-y-4 text-center">
                 <Alert tone="warning">Waktu pembayaran sudah habis. Silakan buat pembayaran baru.</Alert>
                 <button onClick={gantiCaraBayar} className={btn.primary}>
                   Buat Pembayaran Baru
@@ -378,57 +378,57 @@ export default function OrtuSpp() {
               </div>
             ) : (
               <>
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50 p-4">
+                <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 rounded-3 bg-abu-50 p-4">
                   <div>
-                    <p className="text-xs text-slate-500">Total bayar</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-2xl font-extrabold text-slate-900">{rupiah(trx.total)}</p>
+                    <p className="fs-xs text-tinta-3">Total bayar</p>
+                    <div className="d-flex align-items-center gap-2">
+                      <p className="fs-2xl fw-extrabold text-tinta">{rupiah(trx.total)}</p>
                       <TombolSalin teks={String(trx.total)} />
                     </div>
-                    <p className="mt-0.5 text-xs text-slate-500">SPP {daftarBulan(trx.bulan)}</p>
+                    <p className="mt-0-5 fs-xs text-tinta-3">SPP {daftarBulan(trx.bulan)}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="mb-1 text-xs text-slate-500">Selesaikan dalam</p>
+                  <div className="text-end">
+                    <p className="mb-1 fs-xs text-tinta-3">Selesaikan dalam</p>
                     <SisaWaktu sampai={trx.kadaluarsa} />
                   </div>
                 </div>
 
                 {trx.metode === 'qris' ? (
                   <div className="mt-5">
-                    <div className="rounded-2xl border border-slate-200 p-5 text-center">
-                      <p className="text-xs font-bold tracking-widest text-slate-500">QRIS · {SEKOLAH.nama.toUpperCase()}</p>
+                    <div className="rounded-3 border border-abu-200 p-5 text-center">
+                      <p className="fs-xs fw-bold ls-widest text-tinta-3">QRIS · {SEKOLAH.nama.toUpperCase()}</p>
                       <div className="mt-3">
                         <QrPembayaran isi={trx.simulasi ? urlSimulasi : trx.kode} />
                       </div>
                     </div>
-                    <ol className="mt-5 space-y-2.5 text-sm text-slate-700">
+                    <ol className="mt-5 antara-y-2-5 fs-sm text-tinta-2">
                       {[
                         'Buka aplikasi e-wallet atau m-banking di HP Anda.',
                         'Pilih menu Scan / Bayar QRIS.',
                         `Scan kode QR di atas. Pastikan nama penerima "${SEKOLAH.nama}" dan nominal ${rupiah(trx.total)}.`,
                         'Konfirmasi pembayaran dengan PIN Anda.',
                       ].map((t, i) => (
-                        <li key={i} className="flex gap-3">
-                          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">{i + 1}</span>
+                        <li key={i} className="d-flex gap-3">
+                          <span className="d-flex h-6 w-6 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-merah-100 fs-xs fw-bold text-merah-700">{i + 1}</span>
                           {t}
                         </li>
                       ))}
                     </ol>
-                    <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-xs text-amber-800">
+                    <p className="mt-4 rounded-2 bg-warning-subtle px-4 py-3 fs-xs text-warning-emphasis">
                       <b>Membuka dari HP?</b> Tekan “Simpan gambar QR”, lalu di aplikasi pembayaran pilih Scan → ikon galeri, dan pilih gambar tersebut.
                     </p>
                   </div>
                 ) : (
                   <div className="mt-5">
-                    <div className="rounded-2xl border border-slate-200 p-5">
-                      <p className="text-sm text-slate-500">Nomor Virtual Account {BANK_VA.find((b) => b.kode === trx.bank)?.nama}</p>
-                      <div className="mt-1 flex flex-wrap items-center gap-3">
-                        <p className="font-mono text-2xl font-extrabold tracking-wider text-slate-900">{trx.kode.replace(/(\d{4})(?=\d)/g, '$1 ')}</p>
+                    <div className="rounded-3 border border-abu-200 p-5">
+                      <p className="fs-sm text-tinta-3">Nomor Virtual Account {BANK_VA.find((b) => b.kode === trx.bank)?.nama}</p>
+                      <div className="mt-1 d-flex flex-wrap align-items-center gap-3">
+                        <p className="font-monospace fs-2xl fw-extrabold ls-wider text-tinta">{trx.kode.replace(/(\d{4})(?=\d)/g, '$1 ')}</p>
                         <TombolSalin teks={trx.kode} label="Salin nomor" />
                       </div>
-                      <p className="mt-2 text-xs text-slate-500">Atas nama: {SEKOLAH.nama} – {anak.nama}</p>
+                      <p className="mt-2 fs-xs text-tinta-3">Atas nama: {SEKOLAH.nama} – {anak.nama}</p>
                     </div>
-                    <div className="mt-5 inline-flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1">
+                    <div className="mt-5 d-inline-flex mw-100 overflow-x-auto rounded-2 bg-abu-100 p-1">
                       {[
                         ['mbanking', 'm-Banking'],
                         ['atm', 'ATM'],
@@ -436,13 +436,13 @@ export default function OrtuSpp() {
                         <button
                           key={k}
                           onClick={() => setTabPanduan(k)}
-                          className={`shrink-0 whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-semibold ${tabPanduan === k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                          className={`flex-shrink-0 text-nowrap rounded-1 px-4 py-1-5 fs-sm fw-semibold ${tabPanduan === k ? 'bg-white text-tinta shadow-sm' : 'text-tinta-3'}`}
                         >
                           {l}
                         </button>
                       ))}
                     </div>
-                    <ol className="mt-4 space-y-2.5 text-sm text-slate-700">
+                    <ol className="mt-4 antara-y-2-5 fs-sm text-tinta-2">
                       {(tabPanduan === 'mbanking'
                         ? [
                             `Buka aplikasi ${BANK_VA.find((b) => b.kode === trx.bank)?.nama} Mobile dan login.`,
@@ -459,8 +459,8 @@ export default function OrtuSpp() {
                             'Simpan struk ATM sebagai bukti.',
                           ]
                       ).map((t, i) => (
-                        <li key={i} className="flex gap-3">
-                          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">{i + 1}</span>
+                        <li key={i} className="d-flex gap-3">
+                          <span className="d-flex h-6 w-6 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-merah-100 fs-xs fw-bold text-merah-700">{i + 1}</span>
                           {t}
                         </li>
                       ))}
@@ -468,27 +468,27 @@ export default function OrtuSpp() {
                   </div>
                 )}
 
-                <div className="mt-5 flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900" role="status">
-                  <Loader2 className="mt-0.5 h-5 w-5 shrink-0 animate-spin" aria-hidden="true" />
+                <div className="mt-5 d-flex align-items-start gap-3 rounded-3 border border-info-subtle bg-info-subtle p-4 fs-sm text-info-emphasis" role="status">
+                  <Loader2 className="mt-0-5 h-5 w-5 flex-shrink-0 berputar" aria-hidden="true" />
                   <div>
-                    <p className="font-bold">Menunggu konfirmasi dari {trx.metode === 'qris' ? 'penyedia QRIS' : 'bank'}…</p>
-                    <p className="mt-0.5">
+                    <p className="fw-bold">Menunggu konfirmasi dari {trx.metode === 'qris' ? 'penyedia QRIS' : 'bank'}…</p>
+                    <p className="mt-0-5">
                       Halaman ini berubah sendiri menjadi <b>Lunas</b> begitu pembayaran diterima. Status hanya diubah oleh bank, bukan dari halaman ini, jadi
                       tidak perlu mengirim bukti transfer.
                     </p>
                   </div>
                 </div>
                 {trx.simulasi && <PanelSimulasi url={urlSimulasi} qris={trx.metode === 'qris'} />}
-                <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row">
+                <div className="mt-4 d-flex flex-column-reverse gap-2 flex-sm-row">
                   <button onClick={gantiCaraBayar} className={btn.secondary}>
                     Ganti Cara Bayar
                   </button>
-                  <button onClick={cekStatus} disabled={memeriksa} className={`${btn.primary} flex-1 py-3 disabled:opacity-60`}>
-                    <RefreshCw className={`h-4 w-4 ${memeriksa ? 'animate-spin' : ''}`} aria-hidden="true" /> {memeriksa ? 'Memeriksa…' : 'Cek Status Pembayaran'}
+                  <button onClick={cekStatus} disabled={memeriksa} className={`${btn.primary} flex-1 py-3`}>
+                    <RefreshCw className={`h-4 w-4 ${memeriksa ? 'berputar' : ''}`} aria-hidden="true" /> {memeriksa ? 'Memeriksa…' : 'Cek Status Pembayaran'}
                   </button>
                 </div>
                 {pesanCek && (
-                  <p className="mt-2 text-center text-xs text-slate-500" role="status">
+                  <p className="mt-2 text-center fs-xs text-tinta-3" role="status">
                     {pesanCek}
                   </p>
                 )}
@@ -499,18 +499,18 @@ export default function OrtuSpp() {
 
         {langkah === 'sukses' && trx && (
           <div className="py-4 text-center">
-            <span className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-emerald-100 text-emerald-600">
+            <span className="mx-auto d-flex h-20 w-20 align-items-center justify-content-center rounded-pill bg-success-subtle text-success">
               <CheckCircle2 className="h-11 w-11" />
             </span>
-            <p className="mt-5 text-2xl font-extrabold text-slate-900">Pembayaran Berhasil!</p>
-            <p className="mt-2 text-slate-600">
+            <p className="mt-5 fs-2xl fw-extrabold text-tinta">Pembayaran Berhasil!</p>
+            <p className="mt-2 text-tinta-2">
               SPP {daftarBulan(trx.bulan)} untuk <b>{anak.nama}</b> sudah lunas.
             </p>
-            <p className="mt-4 text-3xl font-extrabold text-emerald-600">{rupiah(trx.total)}</p>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-4 fs-3xl fw-extrabold text-success">{rupiah(trx.total)}</p>
+            <p className="mt-1 fs-xs text-tinta-3">
               {trx.metodeLabel} · No. {trx.noTransaksi}
             </p>
-            <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+            <div className="mt-6 d-flex flex-column gap-2 flex-sm-row">
               <button
                 onClick={() => {
                   setKuitansi({ noTransaksi: trx.noTransaksi, tanggal: data.spp[nis]?.[trx.bulan[0]]?.tanggal, metode: trx.metodeLabel, bulan: trx.bulan })

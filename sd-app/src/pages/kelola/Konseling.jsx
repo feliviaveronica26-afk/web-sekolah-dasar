@@ -6,9 +6,9 @@ import { KATEGORI_KONSELING, LAYANAN_KONSELING, STATUS_KONSELING } from '../../d
 import { formatTanggal, todayKey } from '../../utils/format'
 
 export const WARNA_KONSELING = {
-  'Dalam Proses': 'bg-sky-100 text-sky-700',
-  'Perlu Pemantauan': 'bg-amber-100 text-amber-700',
-  Selesai: 'bg-emerald-100 text-emerald-700',
+  'Dalam Proses': 'bg-info-subtle text-info',
+  'Perlu Pemantauan': 'bg-warning-subtle text-warning-emphasis',
+  Selesai: 'bg-success-subtle text-success',
 }
 
 export default function Konseling() {
@@ -24,13 +24,13 @@ export default function Konseling() {
       desc="Catatan layanan BK untuk setiap siswa. Bersifat rahasia — hanya Guru BK dan Kepala Sekolah yang dapat melihatnya."
       ringkasan={
         <>
-          <div className="mb-4 grid gap-3 min-[480px]:grid-cols-3 sm:gap-4">
+          <div className="mb-4 d-grid gap-3 kolom-480-3 kolom-sm-3 gap-sm-4">
             <StatCard icon={HeartHandshake} label="Dalam proses" value={hitung('Dalam Proses')} tone="sky" />
             <StatCard icon={Eye} label="Perlu pemantauan" value={hitung('Perlu Pemantauan')} tone="amber" />
             <StatCard icon={CircleCheck} label="Selesai" value={hitung('Selesai')} tone="emerald" />
           </div>
-          <p className="mb-4 flex items-center gap-2 text-xs text-slate-500">
-            <Lock className="h-3.5 w-3.5" /> Jaga kerahasiaan: jangan menyalin isi catatan ke grup atau pengumuman.
+          <p className="mb-4 d-flex align-items-center gap-2 fs-xs text-tinta-3">
+            <Lock className="h-3-5 w-3-5" /> Jaga kerahasiaan: jangan menyalin isi catatan ke grup atau pengumuman.
           </p>
         </>
       }
@@ -62,11 +62,11 @@ export default function Konseling() {
           key: 'nama',
           label: 'Siswa',
           render: (k) => (
-            <span className="flex items-center gap-3">
+            <span className="d-flex align-items-center gap-3">
               <Avatar nama={k.nama} size="sm" />
               <span>
-                <span className="block font-semibold text-slate-800">{k.nama}</span>
-                <span className="block text-xs text-slate-500">Kelas {k.kelas}</span>
+                <span className="d-block fw-semibold text-tinta">{k.nama}</span>
+                <span className="d-block fs-xs text-tinta-3">Kelas {k.kelas}</span>
               </span>
             </span>
           ),
@@ -76,8 +76,8 @@ export default function Konseling() {
           label: 'Layanan',
           render: (k) => (
             <span>
-              <span className="block text-slate-800">{k.layanan}</span>
-              <span className="block text-xs text-slate-500">
+              <span className="d-block text-tinta">{k.layanan}</span>
+              <span className="d-block fs-xs text-tinta-3">
                 {formatTanggal(k.tanggal)} · {k.kategori}
               </span>
             </span>
@@ -87,9 +87,9 @@ export default function Konseling() {
           key: 'masalah',
           label: 'Permasalahan & Tindak Lanjut',
           render: (k) => (
-            <span className="block max-w-sm">
-              <span className="block text-slate-700">{k.masalah}</span>
-              {k.tindakLanjut && <span className="mt-1 block text-xs text-slate-500">→ {k.tindakLanjut}</span>}
+            <span className="d-block mw-sm">
+              <span className="d-block text-tinta-2">{k.masalah}</span>
+              {k.tindakLanjut && <span className="mt-1 d-block fs-xs text-tinta-3">→ {k.tindakLanjut}</span>}
             </span>
           ),
         },

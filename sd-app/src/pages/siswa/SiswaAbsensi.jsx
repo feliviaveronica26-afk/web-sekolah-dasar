@@ -7,7 +7,7 @@ import { MAPEL } from '../../data/dummy'
 import { namaPengampu } from '../../utils/jadwal'
 import { formatHari } from '../../utils/format'
 
-const warnaPersen = (p) => (p >= 90 ? 'bg-emerald-500' : p >= 75 ? 'bg-amber-400' : 'bg-rose-500')
+const warnaPersen = (p) => (p >= 90 ? 'titik-emerald' : p >= 75 ? 'titik-amber' : 'titik-rose')
 
 export default function SiswaAbsensi() {
   const { user } = useAuth()
@@ -40,42 +40,42 @@ export default function SiswaAbsensi() {
 
       {/* Ringkasan keseluruhan */}
       <Card className="mb-6 p-6">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-          <div className="text-center sm:w-44 sm:text-left">
-            <p className="text-sm text-slate-500">Total kehadiran</p>
-            <p className="text-5xl font-extrabold text-emerald-600">{persenTotal}%</p>
-            <p className="mt-1 text-xs text-slate-500">dari {total.total} jam pelajaran</p>
+        <div className="d-flex flex-column gap-6 flex-sm-row align-items-sm-center">
+          <div className="text-center w-sm-44 text-sm-start">
+            <p className="fs-sm text-tinta-3">Total kehadiran</p>
+            <p className="fs-5xl fw-extrabold text-success">{persenTotal}%</p>
+            <p className="mt-1 fs-xs text-tinta-3">dari {total.total} jam pelajaran</p>
           </div>
-          <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="d-grid flex-1 kolom-2 gap-3 kolom-sm-4">
             {Object.entries(STATUS_ABSEN).map(([k, s]) => (
-              <div key={k} className={`rounded-2xl px-4 py-3 ${s.cls}`}>
-                <p className="text-2xl font-extrabold">{total[k]}</p>
-                <p className="text-xs font-semibold">{s.label}</p>
+              <div key={k} className={`rounded-3 px-4 py-3 ${s.cls}`}>
+                <p className="fs-2xl fw-extrabold">{total[k]}</p>
+                <p className="fs-xs fw-semibold">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className="d-grid gap-6 kolom-lg-isi-380">
         {/* Kartu per mapel */}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="d-grid gap-3 kolom-sm-2">
           {daftar.map(([kode, r]) => (
             <button
               key={kode}
               onClick={() => setDipilih(kode)}
-              className={`rounded-2xl border bg-white p-4 text-left shadow-sm transition hover:shadow-md ${
-                dipilih === kode ? 'border-primary-400 ring-2 ring-primary-100' : 'border-slate-200/80'
+              className={`rounded-3 border bg-white p-4 text-start shadow-sm transisi hover-bayangan-kecil ${
+                dipilih === kode ? 'border-merah-400 border border-2 border-merah-100' : 'border-abu-200'
               }`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <span className={`rounded-lg px-2.5 py-1 text-sm font-bold ${MAPEL[kode].warna}`}>{MAPEL[kode].nama}</span>
-                <span className="text-lg font-extrabold text-slate-900">{r.persen}%</span>
+              <div className="d-flex align-items-start justify-content-between gap-2">
+                <span className={`rounded-1 px-2-5 py-1 fs-sm fw-bold ${MAPEL[kode].warna}`}>{MAPEL[kode].nama}</span>
+                <span className="fs-lg fw-extrabold text-tinta">{r.persen}%</span>
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                <div className={`h-full rounded-full ${warnaPersen(r.persen)}`} style={{ width: `${r.persen}%` }} />
+              <div className="mt-3 h-2 overflow-hidden rounded-pill bg-abu-100">
+                <div className={`h-100 rounded-pill ${warnaPersen(r.persen)}`} style={{ width: `${r.persen}%` }} />
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 fs-xs text-tinta-3">
                 Hadir {r.H} dari {r.total} pertemuan
                 {r.total - r.H > 0 && ` · S ${r.S} · I ${r.I} · A ${r.A}`}
               </p>
@@ -85,17 +85,17 @@ export default function SiswaAbsensi() {
 
         {/* Riwayat mapel terpilih */}
         {detail && (
-          <Card className="h-fit lg:sticky lg:top-24">
-            <div className="border-b border-slate-100 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Riwayat</p>
-              <h2 className="mt-1 font-bold text-slate-900">{MAPEL[dipilih].nama}</h2>
-              <p className="text-sm text-slate-500">{namaPengampu(data.guru, user.kelas, dipilih)}</p>
+          <Card className="h-auto position-lg-sticky top-lg-24">
+            <div className="border-bottom border-abu-100 p-5">
+              <p className="fs-xs fw-semibold text-uppercase ls-wider text-abu-400">Riwayat</p>
+              <h2 className="mt-1 fw-bold text-tinta">{MAPEL[dipilih].nama}</h2>
+              <p className="fs-sm text-tinta-3">{namaPengampu(data.guru, user.kelas, dipilih)}</p>
             </div>
-            <ul className="max-h-96 divide-y divide-slate-100 overflow-y-auto">
+            <ul className="mh-96 pembatas-y pembatas-abu overflow-y-auto">
               {detail.riwayat.map((r) => (
-                <li key={r.tanggal + r.jam} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
-                  <span className="text-slate-700">
-                    {formatHari(r.tanggal)} <span className="text-xs text-slate-400">· {r.jam}</span>
+                <li key={r.tanggal + r.jam} className="d-flex align-items-center justify-content-between gap-3 px-5 py-3 fs-sm">
+                  <span className="text-tinta-2">
+                    {formatHari(r.tanggal)} <span className="fs-xs text-abu-400">· {r.jam}</span>
                   </span>
                   <Badge className={STATUS_ABSEN[r.status].cls}>{STATUS_ABSEN[r.status].label}</Badge>
                 </li>
@@ -105,8 +105,8 @@ export default function SiswaAbsensi() {
         )}
       </div>
 
-      <p className="mt-6 flex items-start gap-2 text-xs text-slate-500">
-        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+      <p className="mt-6 d-flex align-items-start gap-2 fs-xs text-tinta-3">
+        <Info className="mt-0-5 h-3-5 w-3-5 flex-shrink-0" />
         Kehadiran di tiap pelajaran dicatat guru pengampunya (kode OTP atau manual). Pelajaran yang tidak dipresensi tersendiri mengikuti presensi
         harian. Upacara dan senam pagi tidak dihitung. Kehadiran minimal yang disarankan adalah 90%.
       </p>

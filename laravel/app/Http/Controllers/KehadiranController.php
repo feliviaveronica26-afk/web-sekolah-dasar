@@ -99,6 +99,10 @@ class KehadiranController extends Controller
         if (! preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal) || $tanggal > Waktu::hariIni()) {
             throw ValidationException::withMessages(['tanggal' => 'Presensi hanya bisa dicatat sampai hari ini.']);
         }
+        if (! Waktu::hariSekolah($tanggal)) {
+            $libur = Waktu::liburPada($tanggal);
+            throw ValidationException::withMessages(['tanggal' => $libur ? "Tanggal itu libur ({$libur}), tidak ada presensi." : 'Tidak ada presensi pada akhir pekan.']);
+        }
         $request->validate([
             'perubahan' => ['required', 'array', 'min:1', 'max:60'],
             'perubahan.*' => ['required', Rule::in(self::STATUS)],

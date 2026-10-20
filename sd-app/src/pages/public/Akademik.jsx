@@ -72,24 +72,24 @@ export default function Akademik() {
       </KepalaHalaman>
 
       {/* Kurikulum */}
-      <section id="kurikulum" className={`${wadah} scroll-mt-24 py-20 lg:py-28`}>
+      <section id="kurikulum" className={`${wadah} gulir-mt-24 py-20 py-lg-28`}>
         <JudulBagian label={SEKOLAH.kurikulum} judul="Tiga pilar pembelajaran." desc="Di kelas, lewat projek, dan lewat kegiatan minat bakat." />
-        <ol className="grid gap-4 md:grid-cols-3">
+        <ol className="d-grid gap-4 kolom-md-3">
           {PILAR.map((p, i) => (
-            <Muncul as="li" key={p.judul} jeda={i * 90} className="group flex flex-col overflow-hidden rounded-[1.75rem] bg-kartu ring-1 ring-garis">
-              <div className="relative aspect-[16/10] overflow-hidden">
-                <Foto foto={p.foto} alt="" className="transition duration-700 group-hover:scale-105" />
-                <span className="angka absolute left-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white text-lg font-extrabold text-primary-700 shadow">
+            <Muncul as="li" key={p.judul} jeda={i * 90} className="kartu-zoom d-flex flex-column overflow-hidden rounded-kartu bg-white border border-garis">
+              <div className="position-relative rasio-16x10 overflow-hidden">
+                <Foto foto={p.foto} alt="" />
+                <span className="angka position-absolute top-4 start-4 d-flex align-items-center justify-content-center ukuran-11 rounded-circle bg-white fs-lg fw-extrabold text-merah-700 shadow">
                   {i + 1}
                 </span>
               </div>
-              <div className="p-6 sm:p-7">
-                <h3 className="text-2xl">{p.judul}</h3>
-                <p className="mt-2 leading-relaxed text-tinta-2">{p.desc}</p>
-                <ul className="mt-5 space-y-2.5">
+              <div className="p-6 p-sm-7">
+                <h3 className="fs-2xl">{p.judul}</h3>
+                <p className="mt-2 lh-relaxed text-tinta-2">{p.desc}</p>
+                <ul className="mt-5 d-flex flex-column gap-2-5">
                   {p.poin.map((x) => (
-                    <li key={x} className="flex gap-2.5 text-[15px] leading-snug">
-                      <CheckCircle2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-primary-600" aria-hidden="true" />
+                    <li key={x} className="d-flex gap-2-5 fs-15 lh-snug">
+                      <CheckCircle2 className="mt-0-5 ukuran-4-5 flex-shrink-0 text-primary" aria-hidden="true" />
                       {x}
                     </li>
                   ))}
@@ -100,16 +100,16 @@ export default function Akademik() {
         </ol>
 
         {/* Perbandingan jenjang */}
-        <div className="mt-16 overflow-x-auto rounded-[1.75rem] bg-kartu ring-1 ring-garis">
-          <table className="w-full min-w-[40rem] text-left">
-            <caption className="px-6 pt-6 text-left text-2xl font-extrabold tracking-tight sm:px-8">Fokus per jenjang</caption>
+        <div className="mt-16 overflow-x-auto rounded-kartu bg-white border border-garis">
+          <table className="caption-top w-100 text-start tabel-jenjang">
+            <caption className="px-6 px-sm-8 pt-6 pb-0 text-start fs-2xl fw-extrabold ls-tight text-tinta">Fokus per jenjang</caption>
             <thead>
-              <tr className="border-b border-garis">
-                <th scope="col" className="w-36 px-6 py-4 text-sm font-semibold text-tinta-3 sm:px-8" />
+              <tr className="border-bottom border-garis">
+                <th scope="col" className="w-36 px-6 px-sm-8 py-4 fs-sm fw-semibold text-tinta-3" />
                 {JENJANG.map((j) => (
-                  <th key={j.id} scope="col" className="py-4 pr-8 align-bottom">
-                    <span className="block text-2xl font-extrabold tracking-tight">{j.nama}</span>
-                    <span className="mt-1.5 inline-block rounded-full bg-primary-50 px-3 py-1 text-sm font-semibold text-primary-700">
+                  <th key={j.id} scope="col" className="py-4 pe-8 align-bottom">
+                    <span className="d-block fs-2xl fw-extrabold ls-tight">{j.nama}</span>
+                    <span className="mt-1-5 d-inline-block rounded-pill bg-merah-50 px-3 py-1 fs-sm fw-semibold text-merah-700">
                       {j.kelas} · {j.usia}
                     </span>
                   </th>
@@ -117,26 +117,26 @@ export default function Akademik() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-garis align-top">
-                <th scope="row" className="px-6 py-5 text-sm font-semibold text-tinta-3 sm:px-8">
+              <tr className="border-bottom border-garis align-top">
+                <th scope="row" className="px-6 px-sm-8 py-5 fs-sm fw-semibold text-tinta-3">
                   Fokus
                 </th>
                 {JENJANG.map((j) => (
-                  <td key={j.id} className="py-5 pr-8 text-lg font-bold leading-snug">
+                  <td key={j.id} className="py-5 pe-8 fs-lg fw-bold lh-snug">
                     {j.fokus}
                   </td>
                 ))}
               </tr>
               <tr className="align-top">
-                <th scope="row" className="px-6 py-5 text-sm font-semibold text-tinta-3 sm:px-8">
+                <th scope="row" className="px-6 px-sm-8 py-5 fs-sm fw-semibold text-tinta-3">
                   Kegiatan
                 </th>
                 {JENJANG.map((j) => (
-                  <td key={j.id} className="py-5 pr-8">
-                    <ul className="space-y-2.5">
+                  <td key={j.id} className="py-5 pe-8">
+                    <ul className="d-flex flex-column gap-2-5">
                       {j.poin.map((x) => (
-                        <li key={x} className="flex gap-2.5 leading-snug">
-                          <CheckCircle2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-primary-600" aria-hidden="true" />
+                        <li key={x} className="d-flex gap-2-5 lh-snug">
+                          <CheckCircle2 className="mt-0-5 ukuran-4-5 flex-shrink-0 text-primary" aria-hidden="true" />
                           {x}
                         </li>
                       ))}
@@ -150,100 +150,101 @@ export default function Akademik() {
       </section>
 
       {/* Mata pelajaran */}
-      <section id="mapel" className="scroll-mt-24 bg-kertas-tua/70 py-20 lg:py-28">
-        <div className={`${wadah} grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16`}>
-          <div>
-            <JudulBagian label="Mata pelajaran" judul="Yang dipelajari di kelas." className="" />
-            <p className="mt-5 text-lg leading-relaxed text-tinta-2">
-              Seluruh mata pelajaran dinilai dengan Kriteria Ketercapaian Tujuan Pembelajaran (KKTP) <b className="angka font-bold text-tinta">{KKTP}</b>.
-              Pendidikan Agama diberikan sesuai agama yang dianut setiap siswa.
-            </p>
-            <div className="mt-8 hidden aspect-[4/3] overflow-hidden rounded-[1.75rem] lg:block">
-              <Foto foto={FOTO.literasi} />
+      <section id="mapel" className="gulir-mt-24 latar-kertas-lembut py-20 py-lg-28">
+        <div className={wadah}>
+          <div className="row gx-0 gy-12 gx-lg-16">
+            <div className="col-lg-5">
+              <JudulBagian label="Mata pelajaran" judul="Yang dipelajari di kelas." className="" />
+              <p className="mt-5 fs-lg lh-relaxed text-tinta-2">
+                Seluruh mata pelajaran dinilai dengan Kriteria Ketercapaian Tujuan Pembelajaran (KKTP) <b className="angka fw-bold text-tinta">{KKTP}</b>.
+                Pendidikan Agama diberikan sesuai agama yang dianut setiap siswa.
+              </p>
+              <div className="mt-8 d-none d-lg-block rasio-4x3 overflow-hidden rounded-kartu">
+                <Foto foto={FOTO.literasi} />
+              </div>
             </div>
-          </div>
-          <div className="overflow-hidden rounded-[1.75rem] bg-white ring-1 ring-garis">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-primary-600 text-sm text-white">
-                  <th scope="col" className="px-5 py-3.5 font-bold sm:px-6">
-                    Mata pelajaran
-                  </th>
-                  <th scope="col" className="py-3.5 pr-4 font-bold">
-                    Pengajar
-                  </th>
-                  <th scope="col" className="px-5 py-3.5 text-right font-bold sm:px-6">
-                    Kelas
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-garis">
-                {MAPEL_RAPOR.map((kode) => (
-                  <tr key={kode} className="transition hover:bg-kertas">
-                    <th scope="row" className="px-5 py-3.5 font-semibold sm:px-6">
-                      <span className="flex items-center gap-3">
-                        <span aria-hidden="true" className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-extrabold ${MAPEL[kode].warna}`}>
-                          {MAPEL[kode].nama[0]}
-                        </span>
-                        {MAPEL[kode].nama}
-                      </span>
-                    </th>
-                    <td className="py-3.5 pr-4 text-[15px] text-tinta-2">{pengajar(kode)}</td>
-                    <td className="angka whitespace-nowrap px-5 py-3.5 text-right text-[15px] font-semibold text-tinta-2 sm:px-6">
-                      {MULAI_KELAS_3.includes(kode) ? '3 – 6' : '1 – 6'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="col-lg-7">
+              <div className="overflow-hidden rounded-kartu bg-white border border-garis">
+                <table className="w-100 text-start">
+                  <thead>
+                    <tr className="bg-primary fs-sm text-white">
+                      <th scope="col" className="px-5 px-sm-6 py-3-5 fw-bold">
+                        Mata pelajaran
+                      </th>
+                      <th scope="col" className="py-3-5 pe-4 fw-bold">
+                        Pengajar
+                      </th>
+                      <th scope="col" className="px-5 px-sm-6 py-3-5 text-end fw-bold">
+                        Kelas
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="pembatas-y">
+                    {MAPEL_RAPOR.map((kode) => (
+                      <tr key={kode} className="transisi hover-latar">
+                        <th scope="row" className="px-5 px-sm-6 py-3-5 fw-semibold">
+                          <span className="d-flex align-items-center gap-3">
+                            <span aria-hidden="true" className={`d-flex align-items-center justify-content-center ukuran-9 flex-shrink-0 rounded-2 fs-sm fw-extrabold ${MAPEL[kode].warna}`}>
+                              {MAPEL[kode].nama[0]}
+                            </span>
+                            {MAPEL[kode].nama}
+                          </span>
+                        </th>
+                        <td className="py-3-5 pe-4 fs-15 text-tinta-2">{pengajar(kode)}</td>
+                        <td className="angka text-nowrap px-5 px-sm-6 py-3-5 text-end fs-15 fw-semibold text-tinta-2">
+                          {MULAI_KELAS_3.includes(kode) ? '3 – 6' : '1 – 6'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Jam belajar */}
-      <section id="jam" className={`${wadah} scroll-mt-24 py-20 lg:py-28`}>
+      <section id="jam" className={`${wadah} gulir-mt-24 py-20 py-lg-28`}>
         <JudulBagian label="Jam belajar" judul="Pembagian waktu harian." desc="Senin sampai Jumat. Satu sesi terdiri dari 2 jam pelajaran @35 menit." />
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <ol className="space-y-3">
-            {JADWAL_HARIAN.map((b) => (
-              <li
-                key={b.label}
-                className={`grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 rounded-[1.25rem] p-4 sm:grid-cols-[auto_1fr_auto] sm:px-5 ${
-                  b.istirahat ? 'bg-stabilo' : 'bg-kartu ring-1 ring-garis'
-                }`}
-              >
-                <span
-                  className={`row-span-2 grid h-11 w-11 place-items-center rounded-xl sm:row-span-1 ${b.istirahat ? 'bg-tinta text-stabilo' : 'bg-primary-50 text-primary-700'}`}
-                >
-                  {b.istirahat ? <Coffee className="h-5 w-5" aria-hidden="true" /> : <Clock3 className="h-5 w-5" aria-hidden="true" />}
-                </span>
-                <span>
-                  <span className="block text-lg font-bold">{b.label}</span>
-                  <span className={`text-[15px] ${b.istirahat ? 'text-tinta-2' : 'text-tinta-3'}`}>{b.ket}</span>
-                </span>
-                <span className="angka text-xl font-extrabold tracking-tight sm:text-2xl">{b.jam}</span>
-              </li>
-            ))}
-          </ol>
-          <div className="space-y-6">
-            <div className="rounded-[1.75rem] bg-primary-700 p-6 text-white sm:p-7">
-              <h3 className="text-2xl">Jam sekolah</h3>
-              <dl className="mt-5 grid grid-cols-2 gap-3">
+        <div className="row g-6">
+          <div className="col-lg-7">
+            <ol className="d-flex flex-column gap-3">
+              {JADWAL_HARIAN.map((b) => (
+                <li key={b.label} className={`baris-jam rounded-4 p-4 px-sm-5 ${b.istirahat ? 'bg-stabilo' : 'bg-white border border-garis'}`}>
+                  <span
+                    className={`baris-jam__ikon d-flex align-items-center justify-content-center ukuran-11 rounded-2 ${b.istirahat ? 'bg-tinta text-stabilo' : 'bg-merah-50 text-merah-700'}`}
+                  >
+                    {b.istirahat ? <Coffee className="ukuran-5" aria-hidden="true" /> : <Clock3 className="ukuran-5" aria-hidden="true" />}
+                  </span>
+                  <span>
+                    <span className="d-block fs-lg fw-bold">{b.label}</span>
+                    <span className={`fs-15 ${b.istirahat ? 'text-tinta-2' : 'text-tinta-3'}`}>{b.ket}</span>
+                  </span>
+                  <span className="angka fs-xl fs-sm-2xl fw-extrabold ls-tight">{b.jam}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="col-lg-5 d-flex flex-column gap-6">
+            <div className="rounded-kartu bg-merah-tua p-6 p-sm-7 text-white">
+              <h3 className="fs-2xl">Jam sekolah</h3>
+              <dl className="mt-5 d-grid kolom-2 gap-3">
                 {JAM_SEKOLAH.filter((j) => !j.guru).map((j) => (
-                  <div key={j.label} className="rounded-2xl bg-white/10 p-4">
-                    <dt className="text-sm text-krem">{j.label}</dt>
-                    <dd className="angka mt-1 text-2xl font-extrabold">{j.jam}</dd>
+                  <div key={j.label} className="rounded-3 bg-white bg-opacity-10 p-4">
+                    <dt className="fs-sm text-krem">{j.label}</dt>
+                    <dd className="angka mt-1 fs-2xl fw-extrabold">{j.jam}</dd>
                   </div>
                 ))}
               </dl>
             </div>
-            <div className="rounded-[1.75rem] bg-kartu p-6 ring-1 ring-garis sm:p-7">
-              <h3 className="text-2xl">Program rutin</h3>
-              <dl className="mt-4 divide-y divide-garis">
+            <div className="rounded-kartu bg-white p-6 p-sm-7 border border-garis">
+              <h3 className="fs-2xl">Program rutin</h3>
+              <dl className="mt-4 pembatas-y">
                 {PROGRAM_RUTIN.map(([hari, isi]) => (
-                  <div key={hari} className="grid grid-cols-[7.5rem_1fr] gap-4 py-3.5">
+                  <div key={hari} className="baris-program d-grid gap-4 py-3-5">
                     <dt className="text-tinta-3">{hari}</dt>
-                    <dd className="font-bold">{isi}</dd>
+                    <dd className="fw-bold">{isi}</dd>
                   </div>
                 ))}
               </dl>
@@ -253,7 +254,7 @@ export default function Akademik() {
       </section>
 
       {/* Ekstrakurikuler */}
-      <section id="ekskul" className="scroll-mt-24 bg-primary-700 py-20 text-white lg:py-28">
+      <section id="ekskul" className="gulir-mt-24 bg-merah-tua py-20 py-lg-28 text-white">
         <div className={wadah}>
           <JudulBagian
             terang
@@ -261,27 +262,27 @@ export default function Akademik() {
             judul="Ekstrakurikuler."
             desc="Siswa bebas memilih ekskul lewat Portal Siswa selama jadwalnya tidak bentrok. Pramuka wajib untuk kelas 3 – 6."
           />
-          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="d-grid gap-4 kolom-md-2 kolom-lg-3">
             {EKSKUL.map((e, i) => {
               const Icon = IKON[e.ikon]
               return (
-                <Muncul as="li" key={e.id} jeda={(i % 3) * 70} className="flex flex-col overflow-hidden rounded-[1.75rem] bg-white/[0.08] ring-1 ring-inset ring-white/10">
-                  <div className="relative aspect-[16/9] overflow-hidden">
+                <Muncul as="li" key={e.id} jeda={(i % 3) * 70} className="d-flex flex-column overflow-hidden rounded-kartu bg-white bg-opacity-7 border border-white border-opacity-10">
+                  <div className="position-relative rasio-16x9 overflow-hidden">
                     <Foto foto={FOTO_EKSKUL[e.id]} alt="" ikon={Icon} nada={i % 2 ? 'tua' : 'stabilo'} />
-                    {e.wajib && <span className="absolute left-4 top-4 rounded-full bg-stabilo px-3 py-1 text-xs font-extrabold text-tinta">Wajib</span>}
+                    {e.wajib && <span className="position-absolute top-4 start-4 rounded-pill bg-stabilo px-3 py-1 fs-xs fw-extrabold text-tinta">Wajib</span>}
                   </div>
-                  <div className="flex flex-1 flex-col p-6">
-                    <h3 className="text-2xl">{e.nama}</h3>
-                    <p className="mt-2 leading-relaxed text-krem">{e.desc}</p>
-                    <dl className="mt-5 grid grid-cols-[5.5rem_1fr] gap-x-3 gap-y-1.5 border-t border-white/15 pt-4 text-[15px]">
+                  <div className="d-flex flex-1 flex-column p-6">
+                    <h3 className="fs-2xl">{e.nama}</h3>
+                    <p className="mt-2 lh-relaxed text-krem">{e.desc}</p>
+                    <dl className="info-ekskul mt-5 d-grid column-gap-3 row-gap-1-5 border-top border-white border-opacity-15 pt-4 fs-15">
                       <dt className="text-krem">Jadwal</dt>
-                      <dd className="angka font-semibold">
+                      <dd className="angka fw-semibold">
                         {e.hari}, {e.jam}
                       </dd>
                       <dt className="text-krem">Pembina</dt>
-                      <dd className="font-semibold">{e.pembina}</dd>
+                      <dd className="fw-semibold">{e.pembina}</dd>
                       <dt className="text-krem">Peserta</dt>
-                      <dd className="font-semibold">{e.untuk}</dd>
+                      <dd className="fw-semibold">{e.untuk}</dd>
                     </dl>
                   </div>
                 </Muncul>
@@ -292,21 +293,21 @@ export default function Akademik() {
       </section>
 
       {/* Kalender */}
-      <section id="kalender" className={`${wadah} scroll-mt-24 py-20 lg:py-28`}>
+      <section id="kalender" className={`${wadah} gulir-mt-24 py-20 py-lg-28`}>
         <JudulBagian
           label="Tahun ajaran 2026/2027"
           judul="Kalender akademik."
           desc="Hari libur, ujian, dan kegiatan sekolah. Tanggal libur keagamaan bertanda perkiraan."
           aksi={
-            <p className="inline-flex items-center gap-2 rounded-full bg-kartu px-4 py-2 text-sm font-semibold text-tinta-2 ring-1 ring-garis">
-              <CalendarDays className="h-4 w-4 text-primary-600" aria-hidden="true" /> Geser bulan dengan tombol panah
+            <p className="d-inline-flex align-items-center gap-2 rounded-pill bg-white px-4 py-2 fs-sm fw-semibold text-tinta-2 border border-garis">
+              <CalendarDays className="ukuran-4 text-primary" aria-hidden="true" /> Geser bulan dengan tombol panah
             </p>
           }
         />
         <div className={selarasKertas}>
           <KalenderAkademik tanpaJudul />
         </div>
-        <div className="mt-12 flex flex-wrap gap-3">
+        <div className="mt-12 d-flex flex-wrap gap-3">
           <Link to="/ppdb" className={tombol.utama}>
             Daftar PPDB
           </Link>

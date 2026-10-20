@@ -39,18 +39,18 @@ function keAsal(kartu, asal) {
 
 function Info({ icon: Icon, label, children, lebar = false }) {
   return (
-    <div className={`rounded-2xl bg-slate-50 px-3.5 py-3 ${lebar ? 'col-span-2' : ''}`}>
-      <dt className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
-        <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+    <div className={`rounded-3 bg-abu-50 px-3-5 py-3 ${lebar ? 'rentang-2' : ''}`}>
+      <dt className="d-flex align-items-center gap-1-5 fs-xs fw-medium text-tinta-3">
+        <Icon className="h-3-5 w-3-5 flex-shrink-0" aria-hidden="true" />
         {label}
       </dt>
-      <dd className="mt-1 font-semibold leading-snug text-slate-900">{children}</dd>
+      <dd className="mt-1 fw-semibold lh-snug text-tinta">{children}</dd>
     </div>
   )
 }
 
 const Chip = ({ children }) => (
-  <span className="inline-flex items-center rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold ring-1 ring-inset ring-white/20">{children}</span>
+  <span className="d-inline-flex align-items-center rounded-pill bg-white bg-opacity-15 px-2-5 py-1 fs-xs fw-bold border border-white border-opacity-20">{children}</span>
 )
 
 export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
@@ -141,22 +141,22 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
   }, [asal])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div ref={latarRef} className="absolute inset-0 bg-slate-900/55 backdrop-blur-sm" onClick={tutup} aria-hidden="true" />
+    <div className="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4">
+      <div ref={latarRef} className="position-absolute inset-0 latar-redup buram-sm" onClick={tutup} aria-hidden="true" />
 
       <article
         ref={kartuRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={idJudul}
-        className="relative flex max-h-[min(88dvh,46rem)] w-full max-w-md flex-col overflow-hidden rounded-[1.75rem] bg-white shadow-2xl"
+        className="position-relative d-flex mh-kartu-teman w-100 mw-md flex-column overflow-hidden rounded-kartu bg-white shadow-lg"
       >
         {/* Kepala bergaya kartu pelajar */}
-        <div className="relative isolate overflow-hidden bg-linear-to-br from-primary-600 to-primary-800 px-6 pb-6 pt-5 text-white">
-          <span aria-hidden="true" className="pola-titik absolute inset-0 -z-10 opacity-60" />
-          <span aria-hidden="true" className="pointer-events-none absolute -right-14 -top-16 -z-10 h-44 w-44 rounded-full border-[2rem] border-white/[0.07]" />
-          <div className="flex items-start justify-between gap-3">
-            <p className="inline-flex items-center gap-1.5 pt-1 text-[11px] font-bold uppercase tracking-widest text-primary-100">
+        <div className="position-relative isolate overflow-hidden gradasi-merah px-6 pb-6 pt-5 text-white">
+          <span aria-hidden="true" className="pola-titik position-absolute inset-0 z-n1 opacity-60" />
+          <span aria-hidden="true" className="kartu-teman__cincin" />
+          <div className="d-flex align-items-start justify-content-between gap-3">
+            <p className="d-inline-flex align-items-center gap-1-5 pt-1 fs-2xs fw-bold text-uppercase ls-widest text-merah-100">
               <IdCard className="h-4 w-4" aria-hidden="true" /> Kartu Data Diri
             </p>
             <button
@@ -164,21 +164,21 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
               type="button"
               onClick={tutup}
               aria-label="Tutup kartu data diri"
-              className="-mr-2 -mt-1 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/15 text-white ring-1 ring-inset ring-white/25 transition hover:bg-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="me-n2 mt-n1 d-flex h-10 w-10 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-white bg-opacity-15 text-white border border-white border-opacity-25 transisi hover-terang"
             >
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
-          <div className="mt-3 flex items-center gap-4">
-            <Avatar nama={teman.nama} size="xl" className="bg-white text-primary-700 ring-4 ring-white/30" />
+          <div className="mt-3 d-flex align-items-center gap-4">
+            <Avatar nama={teman.nama} size="xl" className="bg-white text-merah-700 cincin-putih-tebal" />
             <div className="min-w-0">
-              <h2 id={idJudul} className="text-xl leading-tight text-white">
+              <h2 id={idJudul} className="fs-xl lh-tight text-white">
                 {teman.nama}
               </h2>
-              <p className="mt-1 text-sm text-primary-100">
+              <p className="mt-1 fs-sm text-merah-100">
                 Siswa Kelas {teman.kelas} · {faseKelas(teman.kelas)}
               </p>
-              <div className="mt-2.5 flex flex-wrap gap-1.5">
+              <div className="mt-2-5 d-flex flex-wrap gap-1-5">
                 <Chip>No. absen {nomorAbsen}</Chip>
                 <Chip>{namaJk(teman.jk)}</Chip>
                 {ulangTahunHariIni(teman) && <Chip>Berulang tahun hari ini</Chip>}
@@ -188,10 +188,10 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
         </div>
 
         {/* Isi: muncul berurutan setelah kartu tiba (lihat .isi-bertahap) */}
-        <div className="isi-bertahap space-y-5 overflow-y-auto px-6 py-5">
+        <div className="isi-bertahap antara-y-5 overflow-y-auto px-6 py-5">
           <section>
-            <h3 className="mb-2.5 text-sm font-bold text-slate-900">Identitas siswa</h3>
-            <dl className="grid grid-cols-2 gap-2.5 text-sm">
+            <h3 className="mb-2-5 fs-sm fw-bold text-tinta">Identitas siswa</h3>
+            <dl className="d-grid kolom-2 gap-2-5 fs-sm">
               <Info icon={Hash} label="NIS">
                 {teman.nis}
               </Info>
@@ -210,25 +210,25 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
           </section>
 
           <section>
-            <h3 className="mb-2.5 text-sm font-bold text-slate-900">Kelas & ruang belajar</h3>
-            <div className="space-y-2.5">
+            <h3 className="mb-2-5 fs-sm fw-bold text-tinta">Kelas & ruang belajar</h3>
+            <div className="antara-y-2-5">
               {wali && (
-                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 px-3.5 py-3">
+                <div className="d-flex align-items-center gap-3 rounded-3 bg-abu-50 px-3-5 py-3">
                   <Avatar nama={wali.nama} size="sm" />
-                  <div className="min-w-0 text-sm">
-                    <p className="text-xs font-medium text-slate-500">Wali kelas {teman.kelas}</p>
-                    <p className="truncate font-semibold text-slate-900">{wali.nama}</p>
+                  <div className="min-w-0 fs-sm">
+                    <p className="fs-xs fw-medium text-tinta-3">Wali kelas {teman.kelas}</p>
+                    <p className="text-truncate fw-semibold text-tinta">{wali.nama}</p>
                   </div>
                 </div>
               )}
               {lantai && (
-                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 px-3.5 py-3">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary-50 text-primary-600">
+                <div className="d-flex align-items-center gap-3 rounded-3 bg-abu-50 px-3-5 py-3">
+                  <span className="d-flex h-9 w-9 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-merah-50 text-primary">
                     <Building2 className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <div className="min-w-0 text-sm">
-                    <p className="text-xs font-medium text-slate-500">Ruang kelas</p>
-                    <p className="font-semibold text-slate-900">
+                  <div className="min-w-0 fs-sm">
+                    <p className="fs-xs fw-medium text-tinta-3">Ruang kelas</p>
+                    <p className="fw-semibold text-tinta">
                       Gedung Utama · Lantai {lantai} · {sisi}
                     </p>
                   </div>
@@ -239,16 +239,16 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
 
           {kegiatanWajib.length > 0 && (
             <section>
-              <h3 className="mb-2.5 text-sm font-bold text-slate-900">Kegiatan wajib kelas</h3>
-              <ul className="space-y-2">
+              <h3 className="mb-2-5 fs-sm fw-bold text-tinta">Kegiatan wajib kelas</h3>
+              <ul className="antara-y-2">
                 {kegiatanWajib.map((e) => (
-                  <li key={e.id} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-3.5 py-3 text-sm">
-                    <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${e.warna}`}>
+                  <li key={e.id} className="d-flex align-items-center gap-3 rounded-3 bg-abu-50 px-3-5 py-3 fs-sm">
+                    <span className={`d-flex h-9 w-9 flex-shrink-0 align-items-center justify-content-center rounded-pill ${e.warna}`}>
                       <Tent className="h-4 w-4" aria-hidden="true" />
                     </span>
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900">{e.nama}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="fw-semibold text-tinta">{e.nama}</p>
+                      <p className="fs-xs text-tinta-3">
                         Setiap {e.hari}, {e.jam}
                       </p>
                     </div>
@@ -258,14 +258,14 @@ export default function KartuTeman({ teman, asal, nomorAbsen, data, onTutup }) {
             </section>
           )}
 
-          <p className="flex items-start gap-2 text-xs leading-relaxed text-slate-500">
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
+          <p className="d-flex align-items-start gap-2 fs-xs lh-relaxed text-tinta-3">
+            <ShieldCheck className="mt-0-5 h-4 w-4 flex-shrink-0 text-success" aria-hidden="true" />
             Alamat rumah dan kontak orang tua tidak ditampilkan untuk menjaga privasi setiap siswa.
           </p>
         </div>
 
-        <div className="flex justify-end border-t border-slate-100 px-6 py-4">
-          <button type="button" onClick={tutup} className={`${btn.secondary} w-full sm:w-auto`}>
+        <div className="d-flex justify-content-end border-top border-abu-100 px-6 py-4">
+          <button type="button" onClick={tutup} className={`${btn.secondary} w-100 w-sm-auto`}>
             Tutup
           </button>
         </div>

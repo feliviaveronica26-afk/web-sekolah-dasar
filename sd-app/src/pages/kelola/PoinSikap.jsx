@@ -47,7 +47,7 @@ export default function PoinSikap() {
         title="Poin Sikap"
         desc="Beri apresiasi atas perilaku baik dan catatan perbaikan. Siswa & orang tua langsung melihatnya di portal."
         action={
-          <select value={kelas} onChange={(e) => setKelas(e.target.value)} className={`${inputCls} w-auto!`} aria-label="Pilih kelas">
+          <select value={kelas} onChange={(e) => setKelas(e.target.value)} className={`${inputCls} w-auto`} aria-label="Pilih kelas">
             {L.daftarKelas.map((k) => (
               <option key={k} value={k}>
                 Kelas {k}
@@ -63,49 +63,49 @@ export default function PoinSikap() {
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+      <div className="d-grid gap-6 kolom-xl-isi-340">
         <Card className="p-6">
           <JudulKartu icon={Users} judul={`Kelas ${kelas} · ${siswa.length} siswa`}>
             <button onClick={() => setDipilih('semua')} className={btn.secondary}>
               <Award className="h-4 w-4" /> Seluruh kelas
             </button>
           </JudulKartu>
-          <p className="-mt-2 mb-4 text-sm text-slate-500">Klik nama siswa untuk memberi poin.</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <p className="mt-n2 mb-4 fs-sm text-tinta-3">Klik nama siswa untuk memberi poin.</p>
+          <div className="d-grid kolom-2 gap-3 kolom-sm-3 kolom-lg-4">
             {siswa.map((s) => {
               const total = ringkasSikap(data, s.nis).total
               return (
                 <button
                   key={s.nis}
                   onClick={() => setDipilih(s.nis)}
-                  className="group relative flex flex-col items-center rounded-2xl bg-slate-50 p-4 text-center transition hover:-translate-y-1 hover:bg-white hover:shadow-lg hover:ring-1 hover:ring-primary-100"
+                  className="grup position-relative d-flex flex-column align-items-center rounded-3 bg-abu-50 p-4 text-center transisi hover-angkat-sedikit hover-latar-putih hover-bayangan-kecil"
                 >
                   <span
-                    className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-xs font-bold ${
-                      total > 0 ? 'bg-emerald-100 text-emerald-700' : total < 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-600'
+                    className={`position-absolute end-2 top-2 rounded-pill px-2 py-0-5 fs-xs fw-bold ${
+                      total > 0 ? 'bg-success-subtle text-success' : total < 0 ? 'bg-warning-subtle text-warning-emphasis' : 'bg-abu-200 text-tinta-2'
                     }`}
                   >
                     {total > 0 ? `+${total}` : total}
                   </span>
-                  <Avatar nama={s.nama} size="lg" className="transition group-hover:scale-110" />
-                  <span className="mt-2 text-sm font-semibold leading-snug text-slate-800">{s.nama}</span>
+                  <Avatar nama={s.nama} size="lg" className="transisi grup-besar" />
+                  <span className="mt-2 fs-sm fw-semibold lh-snug text-tinta">{s.nama}</span>
                 </button>
               )
             })}
           </div>
         </Card>
 
-        <div className="space-y-6">
+        <div className="antara-y-6">
           <Card className="p-6">
             <JudulKartu icon={Trophy} judul="Poin tertinggi" />
-            <ol className="space-y-2.5">
+            <ol className="antara-y-2-5">
               {peringkat.map((s, i) => (
-                <li key={s.nis} className="flex items-center gap-3">
-                  <span className={`grid h-7 w-7 place-items-center rounded-full text-xs font-bold ${['bg-amber-300 text-amber-950', 'bg-slate-300 text-slate-800', 'bg-orange-300 text-orange-950'][i] ?? 'bg-slate-100 text-slate-600'}`}>
+                <li key={s.nis} className="d-flex align-items-center gap-3">
+                  <span className={`d-flex h-7 w-7 align-items-center justify-content-center rounded-pill fs-xs fw-bold ${['bg-warning-subtle text-warning-emphasis', 'bg-abu-300 text-tinta', 'titik-orange teks-orange'][i] ?? 'bg-abu-100 text-tinta-2'}`}>
                     {i + 1}
                   </span>
-                  <span className="flex-1 truncate text-sm font-semibold text-slate-800">{s.nama}</span>
-                  <span className="text-sm font-bold text-slate-900">{s.total > 0 ? `+${s.total}` : s.total}</span>
+                  <span className="flex-1 text-truncate fs-sm fw-semibold text-tinta">{s.nama}</span>
+                  <span className="fs-sm fw-bold text-tinta">{s.total > 0 ? `+${s.total}` : s.total}</span>
                 </li>
               ))}
             </ol>
@@ -114,24 +114,24 @@ export default function PoinSikap() {
           <Card className="p-6">
             <JudulKartu icon={Award} judul="Riwayat terbaru" />
             {riwayatKelas.length === 0 ? (
-              <p className="text-sm text-slate-500">Belum ada catatan.</p>
+              <p className="fs-sm text-tinta-3">Belum ada catatan.</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="antara-y-2">
                 {riwayatKelas.slice(0, 8).map((r) => {
                   const k = infoSikap(r.kode)
                   return (
-                    <li key={r.id} className="group flex items-center gap-2.5 rounded-xl bg-slate-50 px-3 py-2">
-                      <span className="text-lg">{k.emoji}</span>
+                    <li key={r.id} className="grup d-flex align-items-center gap-2-5 rounded-2 bg-abu-50 px-3 py-2">
+                      <span className="fs-lg">{k.emoji}</span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-semibold text-slate-800">{namaSiswa(r.nis)}</span>
-                        <span className="block truncate text-xs text-slate-500">
+                        <span className="d-block text-truncate fs-sm fw-semibold text-tinta">{namaSiswa(r.nis)}</span>
+                        <span className="d-block text-truncate fs-xs text-tinta-3">
                           {k.label} · {formatTanggal(r.tanggal, { year: undefined })}
                         </span>
                       </span>
-                      <span className={`text-xs font-bold ${r.poin > 0 ? 'text-emerald-600' : 'text-amber-700'}`}>{r.poin > 0 ? `+${r.poin}` : r.poin}</span>
+                      <span className={`fs-xs fw-bold ${r.poin > 0 ? 'text-success' : 'text-warning-emphasis'}`}>{r.poin > 0 ? `+${r.poin}` : r.poin}</span>
                       {r.oleh === L.nama && (
-                        <button onClick={() => hapusSikap(r.id)} className="rounded p-1 text-slate-300 opacity-0 transition hover:text-rose-600 group-hover:opacity-100" aria-label="Hapus catatan">
-                          <Trash2 className="h-3.5 w-3.5" />
+                        <button onClick={() => hapusSikap(r.id)} className="rounded-1 p-1 text-abu-300 opacity-0 grup-tampil transisi hover-teks-merah" aria-label="Hapus catatan">
+                          <Trash2 className="h-3-5 w-3-5" />
                         </button>
                       )}
                     </li>
@@ -153,18 +153,18 @@ export default function PoinSikap() {
             ['perbaikan', '📝 Perlu perbaikan'],
           ]}
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="d-grid kolom-2 gap-3 kolom-sm-4">
           {SIKAP[jenis].map((k) => (
             <button
               key={k.kode}
               onClick={() => beri(k)}
-              className={`flex flex-col items-center rounded-2xl p-4 text-center transition hover:-translate-y-1 hover:shadow-md ${
-                jenis === 'positif' ? 'bg-emerald-50 hover:bg-emerald-100' : 'bg-amber-50 hover:bg-amber-100'
+              className={`d-flex flex-column align-items-center rounded-3 p-4 text-center transisi hover-angkat-sedikit hover-bayangan-kecil ${
+                jenis === 'positif' ? 'bg-success-subtle hover-redup' : 'bg-warning-subtle hover-redup'
               }`}
             >
-              <span className="text-3xl">{k.emoji}</span>
-              <span className="mt-2 text-sm font-semibold leading-tight text-slate-800">{k.label}</span>
-              <span className={`mt-1 text-xs font-bold ${k.poin > 0 ? 'text-emerald-600' : 'text-amber-700'}`}>
+              <span className="fs-3xl">{k.emoji}</span>
+              <span className="mt-2 fs-sm fw-semibold lh-tight text-tinta">{k.label}</span>
+              <span className={`mt-1 fs-xs fw-bold ${k.poin > 0 ? 'text-success' : 'text-warning-emphasis'}`}>
                 {k.poin > 0 ? '+' : ''}
                 {k.poin} poin
               </span>
@@ -176,7 +176,7 @@ export default function PoinSikap() {
             Catatan (opsional)
           </label>
           <input id="catatan-sikap" value={catatan} onChange={(e) => setCatatan(e.target.value)} className={inputCls} placeholder="Contoh: Membantu teman memahami soal pecahan" />
-          <p className="mt-1.5 text-xs text-slate-500">Isi catatan dulu, lalu klik salah satu kategori di atas.</p>
+          <p className="mt-1-5 fs-xs text-tinta-3">Isi catatan dulu, lalu klik salah satu kategori di atas.</p>
         </div>
       </Modal>
     </>

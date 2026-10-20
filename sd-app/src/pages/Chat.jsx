@@ -71,13 +71,13 @@ const waktuDaftar = (iso) => {
   return key === todayKey() ? jam(iso) : key === tambahHari(todayKey(), -1) ? 'Kemarin' : formatTanggal(key, { year: undefined })
 }
 
-const WARNA_NAMA = ['text-sky-700', 'text-emerald-700', 'text-violet-700', 'text-orange-700', 'text-rose-700', 'text-teal-700', 'text-indigo-700']
+const WARNA_NAMA = ['text-info', 'text-success', 'teks-violet', 'teks-orange', 'text-danger', 'teks-teal', 'teks-indigo']
 const warnaNama = (id) => WARNA_NAMA[[...id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 997, 7) % WARNA_NAMA.length]
 
 const GAYA_GRUP = {
-  kelas: { ikon: GraduationCap, cls: 'bg-primary-100 text-primary-700' },
-  ortu: { ikon: UsersRound, cls: 'bg-amber-100 text-amber-700' },
-  staf: { ikon: Users, cls: 'bg-sky-100 text-sky-700' },
+  kelas: { ikon: GraduationCap, cls: 'bg-merah-100 text-merah-700' },
+  ortu: { ikon: UsersRound, cls: 'bg-warning-subtle text-warning-emphasis' },
+  staf: { ikon: Users, cls: 'bg-info-subtle text-info' },
 }
 
 const CATATAN_GRUP = {
@@ -102,7 +102,7 @@ function AvatarPercakapan({ info, size = 'md' }) {
   const Ikon = info.gaya.ikon
   const ukuran = size === 'sm' ? 'h-9 w-9' : 'h-11 w-11'
   return (
-    <span className={`grid shrink-0 place-items-center rounded-full ${ukuran} ${info.gaya.cls}`}>
+    <span className={`d-flex flex-shrink-0 align-items-center justify-content-center rounded-pill ${ukuran} ${info.gaya.cls}`}>
       <Ikon className="h-5 w-5" />
     </span>
   )
@@ -112,7 +112,7 @@ function AvatarPercakapan({ info, size = 'md' }) {
 function tautkan(teks) {
   return teks.split(/(https?:\/\/[^\s<]+)/g).map((b, i) =>
     i % 2 ? (
-      <a key={i} href={b} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-2">
+      <a key={i} href={b} target="_blank" rel="noopener noreferrer" className="text-break text-decoration-underline link-offset-1">
         {b}
       </a>
     ) : (
@@ -134,21 +134,21 @@ function PemutarSuara({ url, durasi }) {
   const [posisi, setPosisi] = useState(0)
   const total = durasi || 0
   return (
-    <div className="flex w-60 max-w-full items-center gap-3 py-1">
+    <div className="d-flex w-60 mw-100 align-items-center gap-3 py-1">
       <button
         type="button"
         onClick={() => (main ? ref.current.pause() : ref.current.play())}
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-current/15"
+        className="d-flex h-10 w-10 flex-shrink-0 align-items-center justify-content-center rounded-pill latar-arus-15"
         aria-label={main ? 'Jeda pesan suara' : 'Putar pesan suara'}
       >
-        {main ? <Pause className="h-5 w-5" /> : <Play className="ml-0.5 h-5 w-5" />}
+        {main ? <Pause className="h-5 w-5" /> : <Play className="ms-0-5 h-5 w-5" />}
       </button>
       <div className="min-w-0 flex-1">
-        <div className="h-1.5 overflow-hidden rounded-full bg-current/20">
-          <div className="h-full rounded-full bg-current" style={{ width: `${total ? Math.min(100, (posisi / total) * 100) : 0}%` }} />
+        <div className="h-1-5 overflow-hidden rounded-pill latar-arus-20">
+          <div className="h-100 rounded-pill latar-arus" style={{ width: `${total ? Math.min(100, (posisi / total) * 100) : 0}%` }} />
         </div>
-        <p className="mt-1 text-[11px] opacity-75">
-          <Mic className="mr-0.5 inline h-3 w-3" /> {formatDurasi(main || posisi ? posisi : total)}
+        <p className="mt-1 fs-2xs opacity-75">
+          <Mic className="me-0-5 d-inline h-3 w-3" /> {formatDurasi(main || posisi ? posisi : total)}
         </p>
       </div>
       <audio
@@ -168,57 +168,57 @@ function PemutarSuara({ url, durasi }) {
 }
 
 const IKON_DOKUMEN = {
-  pdf: [FileText, 'text-rose-600'],
-  doc: [FileText, 'text-sky-600'],
-  docx: [FileText, 'text-sky-600'],
-  odt: [FileText, 'text-sky-600'],
-  rtf: [FileText, 'text-sky-600'],
-  txt: [FileText, 'text-slate-600'],
-  xls: [FileSpreadsheet, 'text-emerald-600'],
-  xlsx: [FileSpreadsheet, 'text-emerald-600'],
-  ods: [FileSpreadsheet, 'text-emerald-600'],
-  csv: [FileSpreadsheet, 'text-emerald-600'],
-  ppt: [Presentation, 'text-orange-600'],
-  pptx: [Presentation, 'text-orange-600'],
-  odp: [Presentation, 'text-orange-600'],
+  pdf: [FileText, 'text-danger'],
+  doc: [FileText, 'text-info'],
+  docx: [FileText, 'text-info'],
+  odt: [FileText, 'text-info'],
+  rtf: [FileText, 'text-info'],
+  txt: [FileText, 'text-tinta-2'],
+  xls: [FileSpreadsheet, 'text-success'],
+  xlsx: [FileSpreadsheet, 'text-success'],
+  ods: [FileSpreadsheet, 'text-success'],
+  csv: [FileSpreadsheet, 'text-success'],
+  ppt: [Presentation, 'teks-orange'],
+  pptx: [Presentation, 'teks-orange'],
+  odp: [Presentation, 'teks-orange'],
 }
 
 function Lampiran({ l, onLihatFoto }) {
   const { url, status, onError } = useUrlBerkas(l.id)
-  if (status === 'hilang') return <p className="rounded-xl bg-current/10 px-3 py-2 text-xs italic opacity-80">Berkas tidak bisa dimuat</p>
+  if (status === 'hilang') return <p className="rounded-2 latar-arus-10 px-3 py-2 fs-xs fst-italic opacity-80">Berkas tidak bisa dimuat</p>
   if (l.jenis === 'foto') {
     return (
-      <button type="button" onClick={() => onLihatFoto({ url, nama: l.nama })} className="block overflow-hidden rounded-xl" aria-label={`Lihat foto ${l.nama}`}>
-        <img src={url} alt={l.nama} loading="lazy" onError={onError} className="max-h-72 w-full max-w-xs object-cover" />
+      <button type="button" onClick={() => onLihatFoto({ url, nama: l.nama })} className="d-block overflow-hidden rounded-2" aria-label={`Lihat foto ${l.nama}`}>
+        <img src={url} alt={l.nama} loading="lazy" onError={onError} className="mh-72 w-100 mw-xs object-fit-cover" />
       </button>
     )
   }
-  if (l.jenis === 'video') return <video src={url} controls preload="metadata" onError={onError} className="max-h-72 w-full max-w-xs rounded-xl bg-black" />
+  if (l.jenis === 'video') return <video src={url} controls preload="metadata" onError={onError} className="mh-72 w-100 mw-xs rounded-2 bg-black" />
   if (l.jenis === 'suara') return <PemutarSuara url={url} durasi={l.durasi} />
   if (l.jenis === 'audio') {
     return (
-      <div className="w-64 max-w-full">
-        <p className="mb-1 flex items-center gap-1.5 truncate text-xs font-semibold">
-          <Music className="h-3.5 w-3.5 shrink-0" /> {l.nama}
+      <div className="w-64 mw-100">
+        <p className="mb-1 d-flex align-items-center gap-1-5 text-truncate fs-xs fw-semibold">
+          <Music className="h-3-5 w-3-5 flex-shrink-0" /> {l.nama}
         </p>
-        <audio src={url} controls preload="metadata" className="h-10 w-full" />
+        <audio src={url} controls preload="metadata" className="h-10 w-100" />
       </div>
     )
   }
   const ext = ekstensi(l.nama)
-  const [Ikon, warna] = IKON_DOKUMEN[ext] ?? [File, 'text-slate-600']
+  const [Ikon, warna] = IKON_DOKUMEN[ext] ?? [File, 'text-tinta-2']
   return (
-    <a href={url} download={l.nama} className="flex w-64 max-w-full items-center gap-3 rounded-xl bg-current/10 p-2.5 transition hover:bg-current/15">
-      <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-white ${warna}`}>
+    <a href={url} download={l.nama} className="d-flex w-64 mw-100 align-items-center gap-3 rounded-2 latar-arus-10 p-2-5 transisi hover-latar-arus-15">
+      <span className={`d-flex h-10 w-10 flex-shrink-0 align-items-center justify-content-center rounded-1 bg-white ${warna}`}>
         <Ikon className="h-5 w-5" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold">{l.nama}</span>
-        <span className="block text-xs opacity-75">
+        <span className="d-block text-truncate fs-sm fw-semibold">{l.nama}</span>
+        <span className="d-block fs-xs opacity-75">
           {ext.toUpperCase()} · {formatUkuran(l.ukuran)}
         </span>
       </span>
-      <Download className="h-4 w-4 shrink-0" />
+      <Download className="h-4 w-4 flex-shrink-0" />
     </a>
   )
 }
@@ -229,8 +229,8 @@ function Gelembung({ p, saya, data, grup, anggotaLain, dibaca, bisaHapus, onHapu
   if (p.dihapus) {
     const olehSendiri = p.dihapus.oleh === p.dari
     return (
-      <div className={`flex ${milikSaya ? 'justify-end' : 'justify-start'}`}>
-        <p className="rounded-2xl bg-white/70 px-3 py-2 text-xs italic text-slate-400 ring-1 ring-slate-200">
+      <div className={`d-flex ${milikSaya ? 'justify-content-end' : 'justify-content-start'}`}>
+        <p className="rounded-3 bg-white bg-opacity-70 px-3 py-2 fs-xs fst-italic text-abu-400 border border-abu-200">
           🚫 {olehSendiri ? 'Pesan ini dihapus' : `Pesan dihapus oleh ${profil(data, p.dihapus.oleh).nama.split(',')[0]}`}
         </p>
       </div>
@@ -240,31 +240,31 @@ function Gelembung({ p, saya, data, grup, anggotaLain, dibaca, bisaHapus, onHapu
   const pembaca = milikSaya ? anggotaLain.filter((a) => (dibaca[a]?.[p.pid] ?? '') >= p.waktu).length : 0
   const semuaBaca = milikSaya && anggotaLain.length > 0 && pembaca === anggotaLain.length
   return (
-    <div className={`group flex ${milikSaya ? 'justify-end' : 'justify-start'}`}>
+    <div className={`grup d-flex ${milikSaya ? 'justify-content-end' : 'justify-content-start'}`}>
       <div
-        className={`relative max-w-[85%] rounded-2xl px-3 py-2 shadow-sm sm:max-w-[70%] ${
-          milikSaya ? 'rounded-br-md bg-primary-600 text-white' : 'rounded-bl-md bg-white text-slate-800 ring-1 ring-slate-100'
+        className={`position-relative lebar-gelembung rounded-3 px-3 py-2 shadow-sm ${
+          milikSaya ? 'sudut-bawah-kanan-kecil bg-primary text-white' : 'sudut-bawah-kiri-kecil bg-white text-tinta border border-abu-100'
         }`}
       >
         {grup && !milikSaya && (
-          <p className={`mb-0.5 truncate text-xs font-bold ${warnaNama(p.dari)}`}>
-            {pengirim.nama.split(',')[0]} <span className="font-medium text-slate-400">· {pengirim.label}</span>
+          <p className={`mb-0-5 text-truncate fs-xs fw-bold ${warnaNama(p.dari)}`}>
+            {pengirim.nama.split(',')[0]} <span className="fw-medium text-abu-400">· {pengirim.label}</span>
           </p>
         )}
         {p.lampiran && (
-          <div className={p.teks ? 'mb-1.5' : ''}>
+          <div className={p.teks ? 'mb-1-5' : ''}>
             <Lampiran l={p.lampiran} onLihatFoto={onLihatFoto} />
           </div>
         )}
-        {p.teks && <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{tautkan(p.teks)}</p>}
-        <p className={`mt-0.5 flex items-center justify-end gap-1 text-[10px] ${milikSaya ? 'text-primary-100' : 'text-slate-400'}`}>
+        {p.teks && <p className="spasi-pre-wrap text-break fs-sm lh-relaxed">{tautkan(p.teks)}</p>}
+        <p className={`mt-0-5 d-flex align-items-center justify-content-end gap-1 fs-10 ${milikSaya ? 'text-merah-100' : 'text-abu-400'}`}>
           {jam(p.waktu)}
           {milikSaya &&
             (semuaBaca ? (
-              <CheckCheck className="h-3.5 w-3.5 text-sky-200" aria-label="Dibaca" />
+              <CheckCheck className="h-3-5 w-3-5 teks-terang-sky" aria-label="Dibaca" />
             ) : (
-              <span title={grup ? `Dibaca ${pembaca} dari ${anggotaLain.length} anggota` : 'Terkirim'} className="inline-flex">
-                {pembaca > 0 ? <CheckCheck className="h-3.5 w-3.5" aria-label="Dibaca sebagian" /> : <Check className="h-3.5 w-3.5" aria-label="Terkirim" />}
+              <span title={grup ? `Dibaca ${pembaca} dari ${anggotaLain.length} anggota` : 'Terkirim'} className="d-inline-flex">
+                {pembaca > 0 ? <CheckCheck className="h-3-5 w-3-5" aria-label="Dibaca sebagian" /> : <Check className="h-3-5 w-3-5" aria-label="Terkirim" />}
               </span>
             ))}
         </p>
@@ -274,11 +274,11 @@ function Gelembung({ p, saya, data, grup, anggotaLain, dibaca, bisaHapus, onHapu
             onClick={onHapus}
             title="Hapus pesan"
             aria-label="Hapus pesan"
-            className={`absolute -top-2 grid h-7 w-7 place-items-center rounded-full bg-white text-rose-600 opacity-0 shadow ring-1 ring-slate-200 transition group-hover:opacity-100 focus:opacity-100 pointer-coarse:opacity-90 ${
+            className={`position-absolute top-n2 d-flex h-7 w-7 align-items-center justify-content-center rounded-pill bg-white text-danger opacity-0 grup-tampil shadow border border-abu-200 transisi ${
               milikSaya ? '-left-3' : '-right-3'
             }`}
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="h-3-5 w-3-5" />
           </button>
         )}
       </div>
@@ -334,7 +334,7 @@ function Perekam({ onSelesai, onBatal, onGagal }) {
   }, [])
 
   return (
-    <div className="flex items-center gap-3" role="status" aria-live="polite">
+    <div className="d-flex align-items-center gap-3" role="status" aria-live="polite">
       <button
         type="button"
         onClick={() => {
@@ -342,19 +342,19 @@ function Perekam({ onSelesai, onBatal, onGagal }) {
           rekam.current?.state === 'recording' && rekam.current.stop()
           onBatal()
         }}
-        className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-rose-600 hover:bg-rose-50"
+        className="d-flex h-11 w-11 flex-shrink-0 align-items-center justify-content-center rounded-pill text-danger hover-latar-merah"
         aria-label="Batalkan rekaman"
       >
         <Trash2 className="h-5 w-5" />
       </button>
-      <div className="flex flex-1 items-center gap-2 rounded-full bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700">
-        <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-rose-600" /> Merekam {formatDurasi(detik)}
-        <span className="ml-auto text-xs font-normal text-rose-500">maks. {MAKS_DURASI_SUARA / 60} menit</span>
+      <div className="d-flex flex-1 align-items-center gap-2 rounded-pill bg-danger-subtle px-4 py-2-5 fs-sm fw-semibold text-danger">
+        <span className="h-2-5 w-2-5 berdenyut rounded-pill titik-rose" /> Merekam {formatDurasi(detik)}
+        <span className="ms-auto fs-xs fw-normal teks-terang-rose">maks. {MAKS_DURASI_SUARA / 60} menit</span>
       </div>
       <button
         type="button"
         onClick={() => rekam.current?.state === 'recording' && rekam.current.stop()}
-        className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary-600 text-white hover:bg-primary-700"
+        className="d-flex h-11 w-11 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-primary text-white hover-latar-merah-tua"
         aria-label="Kirim pesan suara"
       >
         <Send className="h-4 w-4" />
@@ -364,9 +364,9 @@ function Perekam({ onSelesai, onBatal, onGagal }) {
 }
 
 const MENU_LAMPIRAN = [
-  { jenis: 'media', label: 'Foto & Video', ikon: IkonFoto, terima: `${TERIMA.foto},${TERIMA.video}`, warna: 'bg-violet-100 text-violet-700' },
-  { jenis: 'dokumen', label: 'Dokumen', ikon: FileText, terima: TERIMA.dokumen, warna: 'bg-sky-100 text-sky-700' },
-  { jenis: 'audio', label: 'Audio / Lagu', ikon: Music, terima: TERIMA.audio, warna: 'bg-orange-100 text-orange-700' },
+  { jenis: 'media', label: 'Foto & Video', ikon: IkonFoto, terima: `${TERIMA.foto},${TERIMA.video}`, warna: 'warna-violet teks-violet' },
+  { jenis: 'dokumen', label: 'Dokumen', ikon: FileText, terima: TERIMA.dokumen, warna: 'bg-info-subtle text-info' },
+  { jenis: 'audio', label: 'Audio / Lagu', ikon: Music, terima: TERIMA.audio, warna: 'warna-orange teks-orange' },
 ]
 
 function Penyusun({ pid, onKirim }) {
@@ -443,33 +443,33 @@ function Penyusun({ pid, onKirim }) {
   }
 
   return (
-    <div className="border-t border-slate-200 bg-white p-2.5 sm:p-3">
+    <div className="border-top border-abu-200 bg-white p-2-5 p-sm-3">
       {error && (
-        <p role="alert" className="mb-2 flex items-start gap-2 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">
+        <p role="alert" className="mb-2 d-flex align-items-start gap-2 rounded-2 bg-danger-subtle px-3 py-2 fs-xs text-danger">
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')} aria-label="Tutup pesan galat">
-            <X className="h-3.5 w-3.5" />
+            <X className="h-3-5 w-3-5" />
           </button>
         </p>
       )}
       {lampiran && (
-        <div className="mb-2 flex items-center gap-3 rounded-xl bg-slate-50 p-2 ring-1 ring-slate-200">
+        <div className="mb-2 d-flex align-items-center gap-3 rounded-2 bg-abu-50 p-2 border border-abu-200">
           {lampiran.jenis === 'foto' ? (
-            <img src={lampiran.pratinjau} alt="" className="h-14 w-14 rounded-lg object-cover" />
+            <img src={lampiran.pratinjau} alt="" className="h-14 w-14 rounded-1 object-fit-cover" />
           ) : lampiran.jenis === 'video' ? (
-            <video src={lampiran.pratinjau} className="h-14 w-14 rounded-lg bg-black object-cover" muted />
+            <video src={lampiran.pratinjau} className="h-14 w-14 rounded-1 bg-black object-fit-cover" muted />
           ) : (
-            <span className="grid h-14 w-14 place-items-center rounded-lg bg-white text-slate-500 ring-1 ring-slate-200">
+            <span className="d-flex h-14 w-14 align-items-center justify-content-center rounded-1 bg-white text-tinta-3 border border-abu-200">
               {lampiran.jenis === 'audio' ? <Music className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
             </span>
           )}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-800">{lampiran.nama}</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-truncate fs-sm fw-semibold text-tinta">{lampiran.nama}</p>
+            <p className="fs-xs text-tinta-3">
               {formatUkuran(lampiran.blob.size)} · tambahkan keterangan (opsional) lalu kirim
             </p>
           </div>
-          <button onClick={buangLampiran} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-600" aria-label="Batalkan lampiran">
+          <button onClick={buangLampiran} className="rounded-1 p-1-5 text-abu-400 hover-latar-abu hover-teks-tinta" aria-label="Batalkan lampiran">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -485,19 +485,19 @@ function Penyusun({ pid, onKirim }) {
           }}
         />
       ) : (
-        <div className="flex items-end gap-2">
-          <div className="relative">
+        <div className="d-flex align-items-end gap-2">
+          <div className="position-relative">
             <button
               type="button"
               onClick={() => setMenu(!menu)}
-              className={`grid h-11 w-11 place-items-center rounded-full transition ${menu ? 'bg-slate-200 text-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`d-flex h-11 w-11 align-items-center justify-content-center rounded-pill transisi ${menu ? 'bg-abu-200 text-tinta' : 'text-tinta-3 hover-latar-abu'}`}
               aria-label="Lampirkan berkas"
               aria-expanded={menu}
             >
               <Paperclip className="h-5 w-5" />
             </button>
             {menu && (
-              <div className="absolute bottom-full left-0 z-20 mb-2 w-52 overflow-hidden rounded-2xl bg-white p-1.5 shadow-xl ring-1 ring-slate-200">
+              <div className="position-absolute bottom-100 start-0 z-20 mb-2 w-52 overflow-hidden rounded-3 bg-white p-1-5 shadow-lg border border-abu-200">
                 {MENU_LAMPIRAN.map(({ jenis, label, ikon: Ikon, terima, warna }) => (
                   <button
                     key={jenis}
@@ -506,21 +506,21 @@ function Penyusun({ pid, onKirim }) {
                       inputRef.current.accept = terima
                       inputRef.current.click()
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    className="d-flex w-100 align-items-center gap-3 rounded-2 px-3 py-2-5 text-start fs-sm fw-semibold text-tinta-2 hover-latar"
                   >
-                    <span className={`grid h-8 w-8 place-items-center rounded-lg ${warna}`}>
+                    <span className={`d-flex h-8 w-8 align-items-center justify-content-center rounded-1 ${warna}`}>
                       <Ikon className="h-4 w-4" />
                     </span>
                     {label}
                   </button>
                 ))}
-                <p className="px-3 pb-1.5 pt-1 text-[11px] text-slate-400">Maks. {formatUkuran(MAKS_UKURAN)} per berkas</p>
+                <p className="px-3 pb-1-5 pt-1 fs-2xs text-abu-400">Maks. {formatUkuran(MAKS_UKURAN)} per berkas</p>
               </div>
             )}
             <input
               ref={inputRef}
               type="file"
-              className="hidden"
+              className="d-none"
               data-chat-berkas
               onChange={(e) => {
                 pilih(e.target.files?.[0])
@@ -548,14 +548,14 @@ function Penyusun({ pid, onKirim }) {
             rows={1}
             placeholder={lampiran ? 'Tambahkan keterangan...' : 'Tulis pesan...'}
             aria-label="Tulis pesan"
-            className="max-h-32 min-h-11 flex-1 resize-none rounded-3xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm [field-sizing:content] focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-100"
+            className="mh-32 min-h-11 flex-1 resize-none rounded-4 border border-abu-200 bg-abu-50 px-4 py-2-5 fs-sm ukuran-isi"
           />
           {teks.trim() || lampiran ? (
             <button
               type="button"
               onClick={kirim}
               disabled={sibuk}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary-600 text-white transition hover:bg-primary-700 disabled:opacity-50"
+              className="d-flex h-11 w-11 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-primary text-white transisi hover-latar-merah-tua"
               aria-label="Kirim pesan"
             >
               <Send className="h-4 w-4" />
@@ -564,7 +564,7 @@ function Penyusun({ pid, onKirim }) {
             <button
               type="button"
               onClick={() => (bisaRekam ? setMerekam(true) : setError('Rekam suara hanya bisa lewat koneksi aman (HTTPS) atau localhost, dan browser yang mendukung.'))}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary-600 text-white transition hover:bg-primary-700"
+              className="d-flex h-11 w-11 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-primary text-white transisi hover-latar-merah-tua"
               aria-label="Rekam pesan suara"
             >
               <Mic className="h-5 w-5" />
@@ -588,47 +588,47 @@ function InfoGrup({ info, data, saya, pengaturan, onAtur, onChat, onTutup }) {
 
   return (
     <Modal open onClose={onTutup} title={info.nama} size="max-w-md">
-      <p className="text-sm text-slate-500">{info.sub}</p>
+      <p className="fs-sm text-tinta-3">{info.sub}</p>
       {info.tipe !== 'staf' && (
-        <label className={`mt-4 flex items-start gap-3 rounded-2xl p-4 ring-1 ${admin ? 'cursor-pointer bg-slate-50 ring-slate-200' : 'bg-slate-50/60 ring-slate-100'}`}>
+        <label className={`mt-4 d-flex align-items-start gap-3 rounded-3 p-4 border ${admin ? 'cursor-pointer bg-abu-50 border-abu-200' : 'bg-abu-50 border-abu-100'}`}>
           <input
             type="checkbox"
             checked={!!pengaturan?.hanyaAdmin}
             disabled={!admin}
             onChange={(e) => onAtur({ hanyaAdmin: e.target.checked })}
-            className="mt-0.5 h-4 w-4 accent-primary-600"
+            className="mt-0-5 h-4 w-4 aksen-merah"
           />
-          <span className="text-sm">
-            <span className="block font-semibold text-slate-800">Hanya guru yang dapat mengirim pesan</span>
-            <span className="block text-slate-500">
+          <span className="fs-sm">
+            <span className="d-block fw-semibold text-tinta">Hanya guru yang dapat mengirim pesan</span>
+            <span className="d-block text-tinta-3">
               {admin ? 'Cocok untuk pengumuman. Anggota lain tetap bisa membaca.' : 'Diatur oleh guru di grup ini.'}
             </span>
           </span>
         </label>
       )}
-      <div className="relative mt-4">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-        <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder={`Cari di ${anggota.length} anggota...`} className={`${inputCls} pl-10`} />
+      <div className="position-relative mt-4">
+        <Search className="pe-none position-absolute start-3-5 top-50 h-4 w-4 translate-middle-y text-abu-400" />
+        <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder={`Cari di ${anggota.length} anggota...`} className={`${inputCls} ps-10`} />
       </div>
       {kelompok.map(([judul, daftar]) => (
         <div key={judul} className="mt-4">
-          <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">
+          <p className="mb-1 fs-xs fw-bold text-uppercase ls-wider text-abu-400">
             {judul} · {daftar.length}
           </p>
-          <ul className="divide-y divide-slate-50">
+          <ul className="pembatas-y pembatas-abu">
             {daftar.map((a) => (
-              <li key={a.id} className="flex items-center gap-3 py-2">
+              <li key={a.id} className="d-flex align-items-center gap-3 py-2">
                 <Avatar nama={a.nama} size="sm" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-slate-800">
+                  <p className="text-truncate fs-sm fw-semibold text-tinta">
                     {a.nama}
-                    {a.id === saya && <span className="font-normal text-slate-400"> (Anda)</span>}
+                    {a.id === saya && <span className="fw-normal text-abu-400"> (Anda)</span>}
                   </p>
-                  <p className="truncate text-xs text-slate-500">{a.sub}</p>
+                  <p className="text-truncate fs-xs text-tinta-3">{a.sub}</p>
                 </div>
-                {a.admin && <span className="rounded-full bg-primary-50 px-2 py-0.5 text-[10px] font-bold text-primary-700">Pengelola</span>}
+                {a.admin && <span className="rounded-pill bg-merah-50 px-2 py-0-5 fs-10 fw-bold text-merah-700">Pengelola</span>}
                 {a.id !== saya && bolehPribadi(data, saya, a.id) && (
-                  <button onClick={() => onChat(a.id)} className="rounded-lg p-1.5 text-primary-600 hover:bg-primary-50" aria-label={`Chat pribadi dengan ${a.nama}`}>
+                  <button onClick={() => onChat(a.id)} className="rounded-1 p-1-5 text-primary hover-latar-merah" aria-label={`Chat pribadi dengan ${a.nama}`}>
                     <MessagesSquare className="h-4 w-4" />
                   </button>
                 )}
@@ -654,22 +654,22 @@ function ChatBaru({ data, saya, onPilih, onTutup }) {
 
   return (
     <Modal open onClose={onTutup} title="Chat baru" size="max-w-md">
-      <div className="relative">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-        <input autoFocus value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama, jabatan, atau kelas..." className={`${inputCls} pl-10`} />
+      <div className="position-relative">
+        <Search className="pe-none position-absolute start-3-5 top-50 h-4 w-4 translate-middle-y text-abu-400" />
+        <input autoFocus value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama, jabatan, atau kelas..." className={`${inputCls} ps-10`} />
       </div>
-      {kelompok.length === 0 && <p className="py-8 text-center text-sm text-slate-500">Tidak ada kontak yang cocok.</p>}
+      {kelompok.length === 0 && <p className="py-8 text-center fs-sm text-tinta-3">Tidak ada kontak yang cocok.</p>}
       {kelompok.map(([judul, daftar]) => (
         <div key={judul} className="mt-4">
-          <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">{judul}</p>
+          <p className="mb-1 fs-xs fw-bold text-uppercase ls-wider text-abu-400">{judul}</p>
           <ul>
             {daftar.map((p) => (
               <li key={p.id}>
-                <button onClick={() => onPilih(p.id)} className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-slate-50">
+                <button onClick={() => onPilih(p.id)} className="d-flex w-100 align-items-center gap-3 rounded-2 px-2 py-2 text-start hover-latar">
                   <Avatar nama={p.nama} size="sm" />
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-slate-800">{p.nama}</span>
-                    <span className="block truncate text-xs text-slate-500">{p.sub}</span>
+                    <span className="d-block text-truncate fs-sm fw-semibold text-tinta">{p.nama}</span>
+                    <span className="d-block text-truncate fs-xs text-tinta-3">{p.sub}</span>
                   </span>
                 </button>
               </li>
@@ -677,7 +677,7 @@ function ChatBaru({ data, saya, onPilih, onTutup }) {
           </ul>
         </div>
       ))}
-      {cocok.length > tampil.length && <p className="mt-3 text-center text-xs text-slate-500">Menampilkan 60 dari {cocok.length} kontak. Ketik nama untuk mencari.</p>}
+      {cocok.length > tampil.length && <p className="mt-3 text-center fs-xs text-tinta-3">Menampilkan 60 dari {cocok.length} kontak. Ketik nama untuk mencari.</p>}
     </Modal>
   )
 }
@@ -689,20 +689,20 @@ function LihatFoto({ foto, onTutup }) {
     return () => document.removeEventListener('keydown', tombol)
   }, [onTutup])
   return (
-    <div role="dialog" aria-modal="true" aria-label={foto.nama} className="fixed inset-0 z-50 flex flex-col bg-slate-950/95" onClick={onTutup}>
-      <div className="flex items-center justify-between gap-3 p-4 text-white" onClick={(e) => e.stopPropagation()}>
-        <p className="truncate text-sm font-semibold">{foto.nama}</p>
-        <div className="flex gap-2">
-          <a href={foto.url} download={foto.nama} className="rounded-full bg-white/10 p-2.5 hover:bg-white/20" aria-label="Unduh foto">
+    <div role="dialog" aria-modal="true" aria-label={foto.nama} className="position-fixed inset-0 z-50 d-flex flex-column bg-tinta" onClick={onTutup}>
+      <div className="d-flex align-items-center justify-content-between gap-3 p-4 text-white" onClick={(e) => e.stopPropagation()}>
+        <p className="text-truncate fs-sm fw-semibold">{foto.nama}</p>
+        <div className="d-flex gap-2">
+          <a href={foto.url} download={foto.nama} className="rounded-pill bg-white bg-opacity-10 p-2-5 hover-terang" aria-label="Unduh foto">
             <Download className="h-5 w-5" />
           </a>
-          <button onClick={onTutup} className="rounded-full bg-white/10 p-2.5 hover:bg-white/20" aria-label="Tutup">
+          <button onClick={onTutup} className="rounded-pill bg-white bg-opacity-10 p-2-5 hover-terang" aria-label="Tutup">
             <X className="h-5 w-5" />
           </button>
         </div>
       </div>
-      <div className="flex flex-1 items-center justify-center p-4">
-        <img src={foto.url} alt={foto.nama} className="max-h-full max-w-full rounded-lg object-contain" onClick={(e) => e.stopPropagation()} />
+      <div className="d-flex flex-1 align-items-center justify-content-center p-4">
+        <img src={foto.url} alt={foto.nama} className="mh-100 mw-100 rounded-1 object-fit-contain" onClick={(e) => e.stopPropagation()} />
       </div>
     </div>
   )
@@ -757,18 +757,18 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
 
   let tanggalSebelum = null
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-3 py-2.5 sm:px-4">
-        <button onClick={onKembali} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="Kembali ke daftar chat">
+    <div className="d-flex h-100 min-h-0 flex-column">
+      <div className="d-flex align-items-center gap-3 border-bottom border-abu-200 bg-white px-3 py-2-5 px-sm-4">
+        <button onClick={onKembali} className="rounded-1 p-1-5 text-tinta-3 hover-latar-abu d-lg-none" aria-label="Kembali ke daftar chat">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <AvatarPercakapan info={info} size="sm" />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-bold text-slate-900">{info.nama}</p>
-          <p className="truncate text-xs text-slate-500">{info.sub}</p>
+          <p className="text-truncate fw-bold text-tinta">{info.nama}</p>
+          <p className="text-truncate fs-xs text-tinta-3">{info.sub}</p>
         </div>
         {info.grup && (
-          <button onClick={() => setInfoBuka(true)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Info grup & anggota">
+          <button onClick={() => setInfoBuka(true)} className="rounded-1 p-2 text-tinta-3 hover-latar-abu" aria-label="Info grup & anggota">
             <Info className="h-5 w-5" />
           </button>
         )}
@@ -780,24 +780,24 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
           const el = e.currentTarget
           diBawah.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
         }}
-        className="min-h-0 flex-1 overflow-y-auto bg-slate-100/70 px-3 py-4 sm:px-6"
+        className="min-h-0 flex-1 overflow-y-auto bg-abu-100 px-3 py-4 px-sm-6"
         aria-label={`Pesan di ${info.nama}`}
       >
-        <div ref={isi} className="space-y-2">
-          {info.grup && <p className="mx-auto mb-3 max-w-md rounded-xl bg-amber-50 px-3 py-2 text-center text-xs text-amber-800 ring-1 ring-amber-100">{CATATAN_GRUP[info.tipe]}</p>}
+        <div ref={isi} className="antara-y-2">
+          {info.grup && <p className="mx-auto mb-3 mw-md rounded-2 bg-warning-subtle px-3 py-2 text-center fs-xs text-warning-emphasis border border-warning-subtle">{CATATAN_GRUP[info.tipe]}</p>}
         {pid === pidKepsekOrtu(data, saya) && (
-          <p className="mx-auto mb-3 max-w-md rounded-xl bg-emerald-50 px-3 py-2 text-center text-xs text-emerald-800 ring-1 ring-emerald-100">
+          <p className="mx-auto mb-3 mw-md rounded-2 bg-success-subtle px-3 py-2 text-center fs-xs text-success-emphasis border border-success-subtle">
             🔒 Percakapan pribadi dengan Kepala Sekolah untuk konsultasi atau pengaduan. Guru dan wali kelas tidak dapat membacanya.
           </p>
         )}
           {semuaPesan.length > pesan.length && (
             <div className="text-center">
-              <button onClick={() => setBatas(batas + PER_HALAMAN)} className="rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50">
+              <button onClick={() => setBatas(batas + PER_HALAMAN)} className="rounded-pill bg-white px-4 py-1-5 fs-xs fw-semibold text-tinta-2 shadow-sm hover-latar">
                 Tampilkan pesan sebelumnya
               </button>
             </div>
           )}
-          {semuaPesan.length === 0 && <p className="py-16 text-center text-sm text-slate-500">Belum ada pesan. Mulai percakapan dengan {info.nama.split(',')[0]}. 👋</p>}
+          {semuaPesan.length === 0 && <p className="py-16 text-center fs-sm text-tinta-3">Belum ada pesan. Mulai percakapan dengan {info.nama.split(',')[0]}. 👋</p>}
           {pesan.map((p) => {
             const tgl = kunciTanggal(p.waktu)
             const pemisah = tgl !== tanggalSebelum
@@ -806,7 +806,7 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
               <div key={p.id}>
                 {pemisah && (
                   <p className="my-3 text-center">
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 shadow-sm">{labelTanggal(tgl)}</span>
+                    <span className="rounded-pill bg-white px-3 py-1 fs-xs fw-semibold text-tinta-3 shadow-sm">{labelTanggal(tgl)}</span>
                   </p>
                 )}
                 <Gelembung
@@ -829,7 +829,7 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
       {bisaKirim ? (
         <Penyusun pid={pid} onKirim={(isi) => kirim(pid, isi)} />
       ) : (
-        <p className="flex items-center justify-center gap-2 border-t border-slate-200 bg-white px-4 py-4 text-sm text-slate-500">
+        <p className="d-flex align-items-center justify-content-center gap-2 border-top border-abu-200 bg-white px-4 py-4 fs-sm text-tinta-3">
           <Lock className="h-4 w-4" /> Hanya guru yang dapat mengirim pesan di grup ini.
         </p>
       )}
@@ -863,14 +863,14 @@ function RuangChat({ pid, saya, onKembali, onChatPribadi }) {
                 hapus(pid, akanDihapus.id)
                 setAkanDihapus(null)
               }}
-              className={`${btn.primary} bg-rose-600 hover:bg-rose-700`}
+              className="btn btn-danger"
             >
               Hapus untuk semua
             </button>
           </>
         }
       >
-        <p className="text-sm text-slate-600">
+        <p className="fs-sm text-tinta-2">
           {akanDihapus?.dari === saya ? 'Pesan dan berkasnya akan dihapus untuk semua anggota percakapan.' : 'Sebagai pengelola grup, Anda akan menghapus pesan anggota ini untuk semua anggota.'}
         </p>
       </Modal>
@@ -910,34 +910,34 @@ export default function Chat() {
       .sort((a, b) => b.sematkan - a.sematkan || (b.terakhir?.waktu ?? '').localeCompare(a.terakhir?.waktu ?? '') || a.info.nama.localeCompare(b.info.nama))
   }, [percakapan, data, saya, cari, saring])
 
-  if (!saya) return <p className="text-slate-500">Akun ini belum terhubung dengan data sekolah, jadi belum bisa memakai chat.</p>
+  if (!saya) return <p className="text-tinta-3">Akun ini belum terhubung dengan data sekolah, jadi belum bisa memakai chat.</p>
 
   return (
-    <div className="-mx-4 -my-6 h-[calc(100dvh-65px)] min-h-[28rem] sm:-mx-8 sm:-my-8 lg:mx-0 lg:my-0 lg:h-[calc(100dvh-65px-4rem)]">
-      <div className="grid h-full grid-cols-1 overflow-hidden bg-white lg:grid-cols-[340px_minmax(0,1fr)] lg:rounded-3xl lg:shadow-sm lg:ring-1 lg:ring-slate-200">
+    <div className="mx-n4 my-n6 tata-chat mx-sm-n8 my-sm-n8 mx-lg-0 my-lg-0">
+      <div className="d-grid h-100 kolom-1 overflow-hidden bg-white kolom-lg-340-isi kisi-chat">
         {/* Daftar percakapan */}
-        <div className={`min-h-0 flex-col border-slate-200 lg:flex lg:border-r ${aktif ? 'hidden' : 'flex'}`}>
-          <div className="space-y-3 border-b border-slate-100 p-4">
-            <div className="flex items-center justify-between gap-2">
-              <h1 className="text-2xl font-bold text-slate-900">Chat</h1>
+        <div className={`min-h-0 flex-column border-abu-200 d-lg-flex garis-kanan-lg ${aktif ? 'd-none' : 'd-flex'}`}>
+          <div className="antara-y-3 border-bottom border-abu-100 p-4">
+            <div className="d-flex align-items-center justify-content-between gap-2">
+              <h1 className="fs-2xl fw-bold text-tinta">Chat</h1>
               {bisaPribadi && (
-                <button onClick={() => setBaruBuka(true)} className={`${btn.primary} rounded-full! px-3.5 py-2`}>
+                <button onClick={() => setBaruBuka(true)} className={`${btn.primary} rounded-pill px-3-5 py-2`}>
                   <MessageCirclePlus className="h-4 w-4" /> Chat baru
                 </button>
               )}
             </div>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari percakapan..." className={`${inputCls} rounded-full! pl-10`} aria-label="Cari percakapan" />
+            <div className="position-relative">
+              <Search className="pe-none position-absolute start-3-5 top-50 h-4 w-4 translate-middle-y text-abu-400" />
+              <input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari percakapan..." className={`${inputCls} rounded-pill ps-10`} aria-label="Cari percakapan" />
             </div>
             {bisaPribadi && (
-              <div className="flex gap-1.5 overflow-x-auto">
+              <div className="d-flex gap-1-5 overflow-x-auto">
                 {SARING.map(([k, label]) => (
                   <button
                     key={k}
                     onClick={() => setSaring(k)}
                     aria-pressed={saring === k}
-                    className={`ui-saring shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition ${saring === k ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    className={`ui-saring flex-shrink-0 rounded-pill px-3 py-1 fs-xs fw-semibold transisi ${saring === k ? 'bg-tinta text-white' : 'bg-abu-100 text-tinta-2 hover-latar-abu'}`}
                   >
                     {label}
                   </button>
@@ -946,55 +946,55 @@ export default function Chat() {
             )}
           </div>
           <ul className="min-h-0 flex-1 overflow-y-auto" aria-label="Daftar percakapan">
-            {daftar.length === 0 && <li className="px-4 py-10 text-center text-sm text-slate-500">Tidak ada percakapan.</li>}
+            {daftar.length === 0 && <li className="px-4 py-10 text-center fs-sm text-tinta-3">Tidak ada percakapan.</li>}
             {daftar.map((c) => (
               <li key={c.id}>
                 <button
                   onClick={() => buka(c.id)}
                   aria-current={aktif === c.id}
-                  className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${aktif === c.id ? 'bg-primary-50' : 'hover:bg-slate-50'}`}
+                  className={`d-flex w-100 align-items-center gap-3 px-4 py-3 text-start transisi ${aktif === c.id ? 'bg-merah-50' : 'hover-latar'}`}
                 >
                   <AvatarPercakapan info={c.info} />
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-baseline justify-between gap-2">
-                      <span className={`flex min-w-0 items-center gap-1 text-sm ${c.belum ? 'font-bold text-slate-900' : 'font-semibold text-slate-700'}`}>
-                        <span className="truncate">{c.info.nama}</span>
-                        {c.sematkan && <Pin className="h-3 w-3 shrink-0 rotate-45 text-slate-400" aria-label="Disematkan" />}
+                    <span className="d-flex align-items-baseline justify-content-between gap-2">
+                      <span className={`d-flex min-w-0 align-items-center gap-1 fs-sm ${c.belum ? 'fw-bold text-tinta' : 'fw-semibold text-tinta-2'}`}>
+                        <span className="text-truncate">{c.info.nama}</span>
+                        {c.sematkan && <Pin className="h-3 w-3 flex-shrink-0 miring-45 text-abu-400" aria-label="Disematkan" />}
                       </span>
-                      {c.terakhir && <span className={`shrink-0 text-[11px] ${c.belum ? 'font-semibold text-primary-600' : 'text-slate-400'}`}>{waktuDaftar(c.terakhir.waktu)}</span>}
+                      {c.terakhir && <span className={`flex-shrink-0 fs-2xs ${c.belum ? 'fw-semibold text-primary' : 'text-abu-400'}`}>{waktuDaftar(c.terakhir.waktu)}</span>}
                     </span>
-                    <span className="mt-0.5 flex items-center justify-between gap-2">
-                      <span className="truncate text-xs text-slate-500">
+                    <span className="mt-0-5 d-flex align-items-center justify-content-between gap-2">
+                      <span className="text-truncate fs-xs text-tinta-3">
                         {c.terakhir
                           ? `${c.grup && c.terakhir.dari !== saya && !c.terakhir.dihapus ? `${profil(data, c.terakhir.dari).nama.split(' ')[0]}: ` : c.terakhir.dari === saya && !c.terakhir.dihapus ? 'Anda: ' : ''}${ringkas(c.terakhir)}`
                           : c.sematkan
                             ? 'Kepala Sekolah · konsultasi & pengaduan (pribadi)'
                             : c.info.sub}
                       </span>
-                      {c.belum > 0 && <span className="grid h-5 min-w-5 shrink-0 place-items-center rounded-full bg-primary-600 px-1.5 text-[10px] font-bold text-white">{c.belum}</span>}
+                      {c.belum > 0 && <span className="d-flex h-5 min-w-5 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-primary px-1-5 fs-10 fw-bold text-white">{c.belum}</span>}
                     </span>
                   </span>
                 </button>
               </li>
             ))}
           </ul>
-          <p className="flex items-center gap-1.5 border-t border-slate-100 px-4 py-2.5 text-[11px] text-slate-400">
-            <ShieldCheck className="h-3.5 w-3.5 shrink-0" /> Chat hanya dengan warga sekolah. Siswa memakai grup kelas.
+          <p className="d-flex align-items-center gap-1-5 border-top border-abu-100 px-4 py-2-5 fs-2xs text-abu-400">
+            <ShieldCheck className="h-3-5 w-3-5 flex-shrink-0" /> Chat hanya dengan warga sekolah. Siswa memakai grup kelas.
           </p>
         </div>
 
         {/* Isi percakapan */}
-        <div className={`min-h-0 ${aktif ? 'block' : 'hidden lg:block'}`}>
+        <div className={`min-h-0 ${aktif ? 'd-block' : 'd-none d-lg-block'}`}>
           {aktif ? (
             <RuangChat key={aktif} pid={aktif} saya={saya} onKembali={() => buka(null)} onChatPribadi={(id) => buka(idPribadi(saya, id))} />
           ) : (
-            <div className="grid h-full place-items-center bg-slate-50 p-8 text-center">
+            <div className="d-flex h-100 align-items-center justify-content-center bg-abu-50 p-8 text-center">
               <div>
-                <span className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-primary-50 text-primary-600">
+                <span className="mx-auto d-flex h-16 w-16 align-items-center justify-content-center rounded-4 bg-merah-50 text-primary">
                   <MessagesSquare className="h-8 w-8" />
                 </span>
-                <p className="mt-4 font-display text-xl font-bold text-slate-900">Chat Sekolah</p>
-                <p className="mt-1 max-w-sm text-sm text-slate-500">Pilih percakapan di sebelah kiri. Kirim pesan, pesan suara, foto, video, dokumen, atau lagu.</p>
+                <p className="mt-4 fs-xl fw-bold text-tinta">Chat Sekolah</p>
+                <p className="mt-1 mw-sm fs-sm text-tinta-3">Pilih percakapan di sebelah kiri. Kirim pesan, pesan suara, foto, video, dokumen, atau lagu.</p>
               </div>
             </div>
           )}

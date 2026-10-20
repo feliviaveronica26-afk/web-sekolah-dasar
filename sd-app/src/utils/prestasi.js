@@ -53,14 +53,14 @@ export function lencanaSiswa(data, siswa) {
   const membantu = sikap.perKategori.membantu ?? 0
 
   return [
-    { kode: 'hadir', emoji: '📅', nama: 'Rajin Hadir', syarat: 'Kehadiran minimal 95%', nilai: hadir.persen / 95, teks: `${hadir.persen}%`, warna: 'from-emerald-300 to-emerald-500' },
-    { kode: 'streak', emoji: '🔥', nama: 'Tak Pernah Absen', syarat: 'Hadir 10 hari berturut-turut', nilai: streak / 10, teks: `${Math.min(streak, 10)}/10 hari`, warna: 'from-orange-300 to-rose-500' },
-    { kode: 'tugas', emoji: '✅', nama: 'Tuntas Tugas', syarat: 'Semua tugas kelas selesai', nilai: tugasKelas.length ? selesai / tugasKelas.length : 0, teks: `${selesai}/${tugasKelas.length} tugas`, warna: 'from-sky-300 to-sky-500' },
-    { kode: 'nilai', emoji: '🏆', nama: 'Nilai Gemilang', syarat: 'Rata-rata nilai minimal 85', nilai: (nilai.rataRata ?? 0) / 85, teks: `rata-rata ${nilai.rataRata ?? '–'}`, warna: 'from-amber-200 to-amber-500' },
-    { kode: 'bintang', emoji: '⭐', nama: 'Bintang Kelas', syarat: 'Kumpulkan 15 poin sikap', nilai: sikap.total / 15, teks: `${Math.max(0, sikap.total)}/15 poin`, warna: 'from-yellow-200 to-orange-400' },
-    { kode: 'penolong', emoji: '🤝', nama: 'Sahabat Penolong', syarat: '3 apresiasi "Membantu teman"', nilai: membantu / 3, teks: `${Math.min(membantu, 3)}/3 apresiasi`, warna: 'from-pink-300 to-rose-500' },
-    { kode: 'buku', emoji: '📚', nama: 'Kutu Buku', syarat: 'Meminjam 3 buku perpustakaan', nilai: pinjam / 3, teks: `${Math.min(pinjam, 3)}/3 buku`, warna: 'from-violet-300 to-violet-500' },
-    { kode: 'ekskul', emoji: '🎯', nama: 'Aktif Berkegiatan', syarat: 'Ikut minimal 1 ekskul pilihan', nilai: pilihan, teks: `${pilihan} ekskul pilihan`, warna: 'from-teal-300 to-teal-500' },
+    { kode: 'hadir', emoji: '📅', nama: 'Rajin Hadir', syarat: 'Kehadiran minimal 95%', nilai: hadir.persen / 95, teks: `${hadir.persen}%`, warna: 'gradasi-hadir' },
+    { kode: 'streak', emoji: '🔥', nama: 'Tak Pernah Absen', syarat: 'Hadir 10 hari berturut-turut', nilai: streak / 10, teks: `${Math.min(streak, 10)}/10 hari`, warna: 'gradasi-streak' },
+    { kode: 'tugas', emoji: '✅', nama: 'Tuntas Tugas', syarat: 'Semua tugas kelas selesai', nilai: tugasKelas.length ? selesai / tugasKelas.length : 0, teks: `${selesai}/${tugasKelas.length} tugas`, warna: 'gradasi-tugas' },
+    { kode: 'nilai', emoji: '🏆', nama: 'Nilai Gemilang', syarat: 'Rata-rata nilai minimal 85', nilai: (nilai.rataRata ?? 0) / 85, teks: `rata-rata ${nilai.rataRata ?? '–'}`, warna: 'gradasi-nilai' },
+    { kode: 'bintang', emoji: '⭐', nama: 'Bintang Kelas', syarat: 'Kumpulkan 15 poin sikap', nilai: sikap.total / 15, teks: `${Math.max(0, sikap.total)}/15 poin`, warna: 'gradasi-bintang' },
+    { kode: 'penolong', emoji: '🤝', nama: 'Sahabat Penolong', syarat: '3 apresiasi "Membantu teman"', nilai: membantu / 3, teks: `${Math.min(membantu, 3)}/3 apresiasi`, warna: 'gradasi-penolong' },
+    { kode: 'buku', emoji: '📚', nama: 'Kutu Buku', syarat: 'Meminjam 3 buku perpustakaan', nilai: pinjam / 3, teks: `${Math.min(pinjam, 3)}/3 buku`, warna: 'gradasi-buku' },
+    { kode: 'ekskul', emoji: '🎯', nama: 'Aktif Berkegiatan', syarat: 'Ikut minimal 1 ekskul pilihan', nilai: pilihan, teks: `${pilihan} ekskul pilihan`, warna: 'gradasi-ekskul' },
   ].map((l) => ({ ...l, didapat: l.nilai >= 1, progres: Math.max(0, Math.min(1, l.nilai)) }))
 }
 

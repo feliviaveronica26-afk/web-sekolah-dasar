@@ -8,15 +8,15 @@ import { formatTanggal, todayKey } from '../../utils/format'
 const PRIORITAS = ['Tinggi', 'Sedang', 'Rendah']
 
 const WARNA_STATUS = {
-  Dilaporkan: 'bg-amber-100 text-amber-700',
-  Diperbaiki: 'bg-sky-100 text-sky-700',
-  Selesai: 'bg-emerald-100 text-emerald-700',
+  Dilaporkan: 'bg-warning-subtle text-warning-emphasis',
+  Diperbaiki: 'bg-info-subtle text-info',
+  Selesai: 'bg-success-subtle text-success',
 }
 
 const WARNA_PRIORITAS = {
-  Tinggi: 'bg-rose-100 text-rose-700',
-  Sedang: 'bg-amber-50 text-amber-700',
-  Rendah: 'bg-slate-100 text-slate-600',
+  Tinggi: 'bg-danger-subtle text-danger',
+  Sedang: 'bg-warning-subtle text-warning-emphasis',
+  Rendah: 'bg-abu-100 text-tinta-2',
 }
 
 export default function LaporanKerusakan() {
@@ -28,7 +28,7 @@ export default function LaporanKerusakan() {
       title="Laporan Kerusakan"
       desc="Catat kerusakan fasilitas sekolah dan pantau perbaikannya sampai selesai."
       ringkasan={
-        <div className="mb-6 grid gap-3 min-[480px]:grid-cols-3 sm:gap-4">
+        <div className="mb-6 d-grid gap-3 kolom-480-3 kolom-sm-3 gap-sm-4">
           <StatCard icon={TriangleAlert} label="Baru dilaporkan" value={hitung('Dilaporkan')} tone="amber" />
           <StatCard icon={Hammer} label="Sedang diperbaiki" value={hitung('Diperbaiki')} tone="sky" />
           <StatCard icon={CircleCheck} label="Selesai" value={hitung('Selesai')} tone="emerald" />
@@ -60,8 +60,8 @@ export default function LaporanKerusakan() {
           label: 'Kerusakan',
           render: (k) => (
             <span>
-              <span className="block font-semibold text-slate-800">{k.nama}</span>
-              <span className="block text-xs text-slate-500">
+              <span className="d-block fw-semibold text-tinta">{k.nama}</span>
+              <span className="d-block fs-xs text-tinta-3">
                 {k.lokasi} · oleh {k.pelapor}
               </span>
             </span>
@@ -70,7 +70,7 @@ export default function LaporanKerusakan() {
         { key: 'tanggal', label: 'Tanggal', render: (k) => formatTanggal(k.tanggal) },
         { key: 'prioritas', label: 'Prioritas', render: (k) => <Badge className={WARNA_PRIORITAS[k.prioritas]}>{k.prioritas}</Badge> },
         { key: 'status', label: 'Status', render: (k) => <Badge className={WARNA_STATUS[k.status]}>{k.status}</Badge> },
-        { key: 'keterangan', label: 'Tindak Lanjut', render: (k) => <span className="text-slate-500">{k.keterangan || '–'}</span> },
+        { key: 'keterangan', label: 'Tindak Lanjut', render: (k) => <span className="text-tinta-3">{k.keterangan || '–'}</span> },
       ]}
     />
   )

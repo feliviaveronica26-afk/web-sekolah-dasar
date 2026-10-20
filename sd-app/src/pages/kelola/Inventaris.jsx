@@ -5,9 +5,9 @@ import { useData } from '../../context/DataContext'
 import { KATEGORI_BARANG, KONDISI_BARANG, LOKASI_SEKOLAH } from '../../data/dummy'
 
 export const WARNA_KONDISI = {
-  Baik: 'bg-emerald-100 text-emerald-700',
-  'Rusak Ringan': 'bg-amber-100 text-amber-700',
-  'Rusak Berat': 'bg-rose-100 text-rose-700',
+  Baik: 'bg-success-subtle text-success',
+  'Rusak Ringan': 'bg-warning-subtle text-warning-emphasis',
+  'Rusak Berat': 'bg-danger-subtle text-danger',
 }
 
 export default function Inventaris() {
@@ -20,7 +20,7 @@ export default function Inventaris() {
       title="Inventaris Sarana & Prasarana"
       desc="Daftar barang milik sekolah beserta lokasi dan kondisinya."
       ringkasan={
-        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mb-6 d-grid kolom-2 gap-4 kolom-lg-4">
           <StatCard icon={Boxes} label="Jenis barang" value={data.inventaris.length} tone="sky" />
           <StatCard icon={PackageCheck} label="Total unit" value={total.toLocaleString('id-ID')} tone="emerald" />
           <StatCard icon={Wrench} label="Rusak ringan" value={jenis('Rusak Ringan')} hint="jenis barang" tone="amber" />
@@ -48,15 +48,15 @@ export default function Inventaris() {
           label: 'Barang',
           render: (b) => (
             <span>
-              <span className="block font-semibold text-slate-800">{b.nama}</span>
-              <span className="block text-xs text-slate-500">{b.kategori}</span>
+              <span className="d-block fw-semibold text-tinta">{b.nama}</span>
+              <span className="d-block fs-xs text-tinta-3">{b.kategori}</span>
             </span>
           ),
         },
         { key: 'lokasi', label: 'Lokasi' },
         { key: 'jumlah', label: 'Jumlah', render: (b) => `${Number(b.jumlah).toLocaleString('id-ID')} unit` },
         { key: 'kondisi', label: 'Kondisi', render: (b) => <Badge className={WARNA_KONDISI[b.kondisi]}>{b.kondisi}</Badge> },
-        { key: 'keterangan', label: 'Keterangan', render: (b) => <span className="text-slate-500">{b.keterangan || '–'}</span> },
+        { key: 'keterangan', label: 'Keterangan', render: (b) => <span className="text-tinta-3">{b.keterangan || '–'}</span> },
       ]}
     />
   )
