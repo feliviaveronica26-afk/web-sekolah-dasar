@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { BookOpen, Camera, ChevronLeft, ChevronRight, Flag, FlaskConical, Monitor, Music, Sprout, Store, Tent, Trophy, X } from 'lucide-react'
 import { Muncul } from '../../components/Hiasan'
 import { Foto, KepalaHalaman, angkaSaring, pilSaring, wadah } from '../../components/Situs'
+import { IkonSosial } from '../../components/Sosial'
 import { GALERI, SEKOLAH } from '../../data/dummy'
 import { FOTO, fotoUntuk } from '../../data/foto'
 import { formatTanggal } from '../../utils/format'
@@ -98,7 +99,20 @@ export default function Galeri() {
             )
           })}
         </ul>
-        <p className="mt-10 fs-15 text-tinta-3">Dokumentasi lengkap setiap kegiatan ada di Instagram {SEKOLAH.instagram}.</p>
+        <p className="mt-10 fs-15 text-tinta-3">
+          Dokumentasi lengkap setiap kegiatan ada di
+          <a
+            href={SEKOLAH.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ms-1-5 d-inline-flex align-items-center gap-1-5 fw-bold text-merah-700 text-decoration-underline link-offset-2 hover-teks-merah-800"
+          >
+            <IkonSosial jenis="instagram" className="ukuran-4" />
+            Instagram {SEKOLAH.instagram}
+            <span className="visually-hidden"> (membuka tab baru)</span>
+          </a>
+          .
+        </p>
       </section>
 
       {dipilih && (

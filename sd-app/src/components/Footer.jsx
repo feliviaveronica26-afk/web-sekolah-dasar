@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Merek } from './Navbar'
 import { Catatan, wadah } from './Situs'
+import { IkonSosial, SOSIAL } from './Sosial'
 import { JAM_SEKOLAH, SEKOLAH } from '../data/dummy'
 
 const JELAJAHI = [
@@ -105,9 +106,21 @@ export default function Footer() {
           <p>
             © {new Date().getFullYear()} {SEKOLAH.nama}. {SEKOLAH.slogan}.
           </p>
-          <p>
-            Instagram {SEKOLAH.instagram} · YouTube {SEKOLAH.youtube}
-          </p>
+          <ul className="d-flex flex-wrap align-items-center column-gap-5" aria-label="Media sosial sekolah">
+            {SOSIAL.map(([jenis, layanan, akun, url]) => (
+              <li key={jenis}>
+                <a href={url} target="_blank" rel="noopener noreferrer" className="tautan-kaki grup d-inline-flex min-h-11 align-items-center gap-2-5">
+                  <span className="d-flex ukuran-9 flex-shrink-0 align-items-center justify-content-center rounded-pill bg-white bg-opacity-10 text-white transisi grup-besar">
+                    <IkonSosial jenis={jenis} className="ukuran-4-5" />
+                  </span>
+                  <span>
+                    {layanan} <span className="fw-semibold text-white">{akun}</span>
+                    <span className="visually-hidden"> (membuka tab baru)</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

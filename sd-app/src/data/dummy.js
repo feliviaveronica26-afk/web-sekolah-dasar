@@ -18,7 +18,9 @@ export const SEKOLAH = {
   jamOperasional: 'Senin – Jumat, 07.00 – 14.00 WIB',
   kepalaSekolah: 'Dra. Siti Rahmawati, M.Pd.',
   instagram: '@sdharapangemilang',
+  instagramUrl: 'https://www.instagram.com/sdharapangemilang/',
   youtube: 'SD Harapan Gemilang',
+  youtubeUrl: 'https://www.youtube.com/@sdharapangemilang',
   facebook: 'SD Harapan Gemilang',
   maksSiswaPerKelas: 28,
   sambutan:
